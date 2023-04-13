@@ -56,3 +56,39 @@ const userContributions = [
 
 
 
+
+
+# 表
+
+使用关系型数据库
+
+表:["user","team","kanban_task_lists","kanban_tasks",“test_case"]
+
+**User**
+
+| definition | attribute | description |
+| ---------- | --------- | ----------- |
+|            | UserId    |             |
+|            | Email     |             |
+|            |           |             |
+|            |           |             |
+|            |           |             |
+
+**Team**
+
+| definition | attribute | description |
+| ---------- | --------- | ----------- |
+|            |           |             |
+|            |           |             |
+|            |           |             |
+|            |           |             |
+|            |           |             |
+
+**UserTeam**
+
+| definition | attribute | description |
+| ---------- | --------- | ----------- |
+|            | UserId    |             |
+|            | TeamId    |             |
+
+用户（user）和团队（team）之间存在多对多（many-to-many）的关系，使用第三张关系表（junction table）来链接这两个表
