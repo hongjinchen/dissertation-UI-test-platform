@@ -11,6 +11,7 @@ import {
   IconButton,
 } from "@mui/material";
 import Dialog from "@material-ui/core/Dialog";
+import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Grid from "@material-ui/core/Grid";
@@ -36,6 +37,7 @@ function generateData(listCount, taskCount) {
       const task = {
         id: j + (i - 1) * taskCount,
         text: `Task ${j} of List ${i}`,
+        testcase: j + (i - 1) * taskCount,
       };
       list.tasks.push(task);
     }
@@ -103,6 +105,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
             {
               id: item.tasks.length + 1,
               text: newEvent,
+              testcase: TestID,
             },
           ],
         };
@@ -116,7 +119,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
     console.log(taskLists);
   };
   const [newEvent, setNewEvent] = useState("");
-
+  const [TestID, setTestID] = useState("");
   const updateTaskText = (taskId, newText) => {
     setTaskLists((prevTaskLists) =>
       prevTaskLists.map((list) => ({
@@ -151,11 +154,11 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
             />
           ))}
         </Box>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-        <Button variant="contained" color="primary" onClick={handleClickOpen}>
-          Add Issue
-        </Button>          
-        </div>
+        <Box display="flex" justifyContent="center" alignItems="center">
+          <Button variant="contained" color="primary" onClick={handleClickOpen}>
+            Add Issue
+          </Button>
+        </Box>
 
         <Dialog
           open={open}
@@ -166,13 +169,26 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle id="alert-dialog-slide-title">
-            {"Add a new event"}
+            Add a new issue
           </DialogTitle>
-          <TextField
-            value={newEvent}
-            onChange={(e) => setNewEvent(e.target.value)}
-            required
-          ></TextField>
+          <DialogContent>
+            <TextField
+              label="Issue name"
+              value={newEvent}
+              onChange={(e) => setNewEvent(e.target.value)}
+              required
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              label="Related test case"
+              value={TestID}
+              onChange={(e) => setTestID(e.target.value)}
+              required
+              fullWidth
+              margin="normal"
+            />
+          </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Cancel
@@ -221,10 +237,6 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText }) => {
     handleClose();
   };
 
-  const handleViewTestResults = () => {
-    console.log("View test results for task", task.id);
-    handleClose();
-  };
   const handleTextChange = (e) => {
     setEditedText(e.target.value);
   };
@@ -342,7 +354,7 @@ const KanbanBoard = () => {
   useEffect(() => {
     console.log(taskLists);
   }, [taskLists]);
-  
+
   const handleAddTaskList = () => {
     const newTaskList = [
       ...taskLists,
@@ -373,7 +385,7 @@ const KanbanBoard = () => {
     setTaskLists(newTaskLists);
     setOpen(false);
   };
-  
+
   const taskListWidth = 300; // 设置每个任务列表的宽度
   const totalWidth = taskLists.length * taskListWidth; // 计算所有任务列表的总宽度
   return (
@@ -393,53 +405,59 @@ const KanbanBoard = () => {
           },
         }}
         onClick={handleClickOpen}
-        style={{ position: 'fixed', top: '10vh', left: '40vh', width:"200px" }} // 设置样式
+        style={{ position: "fixed", top: "10vh", left: "40vh", width: "200px" }} // 设置样式
       >
         Add a task list
       </Button>
       <Dialog
-          open={open}
-          TransitionComponent={Slide}
-          keepMounted
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-slide-title"
-          aria-describedby="alert-dialog-slide-description"
-        >
-          <DialogTitle id="alert-dialog-slide-title">
-            {"Add a new event"}
-          </DialogTitle>
+        open={open}
+        TransitionComponent={Slide}
+        keepMounted
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+        sx={{ "& .MuiDialogTitle-root": { paddingBottom: 0 } }}
+      >
+        <DialogTitle id="alert-dialog-slide-title">
+          Add a new task list
+        </DialogTitle>
+        <DialogContent>
           <TextField
+            label="Task list name"
             value={NewTask}
             onChange={(e) => setNewTask(e.target.value)}
             required
-          ></TextField>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleAddTaskList} color="primary">
-              Confirm
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <div style={{ padding:"5vh", width: totalWidth }}>
-
-      <Box
-        display="flex"
-        flexDirection="row"
-        justifyContent="space-around"
-        marginTop={4}
-      >
-        {taskLists.map((list) => (
-          <TaskList
-            key={list.id}
-            list={list}
-            moveTask={moveTask}
-            taskLists={taskLists}
-            setTaskLists={setTaskLists}
+            fullWidth
+            margin="normal"
           />
-        ))}
-      </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddTaskList} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <div style={{ padding: "5vh", width: totalWidth }}>
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-around"
+          marginTop={4}
+        >
+          {taskLists.map((list) => (
+            <TaskList
+              key={list.id}
+              list={list}
+              moveTask={moveTask}
+              taskLists={taskLists}
+              setTaskLists={setTaskLists}
+            />
+          ))}
+        </Box>
       </div>
     </div>
   );

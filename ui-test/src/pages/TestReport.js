@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Typography, Button, Box } from '@mui/material';
+import { Container, Typography, Button, Box,Grid } from '@mui/material';
+
 
 const TestReportPage = () => {
   const { id } = useParams();
@@ -10,7 +11,7 @@ const TestReportPage = () => {
     // TODO: 从服务器获取报告数据并设置为状态
     const fetchReport = async () => {
         const response={
-            name: '测试报告',
+            name: 'Test Report 1',
             createdAt: '2021-10-10 10:10:10',
             createdBy: 'admin',
             testCaseId: '1',
@@ -176,24 +177,31 @@ const TestReportPage = () => {
 
   return (
     <Container>
-      <Box>
-        <Typography variant="h4">{name}</Typography>
-        <Typography>报告 ID: {id}</Typography>
-        <Typography>创建时间: {createdAt}</Typography>
-        <Typography>创建者: {createdBy}</Typography>
-        <Typography>测试用例 ID: {testCaseId}</Typography>
-        <Typography>环境: {environment}</Typography>
-        <Typography>标签: {labels.join(', ')}</Typography>
-        <Typography>状态: {state}</Typography>
-        <Typography>成功率: {successRate}%</Typography>
+      <Box sx={{ boxShadow: 1, p: 2, my: 2 }}>
+        <Typography variant="h6">Test Case Detail</Typography>
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <Typography>Name: {name}</Typography>
+            <Typography>Report ID: {id}</Typography>
+            <Typography>Created at: {createdAt}</Typography>
+            <Typography>Created by: {createdBy}</Typography>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Typography>Test case ID: {testCaseId}</Typography>
+            <Typography>Environment: {environment}</Typography>
+            <Typography>Labels: {labels.join(', ')}</Typography>
+            <Typography>Status: {state}</Typography>
+            <Typography>Success rate: {successRate}%</Typography>
+          </Grid>
+        </Grid>
       </Box>
-      <Box mt={2}>
+      <Box sx={{ p: 2, my: 2 }}>
         <Button variant="contained" color="primary">
-          跳转到测试用例
+          Go to Test Case
         </Button>
       </Box>
-      <Box mt={2}>
-        <Typography variant="h6">测试报告:</Typography>
+      <Box sx={{ boxShadow: 1, p: 2, my: 2 }}>
+        <Typography variant="h6">Test HTML Report</Typography>
         <iframe
           srcDoc={htmlReport}
           title="HTML Report"

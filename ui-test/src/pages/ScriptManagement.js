@@ -19,7 +19,10 @@ import {
   LinearProgress,
   TablePagination,
 } from "@material-ui/core";
-
+import { Link } from "react-router-dom";
+import Button from "@material-ui/core/Button";
+import SelectReport from "../components/SelectReport";
+// import
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -67,7 +70,7 @@ export default function ScriptManagement() {
       setLoading(false);
     }, 1000);
   }, []);
-  
+
   // 生成示例代码
   const generateScriptList = (count) => {
     const scriptList = [];
@@ -151,31 +154,31 @@ export default function ScriptManagement() {
                   }}
                 >
                   <TextField
-                    label="搜索ID"
+                    label="Search ID"
                     value={idSearch}
                     onChange={handleIdSearch}
                     style={{ minWidth: "100px" }}
                   />
                   <TextField
-                    label="搜索名称"
+                    label="Search Name"
                     value={nameSearch}
                     onChange={handleNameSearch}
                     style={{ minWidth: "100px" }}
                   />
                   <TextField
-                    label="搜索创建者"
+                    label="Search Creator"
                     value={creatorSearch}
                     onChange={handleCreatorSearch}
                     style={{ minWidth: "100px" }}
                   />
                   <FormControl style={{ minWidth: "100px" }}>
-                    <InputLabel>状态筛选</InputLabel>
+                    <InputLabel>Status Filter</InputLabel>
                     <Select value={stateFilter} onChange={handleStateFilter}>
                       <MenuItem value="">
-                        <em>全部</em>
+                        <em>All</em>
                       </MenuItem>
-                      <MenuItem value="finished">完成</MenuItem>
-                      <MenuItem value="in progress">进行中</MenuItem>
+                      <MenuItem value="finished">Finished</MenuItem>
+                      <MenuItem value="in progress">In Progress</MenuItem>
                     </Select>
                   </FormControl>
                 </div>
@@ -190,13 +193,14 @@ export default function ScriptManagement() {
                   <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                       <TableRow>
-                        <TableCell>ID</TableCell>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Time</TableCell>
-                        <TableCell>Lable</TableCell>
-                        <TableCell>State</TableCell>
-                        <TableCell>Passrate</TableCell>
-                        <TableCell>Creator</TableCell>
+                        <TableCell align="center">ID</TableCell>
+                        <TableCell align="center">Name</TableCell>
+                        <TableCell align="center">Time</TableCell>
+                        <TableCell align="center">Label</TableCell>
+                        <TableCell align="center">State</TableCell>
+                        <TableCell align="center">Passrate</TableCell>
+                        <TableCell align="center">Creator</TableCell>
+                        <TableCell align="center">Operation</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -207,13 +211,32 @@ export default function ScriptManagement() {
                         )
                         .map((script) => (
                           <TableRow key={script.id}>
-                            <TableCell>{script.id}</TableCell>
-                            <TableCell>{script.name}</TableCell>
-                            <TableCell>{script.time}</TableCell>
-                            <TableCell>{script.Lable}</TableCell>
-                            <TableCell>{script.State}</TableCell>
-                            <TableCell>{script.Passrate}</TableCell>
-                            <TableCell>{script.Creator}</TableCell>
+                            <TableCell align="center">{script.id}</TableCell>
+                            <TableCell align="center">{script.name}</TableCell>
+                            <TableCell align="center">{script.time}</TableCell>
+                            <TableCell align="center">{script.Label}</TableCell>
+                            <TableCell align="center">{script.State}</TableCell>
+                            <TableCell align="center">
+                              {script.Passrate}
+                            </TableCell>
+                            <TableCell align="center">
+                              {script.Creator}
+                            </TableCell>
+                            <TableCell align="center">
+                            <div style={{ display: 'flex', justifyContent: 'center' }}>
+
+                              <SelectReport id={script.id}></SelectReport>
+                              {/* <Button
+                                variant="contained"
+                                style={{ marginRight: "10px" }}
+                              >
+                                View report
+                              </Button> */}
+                              <Button variant="contained" color="primary">
+                                View script
+                              </Button>
+                              </div>
+                            </TableCell>
                           </TableRow>
                         ))}
                     </TableBody>

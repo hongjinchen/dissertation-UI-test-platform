@@ -10,7 +10,7 @@ import Register from "./pages/Register";
 // import ForgotPassword from "./pages/ForgotPassword";
 import ForgotPasswordFlow from "./pages/ForgotPasswordFlow";
 import TestReport from "./pages/TestReport";
-
+import TestCase from "./pages/TestCase";
 const AppRoutes = () => {
   return (
     <Router>
@@ -24,6 +24,7 @@ const AppRoutes = () => {
         <Route exact path="/register" element={<Register />}/>
         <Route exact path="/forgotPassword" element={<ForgotPasswordFlow />}/>
         <Route exact path="/testReport/:id" element={<TestReport />} />
+        <Route exact path="/testCase/:id" element={<TestCase />} />
       </Routes>
     </Router>
   );

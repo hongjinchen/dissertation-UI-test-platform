@@ -1,29 +1,35 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   makeStyles,
   Paper,
   Grid,
   Button,
   Typography,
+  Box,
 } from "../components/muiComponents";
 import TextField from "@material-ui/core/TextField";
 import AddIcon from "@material-ui/icons/Add";
-import { Link } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
+import Slide from "@material-ui/core/Slide";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import CreatGroup from "./CreatGroup";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
   paper: {
     padding: theme.spacing(2),
-    textAlign: "center",
+    textAlign: "left",
     color: theme.palette.text.secondary,
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "space-between",
     boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-    overflow: "hidden",
+    borderRadius: "8px",
   },
   groupName: {
     fontSize: "1.2rem",
@@ -40,7 +46,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
   },
   groupLink: {
-    color: theme.palette.primary.main,
     textDecoration: "none",
     "&:hover": {
       textDecoration: "underline",
@@ -59,6 +64,7 @@ export default function CenteredGrid() {
     { name: "Group 2", time: "2023-04-05 12:00:00", testCaseNumber: 3 },
     { name: "Group 3", time: "2023-04-05 14:00:00", testCaseNumber: 7 },
   ];
+  // useEffect(() => {}, [groups]);
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -74,45 +80,38 @@ export default function CenteredGrid() {
             />
           </form>
         </Grid>
-        
+
         <Grid item xs={3}>
-          <Paper
-            className={classes.paper}
-            style={{ backgroundColor: "#ffcc33" }}
-          >
-            <AddIcon />
-            <Button variant="contained" color="primary">
-              Create a new group
-            </Button>
-          </Paper>
+          <CreatGroup></CreatGroup>
         </Grid>
 
         {groups.map((group, index) => (
           <Grid item xs={3} key={index}>
-            <Paper
-              className={classes.paper}
-              style={{ backgroundColor: "#4CAF50" }}
-            >
-              <Typography
-                variant="h6"
-                align="left"
-                className={classes.groupName}
+            <Paper className={classes.paper}>
+              <div>
+                <Typography
+                  variant="h6"
+                  align="left"
+                  className={classes.groupName}
+                >
+                  {group.name}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  align="left"
+                  className={classes.groupTime}
+                >
+                  {group.time}
+                </Typography>
+              </div>
+              <Button
+                variant="outlined"
+                color="primary"
+                component={Link}
+                to="/group"
               >
-                {group.name}
-              </Typography>
-              <Typography
-                variant="body1"
-                align="left"
-                className={classes.groupTime}
-              >
-                {group.time}
-              </Typography>
-
-              {/* <a href="#" className={classes.groupLink}> */}
-                <Button variant="outlined" color="primary"  component={Link} to="/group">
-                  View Group
-                </Button>
-              {/* </a> */}
+                View
+              </Button>
             </Paper>
           </Grid>
         ))}
