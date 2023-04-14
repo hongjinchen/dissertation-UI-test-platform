@@ -7,7 +7,7 @@ import {
   Paper,
 } from "../components/muiComponents";
 import Navigation from "../components/SubNavigation";
-import Chart from "../components/Chart";
+// import Chart from "../components/Chart";
 import KanbanPreview from "../components/overview";
 import MemberList from "../components/MemberList";
 import Title from '../Title';
@@ -144,7 +144,7 @@ const MemberData = [
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={fixedHeightPaper}>
-                <Chart />
+                {/* <Chart /> */}
               </Paper>
             </Grid>
 

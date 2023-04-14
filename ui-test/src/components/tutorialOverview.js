@@ -8,6 +8,9 @@ import {
 } from "../components/muiComponents";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
   paper: {
     padding: theme.spacing(2),
     textAlign: "center",
@@ -15,9 +18,11 @@ const useStyles = makeStyles((theme) => ({
     height: "100%",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
+    justifyContent: "space-between",
     boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
     overflow: "hidden",
+    backgroundColor: "#333",
+    color: "#fff",
   },
   tutorialName: {
     fontSize: "1.2rem",
@@ -26,14 +31,12 @@ const useStyles = makeStyles((theme) => ({
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
-    color: "#fff",
   },
   tutorialArea: {
     fontSize: "1rem",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     overflow: "hidden",
-    color: "#fff",
   },
   tutorialLink: {
     color: "#fff",
@@ -49,17 +52,17 @@ export default function CenteredGrid() {
   const tutorial = [
     {
       name: "Tutorial 1",
-      area: "E-commence",
+      area: "E-commerce",
       url: "https://www.example.com/tutorial1",
     },
     {
       name: "Tutorial 2",
-      area: "E-commence",
+      area: "E-commerce",
       url: "https://www.example.com/tutorial2",
     },
     {
       name: "Tutorial 3",
-      area: "E-commence",
+      area: "E-commerce",
       url: "https://www.example.com/tutorial3",
     },
   ];
@@ -70,25 +73,24 @@ export default function CenteredGrid() {
           <Typography variant="h5">Tutorials</Typography>
         </Grid>
         {tutorial.map((tutorial, index) => (
-          <Grid item xs={3} key={index}>
-            <Paper
-              className={classes.paper}
-              style={{ backgroundColor: "#333", color: "#fff" }}
-            >
-              <Typography
-                variant="h6"
-                align="left"
-                className={classes.tutorialName}
-              >
-                {tutorial.name}
-              </Typography>
-              <Typography
-                variant="body1"
-                align="left"
-                className={classes.tutorialArea}
-              >
-                {tutorial.area}
-              </Typography>
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Paper className={classes.paper}>
+              <div>
+                <Typography
+                  variant="h6"
+                  align="left"
+                  className={classes.tutorialName}
+                >
+                  {tutorial.name}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  align="left"
+                  className={classes.tutorialArea}
+                >
+                  {tutorial.area}
+                </Typography>
+              </div>
               <a href={tutorial.url} className={classes.tutorialLink}>
                 <Button variant="contained" color="primary">
                   View Tutorial

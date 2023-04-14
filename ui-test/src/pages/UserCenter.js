@@ -93,7 +93,7 @@ function UserCenter() {
   if (!isLoggedIn) {
     return (
       <Container>
-        <Typography variant="h4">您已登出。</Typography>
+        <Typography variant="h4">You have logged out.</Typography>
       </Container>
     );
   }
@@ -106,38 +106,37 @@ function UserCenter() {
 
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* 用户信息展示页面 */}
+            {/* User information display */}
             <Grid item xs={12} sm={6}>
               <Paper className={fixedHeightPaper}>
                 <Typography variant="h6">My information</Typography>
                 <Box display="flex" alignItems="center">
                   <Avatar src={avatar} />
                   <Box ml={2}>
-                    <Typography>昵称：{nickname}</Typography>
-                    <Typography>邮箱：{email}</Typography>
+                    <Typography>Nickname: {nickname}</Typography>
+                    <Typography>Email: {email}</Typography>
                   </Box>
                 </Box>
               </Paper>
             </Grid>
 
-            {/* 修改信息 */}
+            {/* Edit information */}
             <Grid item xs={12} sm={6}>
               <List aria-label="main mailbox folders">
                 <ListItem button onClick={() => setShowEditInfo(true)}>
-                  <ListItemText primary="修改个人信息" />
+                  <ListItemText primary="Edit personal information" />
                 </ListItem>
                 <ListItem button onClick={() => setShowChangePassword(true)}>
-                  <ListItemText primary="修改密码" />
+                  <ListItemText primary="Change password" />
                 </ListItem>
                 <ListItem button onClick={() => setShowUpdateEmail(true)}>
-                  <ListItemText primary="邮箱管理" />
+                  <ListItemText primary="Manage email" />
                 </ListItem>
                 <ListItem button onClick={handleLogout}>
-                  <ListItemText primary="退出登录" />
+                  <ListItemText primary="Log out" />
                 </ListItem>
               </List>
             </Grid>
-
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <Typography variant="h6">Contribution Graph</Typography>
@@ -166,20 +165,20 @@ function UserCenter() {
               </Paper>
             </Grid>
           </Grid>
-          {/* 相应的修改页面弹窗 */}
+          {/* Corresponding modification pop-ups */}
           <Dialog open={showEditInfo} onClose={() => setShowEditInfo(false)}>
-            <DialogTitle>修改个人信息</DialogTitle>
+            <DialogTitle>Edit personal information</DialogTitle>
             <DialogContent>
               <form>
                 <TextField
-                  label="昵称"
+                  label="Nickname"
                   defaultValue="张三"
                   fullWidth
                   margin="normal"
                 />
                 <TextField
-                  label="个人简介"
-                  defaultValue="这是个人简介"
+                  label="Personal introduction"
+                  defaultValue="This is a personal introduction"
                   fullWidth
                   margin="normal"
                   multiline
@@ -188,10 +187,10 @@ function UserCenter() {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleSave} color="primary">
-                保存
+                Save
               </Button>
               <Button onClick={() => setShowEditInfo(false)} color="secondary">
-                取消
+                Cancel
               </Button>
             </DialogActions>
           </Dialog>
@@ -200,23 +199,23 @@ function UserCenter() {
             open={showChangePassword}
             onClose={() => setShowChangePassword(false)}
           >
-            <DialogTitle>修改密码</DialogTitle>
+            <DialogTitle>Change password</DialogTitle>
             <DialogContent>
               <form>
                 <TextField
-                  label="旧密码"
+                  label="Old password"
                   type="password"
                   fullWidth
                   margin="normal"
                 />
                 <TextField
-                  label="新密码"
+                  label="New password"
                   type="password"
                   fullWidth
                   margin="normal"
                 />
                 <TextField
-                  label="确认新密码"
+                  label="Confirm new password"
                   type="password"
                   fullWidth
                   margin="normal"
@@ -225,13 +224,13 @@ function UserCenter() {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleChangePassword} color="primary">
-                更改密码
+                Change password
               </Button>
               <Button
                 onClick={() => setShowChangePassword(false)}
                 color="secondary"
               >
-                取消
+                Cancel
               </Button>
             </DialogActions>
           </Dialog>
@@ -240,21 +239,25 @@ function UserCenter() {
             open={showUpdateEmail}
             onClose={() => setShowUpdateEmail(false)}
           >
-            <DialogTitle>邮箱管理</DialogTitle>
+            <DialogTitle>Manage email</DialogTitle>
             <DialogContent>
               <form>
-                <TextField label="新邮箱地址" fullWidth margin="normal" />
+                <TextField
+                  label="New email address"
+                  fullWidth
+                  margin="normal"
+                />
               </form>
             </DialogContent>
             <DialogActions>
               <Button onClick={handleUpdateEmail} color="primary">
-                更新邮箱
+                Update email
               </Button>
               <Button
                 onClick={() => setShowUpdateEmail(false)}
                 color="secondary"
               >
-                取消
+                Cancel
               </Button>
             </DialogActions>
           </Dialog>

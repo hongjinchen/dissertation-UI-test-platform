@@ -19,7 +19,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { mainListItems, secondaryListItems } from './listItems';
-import Chart from './Chart';
+// import Chart from './Chart';
 import Deposits from './Deposits';
 import Orders from './Orders';
 
@@ -176,7 +176,7 @@ export default function Dashboard() {
             {/* Chart */}
             <Grid item xs={12} md={8} lg={9}>
               <Paper className={fixedHeightPaper}>
-                <Chart />
+                {/* <Chart /> */}
               </Paper>
             </Grid>
             {/* Recent Deposits */}

@@ -223,18 +223,22 @@ export default function ScriptManagement() {
                               {script.Creator}
                             </TableCell>
                             <TableCell align="center">
-                            <div style={{ display: 'flex', justifyContent: 'center' }}>
-
-                              <SelectReport id={script.id}></SelectReport>
-                              {/* <Button
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <SelectReport id={script.id}></SelectReport>
+                                {/* <Button
                                 variant="contained"
                                 style={{ marginRight: "10px" }}
                               >
                                 View report
                               </Button> */}
-                              <Button variant="contained" color="primary">
-                                View script
-                              </Button>
+                                <Button variant="contained" color="primary">
+                                  View script
+                                </Button>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -247,9 +251,9 @@ export default function ScriptManagement() {
                     component="div"
                     count={filteredScriptList.length}
                     page={page}
-                    onChangePage={handleChangePage}
+                    onPageChange={handleChangePage}
                     rowsPerPage={rowsPerPage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
                   />
                 )}
               </Paper>
