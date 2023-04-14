@@ -236,7 +236,7 @@ export default function ScriptManagement() {
                               >
                                 View report
                               </Button> */}
-                                <Button variant="contained" color="primary">
+                                <Button variant="contained" color="primary" component={Link} to={"/testCase"}>
                                   View script
                                 </Button>
                               </div>

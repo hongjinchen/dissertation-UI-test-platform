@@ -7,7 +7,6 @@ import {
   Paper,
 } from "../components/muiComponents";
 import Navigation from "../components/SubNavigation";
-// import Chart from "../components/Chart";
 import KanbanPreview from "../components/overview";
 import MemberList from "../components/MemberList";
 import Title from '../Title';

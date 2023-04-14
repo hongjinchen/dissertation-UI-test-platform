@@ -140,7 +140,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
       }}
     >
       <CardContent>
-        <Typography variant="h5" component="div">
+        <Typography variant="h6" component="div">
           {list.name}
         </Typography>
         <Box>
