@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useDrop } from 'react-dnd';
-import { Box, Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import DroppableItem from './DroppableItem';
 
 const DroppableArea = () => {
   const [droppedItems, setDroppedItems] = useState([]);
@@ -8,22 +9,30 @@ const DroppableArea = () => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ['Given', 'When', 'Then'],
     drop: (item) => {
+      // console.log("input value", item.inputValue); // 在此处打印输入值以进行调试
       if (item.type === 'Given') {
         setDroppedItems((items) => [
           ...items,
-          { type: item.type, children: [], inputValue: item.inputValue },
+          { id: Date.now(), type: item.type, children: [], inputValue: item.inputValue },
         ]);
       } else {
-        setDroppedItems((items) =>
-          items.map((it) =>
-            it.type === 'Given'
-              ? {
-                  ...it,
-                  children: [...it.children, { type: item.type, inputValue: item.inputValue }],
-                }
-              : it,
-          ),
-        );
+        setDroppedItems((items) => {
+          
+          const givenIndex = items.findIndex((it) => it.type === 'Given' && it.id === item.parentId);
+          console.log("Child", givenIndex); // 在此处打印输入值以进行调试
+          if (givenIndex === -1) return items;
+  
+          const newItems = [...items];
+          newItems[givenIndex] = {
+            ...newItems[givenIndex],
+            children: [
+              ...newItems[givenIndex].children,
+              { type: item.type, inputValue: item.inputValue },
+            ],
+          };
+          console.log("Child", newItems[givenIndex].children); // 在此处打印输入值以进行调试
+          return newItems;
+        });
       }
     },
     collect: (monitor) => ({
@@ -31,9 +40,26 @@ const DroppableArea = () => {
     }),
   }));
 
+  const [, dropDroppableItem] = useDrop(() => ({
+    accept: 'DROPPABLE_ITEM',
+    drop: (item, monitor) => {
+      const targetIndex = droppedItems.length;
+      const sourceIndex = item.index;
+      const newItems = [...droppedItems];
+
+      newItems.splice(sourceIndex, 1);
+      newItems.splice(targetIndex, 0, item);
+
+      setDroppedItems(newItems);
+    },
+  }));
+
   return (
     <Box
-      ref={drop}
+      ref={(node) => {
+        drop(node);
+        dropDroppableItem(node);
+      }}
       sx={{
         flexGrow: 1,
         minHeight: '100vh',
@@ -41,23 +67,24 @@ const DroppableArea = () => {
         padding: 2,
       }}
     >
-      {droppedItems.map((item, index) => (
-        <Box
-          key={index}
-          sx={{
-            backgroundColor: item.type === 'Given' ? 'orange' : 'transparent',
-            borderRadius: 1,
-            padding: 1,
-            margin: 1,
-          }}
-        >
-          {item.type}: {item.inputValue}
-          {item.children.map((child, idx) => (
-            <Box key={idx} sx={{ marginLeft: 2 }}>
-              {child.type}: {child.inputValue}
-            </Box>
+      {droppedItems.map((item) => (
+        <React.Fragment key={item.id}>
+          <DroppableItem
+            type={item.type}
+            inputValue={item.inputValue}
+            index={item.index}
+            parentId={item.parentId}
+          />
+          {item.children.map((child) => (
+            <DroppableItem
+              key={child.id}
+              type={child.type}
+              inputValue={child.inputValue}
+              index={child.index}
+              parentId={item.id}
+            />
           ))}
-        </Box>
+        </React.Fragment>
       ))}
     </Box>
   );

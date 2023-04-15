@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
-import { useDrag } from 'react-dnd';
-import { Box, TextField } from '@mui/material';
+import React, { useState, useRef } from "react";
+import { useDrag } from "react-dnd";
+import { Box, TextField } from "@mui/material";
 
 const DraggableItem = ({ type, color, children, InputComponent }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
+  const inputValueRef = useRef(inputValue); // 使用 useRef 存储输入值
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type,
-    item: { type, inputValue },
+    item: () => {
+      // console.log('inputValueRef.current:', inputValueRef.current);
+      return { type, inputValue: inputValueRef.current };
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }));
+  
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
-    console.log("input value",event.target.value);
+    inputValueRef.current = event.target.value;
+    console.log("input value", inputValueRef);
   };
 
   const InputWrapper = () => (
@@ -31,7 +37,7 @@ const DraggableItem = ({ type, color, children, InputComponent }) => {
         borderRadius: 1,
         backgroundColor: color,
         opacity: isDragging ? 0.5 : 1,
-        cursor: 'grab',
+        cursor: "grab",
       }}
     >
       {children}
