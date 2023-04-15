@@ -1,10 +1,12 @@
-import React,{useState} from 'react';
+// LeftSideBar.js
+import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import DraggableItem from './DraggableItem';
 import { commandsConfig } from '../commandsConfig';
 
 const LeftSideBar = () => {
   const [givenId, setGivenId] = useState(null);
+  
   return (
     <Box
       sx={{
@@ -20,9 +22,10 @@ const LeftSideBar = () => {
           type={command.type}
           color={command.color}
           InputComponent={command.InputComponent}
-          onInputChange={(value) => {
+          onDragBegin={() => {
             if (command.type === 'Given') {
-              setGivenId(Date.now());
+              const newGivenId = Date.now();
+              setGivenId(newGivenId);
             }
           }}
           parentId={command.type === 'Given' ? null : givenId}

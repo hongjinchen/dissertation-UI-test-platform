@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { useDrag } from "react-dnd";
 import { Box, TextField } from "@mui/material";
 
-const DraggableItem = ({ type, color, children, InputComponent }) => {
+const DraggableItem = ({ type, color, children, InputComponent,onDragBegin,parentId }) => {
   const [inputValue, setInputValue] = useState("");
   const inputValueRef = useRef(inputValue); // 使用 useRef 存储输入值
 
@@ -10,7 +10,7 @@ const DraggableItem = ({ type, color, children, InputComponent }) => {
     type,
     item: () => {
       // console.log('inputValueRef.current:', inputValueRef.current);
-      return { type, inputValue: inputValueRef.current };
+      return { type, inputValue: inputValueRef.current,parentId  };
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
