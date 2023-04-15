@@ -9,20 +9,19 @@ const DroppableItem = ({
   index,
   onDelete,
   parentId,
+  isNew
 }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "DROPPABLE_ITEM",
-    item: { type, inputValue, index, parentId },
+    item: { type, inputValue, index, parentId, isNew: isNew || false },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }));
-
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ["When", "Then"],
     drop: (item, monitor) => {
       if (type === "Given") {
-        console.log("targetIndex", index);
         return {
           parentId: parentId,
           targetIndex: index, // 添加 targetIndex

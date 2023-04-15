@@ -9,8 +9,7 @@ const DraggableItem = ({ type, color, children, InputComponent,onDragBegin,paren
   const [{ isDragging }, drag] = useDrag(() => ({
     type,
     item: () => {
-      // console.log('inputValueRef.current:', inputValueRef.current);
-      return { type, inputValue: inputValueRef.current,parentId  };
+      return { type, inputValue: inputValueRef.current, parentId, isNew: true };
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -21,7 +20,6 @@ const DraggableItem = ({ type, color, children, InputComponent,onDragBegin,paren
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
     inputValueRef.current = event.target.value;
-    console.log("input value", inputValueRef);
   };
 
   const InputWrapper = () => (
