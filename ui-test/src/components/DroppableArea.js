@@ -27,7 +27,7 @@ const DroppableArea = () => {
           isNew: false,
           isChild: true,
           parentId: parentId, // 添加 parentId 属性
-          index:newItems[givenIndex].children.length, 
+          index: newItems[givenIndex].children.length,
         }, // 设置 isNew 为 true
       ],
     };
@@ -42,37 +42,45 @@ const DroppableArea = () => {
         ? dropResult.targetIndex
         : droppedItems.length;
 
+      console.log("item", item);
       // Handle reordering of child items
       if (item.isChild) {
+        console.log("item!!!!!!!!!!!!!!!!!", item);
         setDroppedItems((items) => {
           // Find source parent
-          const sourceParentIndex = items.findIndex((it) => it.id === item.parentId);
+          const sourceParentIndex = items.findIndex(
+            (it) => it.id === item.parentId
+          );
           const sourceParent = items[sourceParentIndex];
-      
+
           // Remove the child from the source parent
           const sourceChildren = [...sourceParent.children];
           const draggedChild = sourceChildren[item.index];
           sourceChildren.splice(item.index, 1);
-      
+
           // Find target parent
-          console.log("dropResult", dropResult)
+          console.log("dropResult", dropResult);
           const targetParentIndex = items.findIndex(
             (it) => it.id === dropResult.parentId
           );
           const targetParent = items[targetParentIndex];
-      
+
           // If the target parent is the same as the source parent, use the same parent
           const finalParent = targetParent || sourceParent;
-          const finalParentIndex = targetParentIndex !== -1 ? targetParentIndex : sourceParentIndex;
-      
+          const finalParentIndex =
+            targetParentIndex !== -1 ? targetParentIndex : sourceParentIndex;
+
           // Add the child to the target parent
           const targetChildren = [...finalParent.children];
           targetChildren.splice(targetIndex, 0, draggedChild);
-      
+
           // Update the items
           const newItems = [...items];
-          newItems[finalParentIndex] = { ...finalParent, children: targetChildren };
-      
+          newItems[finalParentIndex] = {
+            ...finalParent,
+            children: targetChildren,
+          };
+
           return newItems;
         });
       } else {
@@ -97,7 +105,6 @@ const DroppableArea = () => {
                 },
               ]);
             }
-          
           } else {
             if (item.isNew) {
               setDroppedItems((items) => handleDrop(item, parentId, items));
@@ -146,24 +153,44 @@ const DroppableArea = () => {
       }}
     >
       {droppedItems.map((item, index) => (
+        // <DroppableItem
+        //   key={index}
+        //   type={item.type}
+        //   inputValue={item.inputValue}
+        //   index={index}
+        //   parentId={item.id} // 将 item.id 作为 parentId 传递
+        //   isNew={item.isNew} // 传递 isNew 属性
+        // >
+        //   {(item.children || []).map((child, idx) => (
+        //     <DroppableItem
+        //       key={idx}
+        //       type={child.type}
+        //       inputValue={child.inputValue}
+        //       index={idx}
+        //       parentId={item.id} // 将 item.id 作为 parentId 传递
+        //       isChild // 添加 isChild 属性
+        //     />
+        //   ))}
+        // </DroppableItem>
         <DroppableItem
           key={index}
           type={item.type}
           inputValue={item.inputValue}
           index={index}
-          parentId={item.id} // 将 item.id 作为 parentId 传递
-          isNew={item.isNew} // 传递 isNew 属性
+          parentId={item.id}
+          isNew={item.isNew}
         >
-          {(item.children || []).map((child, idx) => (
-            <DroppableItem
-              key={idx}
-              type={child.type}
-              inputValue={child.inputValue}
-              index={idx}
-              parentId={item.id} // 将 item.id 作为 parentId 传递
-              isNew={child.isNew} // 传递 isNew 属性给子项目
-            />
-          ))}
+          {item.children &&
+            item.children.map((child, idx) => (
+              <DroppableItem
+                key={idx}
+                type={child.type}
+                inputValue={child.inputValue}
+                index={idx}
+                parentId={item.id}
+                isChild
+              />
+            ))}
         </DroppableItem>
       ))}
     </Box>

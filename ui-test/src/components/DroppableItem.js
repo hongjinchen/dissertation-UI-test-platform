@@ -1,13 +1,11 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Box } from "@mui/material";
-
 const DroppableItem = ({
   type,
   inputValue,
   children,
   index,
-  onDelete,
   parentId,
   isNew
 }) => {
@@ -21,14 +19,25 @@ const DroppableItem = ({
       isNew: isNew || false,
       isChild: parentId ? true : false, // Add the new isChild property
     },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
+    collect: (monitor) => {
+      const isDragging = monitor.isDragging();
+      if (isDragging) {
+        console.log("正在拖拽的组件信息:", {
+          type,
+          inputValue,
+          index,
+          parentId,
+          isNew: isNew || false,
+          isChild: parentId ? true : false,
+        });
+      }
+      return { isDragging };
+    },
   }));
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ["When", "Then","Given"],
     drop: (item, monitor) => {
-      console.log("item", item)
+      console.log("目标子组件信息:", { type, inputValue, index, parentId, isNew });
       if (type === "Given") {
         return {
           parentId: parentId,
@@ -48,23 +57,37 @@ const DroppableItem = ({
       isOver: monitor.isOver(),
     }),
   }));
+  const getItemColor = () => {
+    switch (type) {
+      case "Given":
+        return "#DCA690";
+      case "When":
+        return "#AE99A2";
+      case "Then":
+        return "#967B99";
+      default:
+        return "#BBBED0";
+    }
+  };
 
   return (
     <Box
       ref={(node) => drag(drop(node))}
       sx={{
-        backgroundColor: type === "Given" ? "orange" : "transparent",
+        backgroundColor: getItemColor(inputValue),
         borderRadius: 1,
         padding: 1,
         margin: 1,
         opacity: isDragging ? 0.5 : 1,
         cursor: "grab",
+        boxShadow: isDragging ? "0 0 10px rgba(0, 0, 0, 0.5)" : "none", // Add this line for shadow effect
       }}
     >
       {type}: {inputValue}
-      {children}
+      <Box sx={{ paddingLeft: 2 }}>{children}</Box>
     </Box>
   );
+
 };
 
 export default DroppableItem;

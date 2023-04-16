@@ -92,11 +92,34 @@ function UserCenter() {
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   if (!isLoggedIn) {
     return (
-      <Container>
-        <Typography variant="h4">You have logged out.</Typography>
-      </Container>
+      <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "#DCA690",
+        color: "#ffffff",
+        fontSize: "2rem",
+        zIndex: 9999,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <span role="img" aria-label="wave">
+          👋
+        </span>{" "}
+        You have logged out.
+      </div>
+    </div>
+
     );
   }
+  
 
   return (
     <div className={classes.root}>
@@ -165,6 +188,7 @@ function UserCenter() {
               </Paper>
             </Grid>
           </Grid>
+
           {/* Corresponding modification pop-ups */}
           <Dialog open={showEditInfo} onClose={() => setShowEditInfo(false)}>
             <DialogTitle>Edit personal information</DialogTitle>
@@ -261,6 +285,7 @@ function UserCenter() {
               </Button>
             </DialogActions>
           </Dialog>
+
         </Container>
       </main>
     </div>

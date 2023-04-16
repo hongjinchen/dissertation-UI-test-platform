@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useDrag } from "react-dnd";
 import { Box, TextField } from "@mui/material";
+import { getItemColor } from "../utils"; // Import the getItemColor function
 
 const DraggableItem = ({ type, color, children, InputComponent,onDragBegin,parentId }) => {
   const [inputValue, setInputValue] = useState("");
@@ -33,7 +34,7 @@ const DraggableItem = ({ type, color, children, InputComponent,onDragBegin,paren
         padding: 1,
         margin: 1,
         borderRadius: 1,
-        backgroundColor: color,
+        backgroundColor: getItemColor(type),
         opacity: isDragging ? 0.5 : 1,
         cursor: "grab",
       }}
