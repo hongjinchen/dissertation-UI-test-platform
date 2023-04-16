@@ -13,18 +13,34 @@ const DroppableItem = ({
 }) => {
   const [{ isDragging }, drag] = useDrag(() => ({
     type: "DROPPABLE_ITEM",
-    item: { type, inputValue, index, parentId, isNew: isNew || false },
+    item: {
+      type,
+      inputValue,
+      index,
+      parentId,
+      isNew: isNew || false,
+      isChild: parentId ? true : false, // Add the new isChild property
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   }));
   const [{ isOver }, drop] = useDrop(() => ({
-    accept: ["When", "Then"],
+    accept: ["When", "Then","Given"],
     drop: (item, monitor) => {
+      console.log("item", item)
       if (type === "Given") {
         return {
           parentId: parentId,
           targetIndex: index, // 添加 targetIndex
+        };
+      }
+      console.log("item", item)
+      if (item.isChild) {
+        console.log("item.parentId", item.parentId)
+        return {
+          parentId: parentId|| item.parentId,  // 如果 parentId 不存在，则使用 item.parentId
+          targetIndex: children.length, // Return the new target index
         };
       }
     },

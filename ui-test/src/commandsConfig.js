@@ -1,12 +1,14 @@
 import { TextField } from '@mui/material';
+import React from "react";
 
 export const commandsConfig = [
   {
     type: 'Given',
     color: 'orange',
     label: 'Given',
-    InputComponent: ({ onChange, value }) => (
+    InputComponent: React.forwardRef(({ onChange, value }, ref) => (
       <TextField
+        ref={ref}
         size="small"
         fullWidth
         variant="outlined"
@@ -14,14 +16,15 @@ export const commandsConfig = [
         onChange={onChange}
         value={value}
       />
-    ),
+    )),
   },
   {
     type: 'When',
     color: 'green',
     label: 'When',
-    InputComponent: ({ onChange, value }) => (
+    InputComponent: React.forwardRef(({ onChange, value }, ref) => (
       <TextField
+        ref={ref}
         size="small"
         fullWidth
         variant="outlined"
@@ -29,14 +32,15 @@ export const commandsConfig = [
         onChange={onChange}
         value={value}
       />
-    ),
+    )),
   },
   {
     type: 'Then',
     color: 'blue',
     label: 'Then',
-    InputComponent: ({ onChange, value }) => (
+    InputComponent: React.forwardRef(({ onChange, value }, ref) => (
       <TextField
+        ref={ref}
         size="small"
         fullWidth
         variant="outlined"
@@ -44,7 +48,7 @@ export const commandsConfig = [
         onChange={onChange}
         value={value}
       />
-    ),
+    )),
   },
   // 添加更多命令配置...
 ];
