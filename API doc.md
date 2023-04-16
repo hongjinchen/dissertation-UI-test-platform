@@ -62,7 +62,7 @@ const userContributions = [
 
 使用关系型数据库
 
-表:["user","team","kanban_task_lists","kanban_tasks",“test_case"]
+表:["user","team",“UserTeam”，"kanbanTaskLists","kanbanTasks",“testCase"，]
 
 **User**
 
@@ -101,3 +101,25 @@ const userContributions = [
 
 用户（user）和团队（team）之间存在多对多（many-to-many）的关系，使用第三张关系表（junction table）来链接这两个表
 
+**Tasks**
+
+| definition | attribute    | description        |
+| ---------- | ------------ | ------------------ |
+|            | id           |                    |
+|            | title        |                    |
+|            | description  |                    |
+|            | status       | "未开始"，"已完成" |
+|            | task_list_id |                    |
+|            | user_case_id |                    |
+
+**TasksList**
+
+| definition | attribute  | description |
+| ---------- | ---------- | ----------- |
+|            | name       |             |
+|            | created_at |             |
+|            | team_id    |             |
+
+1. **Team 和 TaskList 之间的关系**：一个团队可以创建多个任务列表，这意味着 Team 和 TaskList 之间存在一对多关系。为了表示这种关系，您可以在 `task_lists` 表中添加一个外键字段 `team_id`，该字段引用 `teams` 表中的主键 `id`。
+2. **TaskList 和 Task 之间的关系**：一个任务列表可以包含多个任务，这意味着 TaskList 和 Task 之间存在一对多关系。为了表示这种关系，您可以在 `tasks` 表中添加一个外键字段 `task_list_id`，该字段引用 `task_lists` 表中的主键 `id`。
+3. **Task 和 UserCase 之间的关系**：每个任务与一个用户案例相关，这意味着 Task 和 UserCase 之间存在一对一关系。为了表示这种关系，您可以在 `tasks` 表中添加一个外键字段 `user_case_id`，该字段引用 `user_cases` 表中的主键 `id`。

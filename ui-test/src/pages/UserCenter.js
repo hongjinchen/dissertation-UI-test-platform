@@ -69,6 +69,8 @@ function UserCenter() {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showUpdateEmail, setShowUpdateEmail] = useState(false);
 
+  const [isOwner, setIsOwner] = useState(true);
+
   const handleSave = () => {
     // Handle saving user info
     setShowEditInfo(false);
@@ -93,33 +95,31 @@ function UserCenter() {
   if (!isLoggedIn) {
     return (
       <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: "#DCA690",
-        color: "#ffffff",
-        fontSize: "2rem",
-        zIndex: 9999,
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <span role="img" aria-label="wave">
-          👋
-        </span>{" "}
-        You have logged out.
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100vh",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "#DCA690",
+          color: "#ffffff",
+          fontSize: "2rem",
+          zIndex: 9999,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span role="img" aria-label="wave">
+            👋
+          </span>{" "}
+          You have logged out.
+        </div>
       </div>
-    </div>
-
     );
   }
-  
 
   return (
     <div className={classes.root}>
@@ -130,6 +130,7 @@ function UserCenter() {
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
             {/* User information display */}
+
             <Grid item xs={12} sm={6}>
               <Paper className={fixedHeightPaper}>
                 <Typography variant="h6">My information</Typography>
@@ -144,22 +145,26 @@ function UserCenter() {
             </Grid>
 
             {/* Edit information */}
-            <Grid item xs={12} sm={6}>
-              <List aria-label="main mailbox folders">
-                <ListItem button onClick={() => setShowEditInfo(true)}>
-                  <ListItemText primary="Edit personal information" />
-                </ListItem>
-                <ListItem button onClick={() => setShowChangePassword(true)}>
-                  <ListItemText primary="Change password" />
-                </ListItem>
-                <ListItem button onClick={() => setShowUpdateEmail(true)}>
-                  <ListItemText primary="Manage email" />
-                </ListItem>
-                <ListItem button onClick={handleLogout}>
-                  <ListItemText primary="Log out" />
-                </ListItem>
-              </List>
-            </Grid>
+            {isOwner && (
+              <Grid item xs={12} sm={6}>
+                <List aria-label="main mailbox folders">
+                  <ListItem button onClick={() => setShowEditInfo(true)}>
+                    <ListItemText primary="Edit personal information" />
+                  </ListItem>
+                  <ListItem button onClick={() => setShowChangePassword(true)}>
+                    <ListItemText primary="Change password" />
+                  </ListItem>
+                  <ListItem button onClick={() => setShowUpdateEmail(true)}>
+                    <ListItemText primary="Manage email" />
+                  </ListItem>
+                  <ListItem button onClick={handleLogout}>
+                    <ListItemText primary="Log out" />
+                  </ListItem>
+                </List>
+              </Grid>
+            )}
+
+            {/* Contribution Graph */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 <Typography variant="h6">Contribution Graph</Typography>
@@ -285,7 +290,6 @@ function UserCenter() {
               </Button>
             </DialogActions>
           </Dialog>
-
         </Container>
       </main>
     </div>

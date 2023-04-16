@@ -253,12 +253,6 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText }) => {
     }
   };
 
-  // const handleBlur = () => {
-  //   setTimeout(() => {
-  //     saveEditedText();
-  //   }, 2000);
-  // };
-
   const handleEdit = (event) => {
     event.stopPropagation(); // 阻止事件继续传播
     setIsEditing(true);
