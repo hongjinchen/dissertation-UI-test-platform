@@ -13,9 +13,14 @@ import {
   MenuIcon,
   ChevronLeftIcon,
   NotificationsIcon,
+  Button,
 } from "../components/muiComponents";
 import { mainListItems } from "../components/listItems";
 import { Link } from "react-router-dom";
+import LoginIcon from "@mui/icons-material/Login";
+import SignUpIcon from '@mui/icons-material/PersonAdd';
+import Cookies from 'js-cookie';
+
 
 const drawerWidth = 240;
 
@@ -114,6 +119,7 @@ export default function Navigation({ title }) {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+  const token = Cookies.get('token');
 
   return (
     <div>
@@ -143,16 +149,23 @@ export default function Navigation({ title }) {
           >
             {title}
           </Typography>
-          <IconButton color="inherit">
-            <Badge
-              badgeContent={4}
-              color="secondary"
-              component={Link}
-              to="/login"
-            >
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
+          {!token && (
+            <Button color="inherit" component={Link} to="/login">
+              <Badge component={Link} to="/login">
+                <LoginIcon sx={{ color: 'white' }} />
+              </Badge>
+              Sign in
+            </Button>
+          )}
+          {!token && (
+            <Button color="inherit" component={Link} to="/register">
+              <Badge component={Link} to="/register">
+                <SignUpIcon sx={{ color: 'white' }} />
+              </Badge>
+              Sign up
+            </Button>
+          )}
+
         </Toolbar>
       </AppBar>
       <Drawer

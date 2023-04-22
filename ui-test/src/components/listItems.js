@@ -3,7 +3,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DashboardIcon from '@material-ui/icons/Dashboard';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link } from "react-router-dom";
 
@@ -18,7 +18,7 @@ export const mainListItems = (
 
       <ListItem button component={Link} to="/userCenter">
         <ListItemIcon>
-          <ShoppingCartIcon />
+        <AccountCircleIcon />
         </ListItemIcon>
         <ListItemText primary="User Center" />
       </ListItem>

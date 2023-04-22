@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 function UserCenter() {
   // user information
-  const [nickname, setNickname] = useState("John Doe");
+  const [username, setNickname] = useState("John Doe");
   const [email, setEmail] = useState("zhangsan@example.com");
 
   const [avatar, setAvatar] = useState("https://via.placeholder.com/150");
@@ -137,7 +137,7 @@ function UserCenter() {
                 <Box display="flex" alignItems="center">
                   <Avatar src={avatar} />
                   <Box ml={2}>
-                    <Typography>Nickname: {nickname}</Typography>
+                    <Typography>username: {username}</Typography>
                     <Typography>Email: {email}</Typography>
                   </Box>
                 </Box>
@@ -200,7 +200,7 @@ function UserCenter() {
             <DialogContent>
               <form>
                 <TextField
-                  label="Nickname"
+                  label="username"
                   defaultValue="张三"
                   fullWidth
                   margin="normal"

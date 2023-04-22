@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
 
 const EditUserInfo = () => {
   const classes = useStyles();
-  const [nickname, setNickname] = useState('John Doe');
+  const [username, setNickname] = useState('John Doe');
   const [avatar, setAvatar] = useState('');
   const [showEdit, setShowEdit] = useState(false);
   const toggleComponent = () => {
@@ -50,10 +50,10 @@ const EditUserInfo = () => {
         <CardContent>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
-              <Typography variant="h6">Nickname</Typography>
+              <Typography variant="h6">username</Typography>
               <TextField
                 fullWidth
-                value={nickname}
+                value={username}
                 onChange={handleNicknameChange}
               />
             </Grid>

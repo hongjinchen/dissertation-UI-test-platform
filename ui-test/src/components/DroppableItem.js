@@ -1,16 +1,28 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
 import { Box } from "@mui/material";
+import { darken } from "@mui/system";
+
+
 const DroppableItem = ({
   type,
   inputValue,
   children,
   index,
   parentId,
-  isNew
+  isNew,
+  setDroppedItems,
+  droppedItems,
 }) => {
+  const rearrangeItems = (sourceIndex, targetIndex) => {
+    const newItems = [...droppedItems];
+    const [removed] = newItems.splice(sourceIndex, 1);
+    newItems.splice(targetIndex, 0, removed);
+    setDroppedItems(newItems);
+  };
+
   const [{ isDragging }, drag] = useDrag(() => ({
-    type: "DROPPABLE_ITEM",
+    type: type,
     item: {
       type,
       inputValue,
@@ -21,73 +33,76 @@ const DroppableItem = ({
     },
     collect: (monitor) => {
       const isDragging = monitor.isDragging();
-      if (isDragging) {
-        console.log("正在拖拽的组件信息:", {
-          type,
-          inputValue,
-          index,
-          parentId,
-          isNew: isNew || false,
-          isChild: parentId ? true : false,
-        });
-      }
       return { isDragging };
     },
   }));
+  
   const [{ isOver }, drop] = useDrop(() => ({
-    accept: ["When", "Then","Given"],
+    accept: ["When", "Then", "Given"],
     drop: (item, monitor) => {
-      console.log("目标子组件信息:", { type, inputValue, index, parentId, isNew });
       if (type === "Given") {
         return {
           parentId: parentId,
           targetIndex: index, // 添加 targetIndex
         };
       }
-      console.log("item", item)
-      if (item.isChild) {
-        console.log("item.parentId", item.parentId)
-        return {
-          parentId: parentId|| item.parentId,  // 如果 parentId 不存在，则使用 item.parentId
-          targetIndex: children.length, // Return the new target index
-        };
+      
+      if (!item.isNew) {
+        console.log("item!!!", monitor);
+        if (item.isChild) {
+          return {
+            parentId: parentId || item.parentId,
+            targetIndex: index + 1,
+          };
+        }
+        console.log("item!!!", item);
+        // 如果不是新建的元素，调用 rearrangeItems 函数
+        const sourceIndex = item.index;
+        const targetIndex = index;
+        rearrangeItems(sourceIndex, targetIndex);
       }
+      
     },
     collect: (monitor) => ({
-      isOver: monitor.isOver(),
+      isOver: monitor.isOver({ shallow: true }),
     }),
   }));
-  const getItemColor = () => {
+  const getItemColor = (isOver) => {
+    let color;
     switch (type) {
       case "Given":
-        return "#DCA690";
+        color = "#DCA690";
+        break;
       case "When":
-        return "#AE99A2";
+        color = "#AE99A2";
+        break;
       case "Then":
-        return "#967B99";
+        color = "#967B99";
+        break;
       default:
-        return "#BBBED0";
+        color = "#BBBED0";
     }
+    
+    return isOver ? darken(color, 0.1) : color; // 如果 isOver 为 true，颜色变深
   };
 
   return (
     <Box
       ref={(node) => drag(drop(node))}
       sx={{
-        backgroundColor: getItemColor(inputValue),
+        backgroundColor: getItemColor(isOver),
         borderRadius: 1,
         padding: 1,
         margin: 1,
         opacity: isDragging ? 0.5 : 1,
         cursor: "grab",
-        boxShadow: isDragging ? "0 0 10px rgba(0, 0, 0, 0.5)" : "none", // Add this line for shadow effect
+        boxShadow: isOver ? "0 0 10px rgba(0, 0, 0, 0.5)" : "none", // 根据 isOver 改变阴影效果
       }}
     >
       {type}: {inputValue}
       <Box sx={{ paddingLeft: 2 }}>{children}</Box>
     </Box>
   );
-
 };
 
 export default DroppableItem;

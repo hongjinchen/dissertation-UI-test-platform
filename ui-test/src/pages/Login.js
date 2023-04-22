@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, TextField, Grid, Typography, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {Link} from 'react-router-dom';
-
+import { loginUser } from '../api';
 const useStyles = makeStyles((theme) => ({
   container: {
     padding: theme.spacing(2),
@@ -22,7 +22,8 @@ export default function Login() {
   
     const handleLogin = (e) => {
       e.preventDefault();
-      console.log(`Logging in with identifier: ${identifier} and password: ${password}`);
+      loginUser(identifier, password);
+      // console.log(`Logging in with identifier: ${identifier} and password: ${password}`);
       // 在这里实现登录逻辑（例如调用后端 API）
     };
   
@@ -34,7 +35,7 @@ export default function Login() {
           <form onSubmit={handleLogin} className={classes.container}>
             <Grid container direction="column">
               <TextField
-                label="Nickname or Email"
+                label="username or Email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
