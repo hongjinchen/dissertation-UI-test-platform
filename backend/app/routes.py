@@ -58,8 +58,8 @@ def register():
             {"user_id": new_user_id, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)},
             app.config["SECRET_KEY"],
         )
-        resp = make_response(jsonify({"message": 'Registration successful, please log in.', "status": 'success'}))
-        resp.set_cookie("token", token, max_age=60 * 60, secure=True, httponly=True, samesite="Strict")
+        resp = make_response(jsonify({"message": 'Registration successful, please log in.', "status": 'success',"user_id":new_user_id}))
+        resp.set_cookie("token", token, max_age=60 * 60, secure=True, httponly=False, samesite="Strict")
 
         return resp
 
@@ -67,17 +67,29 @@ def register():
 def login():
     if request.method == 'POST':
         data = request.get_json()
-        username = data['username']
+        email = data['email']
         password = data['password']
-        
-        user = User.query.filter_by(username=username).first()
 
+        user = User.query.filter_by(email=email).first()
+
+        print(user)
         if user is not None and check_password_hash(user.password, password):
             login_user(user)
-            return jsonify(message='Login successful.', status='success')
-        
-        return jsonify(message='Login failed.', status='failed')
 
+            # 生成令牌
+            token = jwt.encode(
+                {"user_id": user.user_id, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)},
+                app.config["SECRET_KEY"],
+            )
+            resp = make_response(jsonify(message='Login successful.', status='success', user_id=user.user_id))
+
+            # 设置令牌 cookie
+            resp.set_cookie("token", token, max_age=60 * 60, secure=True, httponly=False, samesite="Strict")
+
+            return resp
+
+        return jsonify(message='Login failed.', status='failed')
+    
 @app.route('/logout')
 @login_required
 def logout():

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   Container,
   Typography,
@@ -22,6 +22,8 @@ import Navigation from "../components/navigation";
 import "react-calendar-heatmap/dist/styles.css";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
+import Cookies from 'js-cookie';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -87,9 +89,16 @@ function UserCenter() {
   };
 
   const handleLogout = () => {
+    Cookies.remove('token')
     setIsLoggedIn(false);
+    setTimeout(() => {
+      window.location.href = "/"
+    }, 2000)
   };
+  // useEffect(() => {
 
+  // }, []);
+  
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   if (!isLoggedIn) {

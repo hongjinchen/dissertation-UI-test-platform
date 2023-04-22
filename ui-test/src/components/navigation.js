@@ -15,7 +15,8 @@ import {
   NotificationsIcon,
   Button,
 } from "../components/muiComponents";
-import { mainListItems } from "../components/listItems";
+import { MainListItems } from '../components/listItems';
+
 import { Link } from "react-router-dom";
 import LoginIcon from "@mui/icons-material/Login";
 import SignUpIcon from '@mui/icons-material/PersonAdd';
@@ -181,9 +182,10 @@ export default function Navigation({ title }) {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        <List><MainListItems /></List>
         <Divider />
       </Drawer>
+
     </div>
   );
 }

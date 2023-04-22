@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Button, TextField, Grid, Typography, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import {Link} from 'react-router-dom';
+import {Link,useNavigate} from 'react-router-dom';
 import { loginUser } from '../api';
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -19,12 +19,20 @@ export default function Login() {
     const classes = useStyles();
     const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
-  
-    const handleLogin = (e) => {
-      e.preventDefault();
-      loginUser(identifier, password);
-      // console.log(`Logging in with identifier: ${identifier} and password: ${password}`);
-      // 在这里实现登录逻辑（例如调用后端 API）
+    const navigate = useNavigate();
+
+    const handleLogin = async () => {
+        const status = await loginUser(
+          identifier,
+          password
+        );
+        console.log(status);
+        if (status === "success") {
+          console.log("Login success");
+          navigate('/');
+        } else {
+          alert(status);
+        }
     };
   
     return (
@@ -35,7 +43,7 @@ export default function Login() {
           <form onSubmit={handleLogin} className={classes.container}>
             <Grid container direction="column">
               <TextField
-                label="username or Email"
+                label="Email"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
@@ -49,7 +57,7 @@ export default function Login() {
                 required
                 className={classes.textField}
               />
-              <Button type="submit" variant="contained" color="primary" className={classes.button}>
+              <Button onClick={handleLogin} variant="contained" color="primary" className={classes.button}>
                 Login
               </Button>
               <Button variant="outlined" className={classes.button} component={Link} to="/register">

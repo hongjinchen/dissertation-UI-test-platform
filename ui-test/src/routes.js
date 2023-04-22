@@ -20,7 +20,8 @@ const AppRoutes = () => {
         <Route exact path="/" element={<Dashboard />}/>
         <Route exact path="/issue" element={<IssueManagement />}/>
         <Route exact path="/script" element={<ScriptManagement />}/>
-        <Route exact path="/userCenter" element={<UserCenter />}/>
+        {/* <Route exact path="/userCenter/:id" element={<UserCenter />}/> */}
+        <Route exact path="/userCenter" element={<UserCenter />}/> 
         <Route exact path="/group" element={<GroupPage />}/>
         <Route exact path="/login" element={<Login />}/>
         <Route exact path="/register" element={<Register />}/>

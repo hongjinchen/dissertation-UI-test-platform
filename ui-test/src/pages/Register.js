@@ -16,6 +16,7 @@ import {
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { registerUser } from '../api';
+import Cookies from 'js-cookie';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -117,7 +118,6 @@ const Register = () => {
     }
   };
 
-
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
@@ -138,6 +138,9 @@ const Register = () => {
         values.password
       );
       if (status === "success") {
+        const token = Cookies.get('token');
+        console.log("Login success");
+        console.log(token);
         navigate(-1);
       } else {
         alert(status);
