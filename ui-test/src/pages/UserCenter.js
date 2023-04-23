@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -23,6 +23,7 @@ import "react-calendar-heatmap/dist/styles.css";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Cookies from 'js-cookie';
+import { fetchUserData, updateUserInfo, updateUserPassword, updateEmail } from '../api';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,22 +71,52 @@ function UserCenter() {
   const [showEditInfo, setShowEditInfo] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showUpdateEmail, setShowUpdateEmail] = useState(false);
-
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isOwner, setIsOwner] = useState(true);
 
-  const handleSave = () => {
-    // Handle saving user info
-    setShowEditInfo(false);
+  // 在useState声明部分下方添加表单状态
+  const [form, setForm] = useState({
+    username: '',
+    personalIntroduction: '',
+  });
+  // 更新handleSave函数以调用updateUserInfo
+  const handleSave = async () => {
+    const updatedData = await updateUserInfo(Cookies.get('userId'), form.username, form.personalIntroduction);
+
+    if (updatedData) {
+      setNickname(updatedData.username);
+      // 更新其他需要的数据，例如个人简介
+      setShowEditInfo(false);
+    }
   };
 
-  const handleChangePassword = () => {
-    // Handle changing password
-    setShowChangePassword(false);
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmNewPassword) {
+      alert("New passwords do not match");
+      return;
+    }
+    const response = await updateUserPassword(Cookies.get('userId'), oldPassword, newPassword);
+    console.log(response);
+    if (response.status === "success") {
+      alert("Password changed successfully");
+      setShowChangePassword(false);
+    } else {
+      alert(response.error);
+    }
   };
 
-  const handleUpdateEmail = () => {
-    // Handle updating email
-    setShowUpdateEmail(false);
+  const handleUpdateEmail = async () => {
+    const newEmail = document.getElementById('new-email').value;
+    const response = await updateEmail(Cookies.get('userId'), newEmail);
+
+    if (response.status === 'success') {
+      alert('Email updated successfully');
+      setShowUpdateEmail(false);
+    } else {
+      alert(response.message);
+    }
   };
 
   const handleLogout = () => {
@@ -95,10 +126,21 @@ function UserCenter() {
       window.location.href = "/"
     }, 2000)
   };
-  // useEffect(() => {
 
-  // }, []);
-  
+  useEffect(() => {
+    const getUserData = async () => {
+      const userData = await fetchUserData(Cookies.get('userId'));
+
+      if (userData) {
+        setNickname(userData.username);
+        setEmail(userData.email);
+        setAvatar(userData.avatar);
+      }
+    };
+
+    getUserData();
+  }, [showEditInfo, showUpdateEmail]); // 添加空数组以确保仅在组件挂载时运行
+
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   if (!isLoggedIn) {
@@ -208,18 +250,21 @@ function UserCenter() {
             <DialogTitle>Edit personal information</DialogTitle>
             <DialogContent>
               <form>
+                {/* // 更新文本字段以使用表单状态 */}
                 <TextField
                   label="username"
-                  defaultValue="张三"
+                  placeholder="New username"
                   fullWidth
                   margin="normal"
+                  onChange={(e) => setForm({ ...form, username: e.target.value })}
                 />
                 <TextField
                   label="Personal introduction"
-                  defaultValue="This is a personal introduction"
+                  placeholder="This is a simple personal introduction"
                   fullWidth
                   margin="normal"
                   multiline
+                  onChange={(e) => setForm({ ...form, personalIntroduction: e.target.value })}
                 />
               </form>
             </DialogContent>
@@ -245,18 +290,21 @@ function UserCenter() {
                   type="password"
                   fullWidth
                   margin="normal"
+                  onChange={(e) => setOldPassword(e.target.value)}
                 />
                 <TextField
                   label="New password"
                   type="password"
                   fullWidth
                   margin="normal"
+                  onChange={(e) => setNewPassword(e.target.value)}
                 />
                 <TextField
                   label="Confirm new password"
                   type="password"
                   fullWidth
                   margin="normal"
+                  onChange={(e) => setConfirmNewPassword(e.target.value)}
                 />
               </form>
             </DialogContent>
@@ -281,6 +329,7 @@ function UserCenter() {
             <DialogContent>
               <form>
                 <TextField
+                  id="new-email"
                   label="New email address"
                   fullWidth
                   margin="normal"

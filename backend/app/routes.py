@@ -72,7 +72,6 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        print(user)
         if user is not None and check_password_hash(user.password, password):
             login_user(user)
 
@@ -96,3 +95,88 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('login'))
+
+@app.route('/user/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = User.query.get(user_id)
+
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "username": user.username,
+        "email": user.email
+    })
+
+@app.route('/infoEdit/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    # 检查请求中是否包含JSON数据
+    if not request.is_json:
+        return jsonify({"error": "Missing JSON in request"}), 400
+
+    # 获取请求中的数据
+    data = request.get_json()
+
+    # 根据user_id查找用户
+    user = User.query.get(user_id)
+
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+
+    # 更新用户名和描述
+    if "username" in data:
+        user.username = data["username"]
+    if "description" in data:
+        user.description = data["description"]
+
+    # 提交更改到数据库
+    db.session.commit()
+
+    return jsonify({"status": "success"}), 200
+
+@app.route('/changePassword/<int:user_id>', methods=['PUT'])
+def change_password(user_id):
+    if not request.is_json:
+        return jsonify({"status": "error", "message": "Missing JSON in request"}), 400
+
+    data = request.get_json()
+
+    user = User.query.get(user_id)
+
+    if user is None:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
+    if "old_password" not in data or "new_password" not in data:
+        return jsonify({"status": "error", "message": "Missing old_password or new_password in request"}), 400
+
+    if not check_password_hash(user.password,  data["old_password"]):
+        return jsonify({"status": "error", "message": "Incorrect old password"}), 403
+    hashed_password = generate_password_hash(data["new_password"])
+    user.password = hashed_password
+    db.session.commit()
+
+    return jsonify({"status": "success", "message": "Password changed successfully"}), 200
+
+@app.route('/update-email/<int:user_id>', methods=['PUT'])
+def update_email(user_id):
+    if not request.is_json:
+        return jsonify({"status": "error", "message": "Missing JSON in request"}), 400
+
+    data = request.get_json()
+
+    user = User.query.get(user_id)
+
+    if user is None:
+        return jsonify({"status": "error", "message": "User not found"}), 404
+
+    if "email" not in data:
+        return jsonify({"status": "error", "message": "Missing email in request"}), 400
+
+    existing_user = User.query.filter_by(email=data["email"]).first()
+    if existing_user:
+        return jsonify({"status": "error", "message": "Email already in use"}), 400
+
+    user.email = data["email"]
+    db.session.commit()
+
+    return jsonify({"status": "success", "message": "Email updated successfully"}), 200

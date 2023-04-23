@@ -29,7 +29,10 @@ export const loginUser = async (email, password) => {
     }, { withCredentials: true });
 
     if (response.data.status === 'success') {
-      return response.data.status; // 返回响应状态
+      return {
+        status: response.data.status,
+        userId: response.data.user_id,
+      };
     } else {
       return response.data.message;
     }
@@ -40,11 +43,64 @@ export const loginUser = async (email, password) => {
 };
 
 
-export const fetchUserInfo = async () => {
-    try {
-      const response = await axios.get("/api/userInfo");
-      
-    } catch (error) {
-      console.error(error);
+export const fetchUserData = async (userId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
+    const userData = response.data;
+
+    return userData;
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+  }
+};
+
+export const updateUserInfo = async (userId, username, personalIntroduction) => {
+  try {
+    const response = await axios.put(`${API_BASE_URL}/infoEdit/${userId}`, {
+      username: username,
+      description: personalIntroduction,
+    });
+
+    if (response.data.status === 'success') {
+      return response.data;
+    } else {
+      return response.data.message;
     }
-  };
+  } catch (error) {
+    console.error('Error updating user info:', error);
+  }
+};
+
+export const updateUserPassword = async (userId, oldPassword, newPassword) => {
+
+  try {
+    const response = await axios.put(API_BASE_URL + `/changePassword/${userId}`, {
+      old_password: oldPassword,
+      new_password: newPassword,
+    });
+
+    if (response.data.status === 'success') {
+      return response.data;
+    } else {
+      return response.data.message;
+    }
+  } catch (error) {
+    console.error('Error updating user info:', error);
+  }
+}
+
+export const updateEmail = async (userId, newEmail) => {
+  try {
+    const response = await axios.put(API_BASE_URL + `/update-email/${userId}`, {
+      email: newEmail,
+    });
+
+    if (response.data.status === 'success') {
+      return response.data;
+    } else {
+      return response.data.message;
+    }
+  } catch (error) {
+    console.error('Error updating user email:', error);
+  }
+};
