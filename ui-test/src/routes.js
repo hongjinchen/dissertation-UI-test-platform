@@ -18,11 +18,11 @@ const AppRoutes = () => {
     <Router>
       <Routes>
         <Route exact path="/" element={<Dashboard />}/>
-        <Route exact path="/issue" element={<IssueManagement />}/>
-        <Route exact path="/script" element={<ScriptManagement />}/>
+        <Route exact path="/issue/:id" element={<IssueManagement />}/>
+        <Route exact path="/script/:id" element={<ScriptManagement />}/>
         {/* <Route exact path="/userCenter/:id" element={<UserCenter />}/> */}
         <Route exact path="/userCenter" element={<UserCenter />}/> 
-        <Route exact path="/group" element={<GroupPage />}/>
+        <Route exact path="/group/:id" element={<GroupPage />}/>
         <Route exact path="/login" element={<Login />}/>
         <Route exact path="/register" element={<Register />}/>
         <Route exact path="/forgotPassword" element={<ForgotPasswordFlow />}/>

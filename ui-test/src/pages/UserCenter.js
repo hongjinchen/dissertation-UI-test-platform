@@ -62,8 +62,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 function UserCenter() {
   // user information
-  const [username, setNickname] = useState("John Doe");
-  const [email, setEmail] = useState("zhangsan@example.com");
+  const [username, setNickname] = useState("");
+  const [email, setEmail] = useState("");
 
   const [avatar, setAvatar] = useState("https://via.placeholder.com/150");
   // control the dialogs

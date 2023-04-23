@@ -12,10 +12,6 @@ import {
   TextField,
   Grid,
   Button,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
   ListItem,
   List,
   makeStyles,
@@ -25,7 +21,7 @@ import {
   Slide,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import {createTeam} from "../api";
+import {createTeam,searchUsers } from "../api";
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
@@ -55,19 +51,13 @@ export default function CreateTeam() {
 
   const [teamName, setTeamName] = useState("");
   const [teamDescription, setTeamDescription] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchUserName, setSearchTerm] = useState("");
   const [teamMembers, setTeamMembers] = useState([]);
-  const [visibility, setVisibility] = useState("public");
   const [searchResults, setSearchResults] = useState([]);
 
-  const searchUsers = (term) => {
-    console.log("Searching for users with term:", term);
-    const newSearchResults = [
-      { id: 1, name: "John Doe" },
-      { id: 2, name: "Jane Doe" },
-      { id: 3, name: "Joe Bloggs" },
-      { id: 4, name: "Jane Bloggs" },
-    ];
+  const handleSearch = async (userName) => {
+    const newSearchResults = await searchUsers(userName);
+    console.log(newSearchResults);
     setSearchResults(newSearchResults);
   };
 
@@ -80,13 +70,14 @@ export default function CreateTeam() {
   };
 
   const submitForm = async () => {
-    const response = await createTeam(teamName, teamDescription, teamMembers, visibility);
-  
+    const response = await createTeam(teamName, teamDescription, teamMembers);
+    console.log(response);
     if (response.status === 'success') {
       alert('Team created successfully');
       setIsAdding(false);
     } else {
-      alert(response.message);
+      console.log(response.error);
+      alert(response.error);
     }
   };
 
@@ -146,10 +137,10 @@ export default function CreateTeam() {
             <TextField
               fullWidth
               label="Search Members"
-              value={searchTerm}
+              value={searchUserName}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button onClick={() => searchUsers(searchTerm)}>Search</Button>
+            <Button onClick={() => handleSearch(searchUserName)}>Search</Button>
           </Grid>
 
           <Grid item xs={12}>
@@ -176,19 +167,6 @@ export default function CreateTeam() {
                 </ListItem>
               ))}
             </List>
-          </Grid>
-
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <InputLabel>Team Visibility</InputLabel>
-              <Select
-                value={visibility}
-                onChange={(e) => setVisibility(e.target.value)}
-              >
-                <MenuItem value="public">Public</MenuItem>
-                <MenuItem value="private">Private</MenuItem>
-              </Select>
-            </FormControl>
           </Grid>
 
           <Grid item xs={12}>

@@ -10,6 +10,7 @@ import {
   Paper,
   Link as MuiLink,
 } from "../components/muiComponents";
+import Cookies from 'js-cookie';
 
 
 import Groups from "../components/groups";
@@ -79,15 +80,30 @@ export default function Dashboard() {
   return (
     <div className={classes.root}>
       {/* <CssBaseline /> */}
-      <Navigation title="Dashboard"/>
+      <Navigation title="Dashboard" />
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
+
           {/* Group component */}
           <Grid container spacing={3}>
             <Grid item xs={12}>
               <Paper className={fixedHeightPaper}>
-                <Groups />
+                {Cookies.get("token") ? (
+                  <Groups />
+                ) : (
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="100%"
+                  >
+                    <Typography variant="h5" align="center" style={{ marginBottom: '10px' }}>
+                      Please login to view groups
+                    </Typography>
+                  </Box>
+                )}
               </Paper>
             </Grid>
 

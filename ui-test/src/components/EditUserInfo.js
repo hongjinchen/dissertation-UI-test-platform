@@ -24,12 +24,12 @@ const useStyles = makeStyles((theme) => ({
 
 const EditUserInfo = () => {
   const classes = useStyles();
-  const [username, setNickname] = useState('John Doe');
+  const [username, setNickname] = useState('');
   const [avatar, setAvatar] = useState('');
   const [showEdit, setShowEdit] = useState(false);
-  const toggleComponent = () => {
-    setShowEdit(!showEdit);
-  };
+  // const toggleComponent = () => {
+  //   setShowEdit(!showEdit);
+  // };
 
   const handleNicknameChange = (event) => {
     setNickname(event.target.value);

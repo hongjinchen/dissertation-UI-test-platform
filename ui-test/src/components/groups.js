@@ -5,17 +5,19 @@ import {
   Grid,
   Button,
   Typography,
+  TextField,
+  ListItem,
+  List,
   Box,
-} from "../components/muiComponents";
-import TextField from "@material-ui/core/TextField";
-import AddIcon from "@material-ui/icons/Add";
+  Dialog,
+  Slide,
+} from  "@material-ui/core";
 import { Link } from "react-router-dom";
-import Slide from "@material-ui/core/Slide";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import CreatGroup from "./CreatGroup";
+import AddIcon from "@material-ui/icons/Add";
+import {createTeam,searchUsers } from "../api";
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import {fetchUserTeams} from "../api";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -55,16 +57,84 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "flex-end",
   },
+  paperCreat: {
+    padding: theme.spacing(2),
+    textAlign: "center",
+    color: theme.palette.text.secondary,
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+    borderRadius: "8px",
+    cursor: "pointer",
+    "&:hover": {
+      boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+    },
+  },
+  addButton: {
+    marginBottom: theme.spacing(1),
+  },
+  listItem: {
+    justifyContent: "space-between",
+  },
 }));
 
 export default function CenteredGrid() {
   const classes = useStyles();
-  const groups = [
-    { name: "Group 1", time: "2023-04-05 10:00:00", testCaseNumber: 5 },
-    { name: "Group 2", time: "2023-04-05 12:00:00", testCaseNumber: 3 },
-    { name: "Group 3", time: "2023-04-05 14:00:00", testCaseNumber: 7 },
-  ];
-  // useEffect(() => {}, [groups]);
+
+  // 新建team部分的逻辑
+  const [teamName, setTeamName] = useState("");
+  const [teamDescription, setTeamDescription] = useState("");
+  const [searchUserName, setSearchTerm] = useState("");
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = async (userName) => {
+    const newSearchResults = await searchUsers(userName);
+    console.log(newSearchResults);
+    setSearchResults(newSearchResults);
+  };
+
+  const addMember = (user) => {
+    setTeamMembers([...teamMembers, user]);
+  };
+
+  const removeMember = (index) => {
+    setTeamMembers(teamMembers.filter((_, i) => i !== index));
+  };
+
+  const submitForm = async () => {
+    const response = await createTeam(teamName, teamDescription, teamMembers);
+    console.log(response);
+    if (response.status === 'success') {
+      alert('Team created successfully');
+      setIsAdding(false);
+    } else {
+      console.log(response.error);
+      alert(response.error);
+    }
+  };
+
+  const [isAdding, setIsAdding] = useState(false);
+
+  const AddNewGroup = () => {
+    setIsAdding(true);
+  };
+  const handleClose = () => {
+    setIsAdding(false);
+  };
+
+  // 显示team列表的逻辑
+  const [groups, setGroups] = useState([]);
+  useEffect(() => {
+    const getUserData = async () => {
+      const response = await fetchUserTeams(Cookies.get('userId'));
+      setGroups(response.data.teams);
+    };
+  
+    getUserData();
+  }, [isAdding]);
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -82,7 +152,98 @@ export default function CenteredGrid() {
         </Grid>
 
         <Grid item xs={3}>
-          <CreatGroup></CreatGroup>
+        <div>
+      <Paper className={classes.paperCreat} onClick={AddNewGroup}>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <AddIcon className={classes.addButton} fontSize="large" />
+          <Typography>Create a new group</Typography>
+        </Box>
+      </Paper>
+      <Dialog
+        open={isAdding}
+        TransitionComponent={Slide}
+        keepMounted
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+        // maxWidth="sm"
+        fullWidth
+      >
+        <Grid container style={{ padding: "20px" }}>
+          <Grid item xs={12}>
+          <Typography variant="h5">Create Team</Typography>
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Team Name"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={4}
+              label="Team Description"
+              value={teamDescription}
+              onChange={(e) => setTeamDescription(e.target.value)}
+              inputProps={{ maxLength: 200 }}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Search Members"
+              value={searchUserName}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Button onClick={() => handleSearch(searchUserName)}>Search</Button>
+          </Grid>
+
+          <Grid item xs={12}>
+            <List>
+              {searchResults.map((user) => (
+                <ListItem
+                  className={classes.listItem}
+                  button
+                  key={user.id}
+                  onClick={() => addMember(user)}
+                >
+                  {user.name}
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+
+          <Grid item xs={12}>
+            <List>
+              {teamMembers.map((member, index) => (
+                <ListItem className={classes.listItem} key={index}>
+                  {member.name}
+                  <Button onClick={() => removeMember(index)}>Remove</Button>
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={submitForm}
+              fullWidth
+            >
+              Create Team
+            </Button>
+          </Grid>
+        </Grid>
+      </Dialog>
+    </div>
         </Grid>
 
         {groups.map((group, index) => (
@@ -99,16 +260,16 @@ export default function CenteredGrid() {
                 <Typography
                   variant="body1"
                   align="left"
-                  className={classes.groupTime}
+                  className={classes.joined_at}
                 >
-                  {group.time}
+                  {group.joined_at}
                 </Typography>
               </div>
               <Button
                 variant="outlined"
                 color="primary"
                 component={Link}
-                to="/group"
+                to={`/group/${group.team_id}`}
               >
                 View
               </Button>

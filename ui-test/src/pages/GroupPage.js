@@ -1,4 +1,5 @@
-import React from "react";
+import React,{useState,useEffect} from "react";
+import { useParams } from 'react-router-dom';
 import clsx from "clsx";
 import {
   makeStyles,
@@ -10,6 +11,8 @@ import Navigation from "../components/SubNavigation";
 import KanbanPreview from "../components/overview";
 import MemberList from "../components/MemberList";
 import Title from '../Title';
+import axios from "axios";
+import {fetchMembers} from "../api";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -64,9 +67,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Dashboard() {
+export default function GroupPage() {
   const classes = useStyles();
+  const [members, setMembers] = useState([]);
+  const { id } = useParams(); // 获取路由参数
 
+  useEffect(() => {
+    const fetchMembersList = async () => {
+      const response =await fetchMembers(id);
+      console.log("fetchMembers",response);
+      setMembers(response.data.members);
+    };
+    fetchMembersList();
+  }, []);
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const KanbanData = [
     {
@@ -95,43 +108,6 @@ export default function Dashboard() {
       count: 8,
     },
 ];
-const MemberData = [
-  {
-    id: 1,
-    avatar:
-      "https://th.bing.com/th/id/OIP.y29pBmWKpVvCF24R8OtWWAHaHU?pid=ImgDet&rs=1",
-    name: "Elizabeth",
-    responsibility: "manager",
-  },
-  {
-    id: 2,
-    avatar:
-      "https://th.bing.com/th/id/OIP.y29pBmWKpVvCF24R8OtWWAHaHU?pid=ImgDet&rs=1",
-    name: "Patricia",
-    responsibility: "tester",
-  },
-  {
-    id: 3,
-    avatar:
-      "https://th.bing.com/th/id/OIP.y29pBmWKpVvCF24R8OtWWAHaHU?pid=ImgDet&rs=1",
-    name: "David",
-    responsibility: "tester",
-  },
-  {
-    id: 4,
-    avatar:
-      "https://th.bing.com/th/id/OIP.y29pBmWKpVvCF24R8OtWWAHaHU?pid=ImgDet&rs=1",
-    name: "Linda",
-    responsibility: "developer",
-  },
-  {
-    id: 5,
-    avatar:
-      "https://th.bing.com/th/id/OIP.y29pBmWKpVvCF24R8OtWWAHaHU?pid=ImgDet&rs=1",
-    name: "Thomas",
-    responsibility: "developer",
-  },
-];
   return (
     <div className={classes.root}>
       <Navigation   title="My Group"/>
@@ -158,7 +134,7 @@ const MemberData = [
             <Grid item xs={6}>
               <Paper className={classes.member}>
               <Title>Group Members</Title>
-                <MemberList data={MemberData} />
+              <MemberList data={members} />
               </Paper>
             </Grid>
           </Grid>

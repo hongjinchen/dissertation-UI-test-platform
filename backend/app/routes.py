@@ -4,8 +4,12 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from app import app, db
 from app.models import User
+from app.models import Team
+from app.models import UserTeam
 import jwt
-import datetime
+from datetime import datetime, timedelta
+from sqlalchemy.exc import SQLAlchemyError
+
 
 @app.after_request
 def add_cors_headers(response):
@@ -55,7 +59,7 @@ def register():
 
         # 生成令牌
         token = jwt.encode(
-            {"user_id": new_user_id, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)},
+            {"user_id": new_user_id, "exp": datetime.utcnow() + timedelta(hours=1)},
             app.config["SECRET_KEY"],
         )
         resp = make_response(jsonify({"message": 'Registration successful, please log in.', "status": 'success',"user_id":new_user_id}))
@@ -77,7 +81,7 @@ def login():
 
             # 生成令牌
             token = jwt.encode(
-                {"user_id": user.user_id, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)},
+                {"user_id": user.user_id, "exp": datetime.utcnow() + timedelta(hours=1)},
                 app.config["SECRET_KEY"],
             )
             resp = make_response(jsonify(message='Login successful.', status='success', user_id=user.user_id))
@@ -88,6 +92,7 @@ def login():
             return resp
 
         return jsonify(message='Login failed.', status='failed')
+
     
 @app.route('/logout')
 @login_required
@@ -157,7 +162,7 @@ def change_password(user_id):
 
     return jsonify({"status": "success", "message": "Password changed successfully"}), 200
 
-@app.route('/update-email/<int:user_id>', methods=['PUT'])
+@app.route('/updateEmail/<int:user_id>', methods=['PUT'])
 def update_email(user_id):
     if not request.is_json:
         return jsonify({"status": "error", "message": "Missing JSON in request"}), 400
@@ -180,3 +185,111 @@ def update_email(user_id):
     db.session.commit()
 
     return jsonify({"status": "success", "message": "Email updated successfully"}), 200
+
+
+@app.route('/searchUsers', methods=['GET'])
+def search_users():
+    userName = request.args.get('userName', '')
+
+    if not userName:
+        return jsonify({"error": "Search term is required"}), 400
+
+    # users = User.query.filter(User.username.like(f'%{userName}%')).all()
+    users = User.query.with_entities(User.user_id, User.username, User.email, User.description, User.avatar_link).filter(User.username.like(f'%{userName}%')).all()
+
+    if not users:
+        return jsonify({"error": "No users found"}), 404
+
+    return jsonify({"status": "success", "users": [
+        {
+            "user_id": user.user_id,
+            "username": user.username,
+            "email": user.email,
+            "description": user.description,
+            "avatar_link": user.avatar_link
+        } for user in users
+    ]})
+
+@app.route('/createTeam', methods=['POST'])
+def create_team():
+    data = request.get_json()
+
+    team_name = data.get('team_name', '')
+    team_description = data.get('team_description', '')
+    team_members = data.get('team_members', [])
+
+    if not team_name:
+        return jsonify({"status": "failed","error": "Team name is required"}), 400
+
+    if not team_members:
+        return jsonify({"status": "failed","error": "Team must have at least one member"}), 400
+
+    new_team = Team(
+        name=team_name,
+        description=team_description,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
+    )
+
+    for user_id in team_members:
+        user = User.query.get(user_id)
+        if user:
+            new_member = UserTeam(
+                user_id=user_id,
+                role='member',
+                joined_at=datetime.utcnow()
+            )
+            new_team.members.append(new_member)
+        else:
+            return jsonify({"status": "failed","error": f"User with ID {user_id} not found"}), 400
+
+    try:
+        db.session.add(new_team)
+        db.session.commit()
+    except SQLAlchemyError as e:
+        print(e)  # Print the error message
+        db.session.rollback()  # Rollback any changes
+        return jsonify({"status": "failed", "error": "An error occurred while adding the team"}), 500
+
+    return jsonify({"status": "success", "team_id": new_team.team_id})
+
+@app.route('/getTeamMembers/<int:team_id>', methods=['GET'])
+def get_team_members(team_id):
+    team = Team.query.get(team_id)
+    if not team:
+        return jsonify({"status": "failed", "error": "Team not found"}), 404
+
+    members = team.members
+    member_data = []
+
+    for member in members:
+        user = member.user
+        member_data.append({
+            'user_id': user.user_id,
+            'username': user.username,
+            'email': user.email,
+            'role': member.role,
+            'joined_at': member.joined_at.isoformat(),
+            'avatar_link': user.avatar_link,
+        })
+
+    return jsonify({"status": "success", "members": member_data})
+
+@app.route('/getUserTeams/<int:user_id>', methods=['GET'])
+def get_user_teams(user_id):
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"status": "failed", "error": "User not found"}), 404
+
+    user_teams = user.teams
+    team_data = []
+
+    for user_team in user_teams:
+        team = user_team.team
+        team_data.append({
+            'team_id': team.team_id,
+            'name': team.name,
+            'joined_at': user_team.joined_at.isoformat()
+        })
+
+    return jsonify({"status": "success", "teams": team_data})

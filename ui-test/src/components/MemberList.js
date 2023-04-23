@@ -31,11 +31,11 @@ export default function MemberList({ data }) {
       {data.map((member) => (
         <ListItem divider>
           <ListItemAvatar>
-            <Avatar src={member.avatar} />
+            <Avatar src={member.avatar_link} />
           </ListItemAvatar>
           <ListItemText
-            primary={member.name}
-            secondary={member.responsibility}
+            primary={member.username}
+            secondary={member.role}
           />
         </ListItem>
       ))}

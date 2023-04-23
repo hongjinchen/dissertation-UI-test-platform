@@ -13,6 +13,7 @@ class User(UserMixin, db.Model):
 
     contributions = relationship("UserContribution", back_populates="user")
     teams = relationship("UserTeam", back_populates="user")
+    managed_teams = relationship("Team", back_populates="manager")
 
     def get_id(self):
         return str(self.user_id)
@@ -38,6 +39,7 @@ class Team(db.Model):
     members = relationship("UserTeam", back_populates="team")
 
 class UserTeam(db.Model):
+    __tablename__ = 'userteam'
     team_member_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'), nullable=True)
     team_id = db.Column(db.Integer, db.ForeignKey('team.team_id'), nullable=True)

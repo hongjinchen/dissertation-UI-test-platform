@@ -91,7 +91,7 @@ export const updateUserPassword = async (userId, oldPassword, newPassword) => {
 
 export const updateEmail = async (userId, newEmail) => {
   try {
-    const response = await axios.put(API_BASE_URL + `/update-email/${userId}`, {
+    const response = await axios.put(API_BASE_URL + `/updateEmail/${userId}`, {
       email: newEmail,
     });
 
@@ -106,21 +106,59 @@ export const updateEmail = async (userId, newEmail) => {
 };
 
 
-export const createTeam = async (teamName, teamDescription, teamMembers, visibility) => {
+export const createTeam = async (teamName, teamDescription, teamMembers) => {
   try {
-    const response = await axios.post(API_BASE_URL + '/create-team', {
+    const response = await axios.post(API_BASE_URL + '/createTeam', {
       team_name: teamName,
       team_description: teamDescription,
-      team_members: teamMembers.map((member) => member.id),
-      visibility: visibility,
+      team_members: teamMembers.map((member) => member.id)
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error creating team:', error);
+    return { status: 'failed', error: 'Error creating team' };
+  }
+};
+
+export const searchUsers = async (userName) => {
+  console.log("Searching for users with user name:", userName);
+  try {
+    const response = await axios.get(`${API_BASE_URL}/searchUsers`, {
+      params: { userName: userName },
     });
 
     if (response.data.status === 'success') {
-      return response.data;
+      return response.data.users.map((user) => ({
+        id: user.user_id,
+        name: user.username,
+        avatar_link: user.avatar_link,
+      }));
     } else {
-      return response.data.message;
+      console.error("Error searching users:", response.data.message);
+      return [];
     }
   } catch (error) {
-    console.error('Error creating team:', error);
+    console.error("Error searching users:", error);
+    return [];
+  }
+};
+
+export const fetchUserTeams = async (userId) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/getUserTeams/${userId}`);
+    return response;
+  } catch (error) {
+    console.error("Error fetching user teams:", error);
+  }
+};
+
+
+export const fetchMembers = async (id) => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/getTeamMembers/${id}`);
+    return response;
+  } catch (error) {
+    console.error("Error fetching team members:", error);
   }
 };
