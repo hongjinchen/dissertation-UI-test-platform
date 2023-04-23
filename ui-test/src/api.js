@@ -104,3 +104,23 @@ export const updateEmail = async (userId, newEmail) => {
     console.error('Error updating user email:', error);
   }
 };
+
+
+export const createTeam = async (teamName, teamDescription, teamMembers, visibility) => {
+  try {
+    const response = await axios.post(API_BASE_URL + '/create-team', {
+      team_name: teamName,
+      team_description: teamDescription,
+      team_members: teamMembers.map((member) => member.id),
+      visibility: visibility,
+    });
+
+    if (response.data.status === 'success') {
+      return response.data;
+    } else {
+      return response.data.message;
+    }
+  } catch (error) {
+    console.error('Error creating team:', error);
+  }
+};

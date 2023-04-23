@@ -25,7 +25,7 @@ import {
   Slide,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-
+import {createTeam} from "../api";
 const useStyles = makeStyles((theme) => ({
   paper: {
     padding: theme.spacing(2),
@@ -79,12 +79,15 @@ export default function CreateTeam() {
     setTeamMembers(teamMembers.filter((_, i) => i !== index));
   };
 
-  const submitForm = () => {
-    console.log("Submitting form with team name:", teamName);
-    console.log("Submitting form with team description:", teamDescription);
-    console.log("Submitting form with team members:", teamMembers);
-    console.log("Submitting form with team visibility:", visibility);
-    setIsAdding(false);
+  const submitForm = async () => {
+    const response = await createTeam(teamName, teamDescription, teamMembers, visibility);
+  
+    if (response.status === 'success') {
+      alert('Team created successfully');
+      setIsAdding(false);
+    } else {
+      alert(response.message);
+    }
   };
 
   const [isAdding, setIsAdding] = useState(false);
