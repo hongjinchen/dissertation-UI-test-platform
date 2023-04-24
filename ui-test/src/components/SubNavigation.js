@@ -1,4 +1,5 @@
 import React from "react";
+import { useParams } from 'react-router-dom';
 import clsx from "clsx";
 import {
   makeStyles,
@@ -14,8 +15,7 @@ import {
   ChevronLeftIcon,
   NotificationsIcon,
 } from "../components/muiComponents";
-import { secondaryListItems } from "../components/listItems";
-
+import { SecondaryListItems } from "../components/listItems";
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -82,13 +82,13 @@ const useStyles = makeStyles((theme) => ({
 export default function Navigation({ title }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const { id } = useParams(); // 获取路由参数
   const handleDrawerOpen = () => {
     setOpen(true);
   };
   const handleDrawerClose = () => {
     setOpen(false);
   };
-
   return (
     <div>
       <AppBar
@@ -137,7 +137,9 @@ export default function Navigation({ title }) {
           </IconButton>
         </div>
         <Divider />
-        <List>{secondaryListItems}</List>
+        <List>
+          <SecondaryListItems id={id} />
+        </List>
         <Divider />
       </Drawer>
     </div>

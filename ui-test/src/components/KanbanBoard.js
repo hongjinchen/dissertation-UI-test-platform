@@ -1,5 +1,6 @@
 // KanbanBoard.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, } from "react";
+import { useParams } from 'react-router-dom';
 import { useDrop } from "react-dnd";
 import { useDrag } from "react-dnd";
 import {
@@ -22,36 +23,15 @@ import { Menu, MenuItem } from "@material-ui/core";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { Link } from "react-router-dom";
+import { API_BASE_URL } from "../config";
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import CircularProgress from '@mui/material/CircularProgress';
 
-function generateData(listCount, taskCount) {
-  const data = [];
 
-  for (let i = 1; i <= listCount; i++) {
-    const list = {
-      id: i,
-      name: `List ${i}`,
-      tasks: [],
-    };
-
-    for (let j = 1; j <= taskCount; j++) {
-      const task = {
-        id: j + (i - 1) * taskCount,
-        text: `Task ${j} of List ${i}`,
-        testcase: j + (i - 1) * taskCount,
-      };
-      list.tasks.push(task);
-    }
-
-    data.push(list);
-  }
-
-  return data;
-}
-
-const data = generateData(4, 3);
-
-const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
+const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
   // 拖拽组件
+  const { id } = useParams();
   const [{ isOver }, drop] = useDrop({
     accept: "task",
     drop: (item) => moveTask(item.id, list.id),
@@ -73,6 +53,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
           .find((l) => l.id === list.id)
           .tasks.splice(draggingIndex, 0, task);
         setTaskLists(newTaskLists);
+        saveData();
       }
     },
     collect: (monitor) => ({
@@ -82,9 +63,6 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
 
   // 判定弹窗是否打开
   const [open, setOpen] = React.useState(false);
-  useEffect(() => {
-    console.log(taskLists);
-  }, [taskLists]);
   const handleClickOpen = () => {
     setOpen(true);
     console.log(list);
@@ -116,7 +94,8 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
 
     setTaskLists(updatedData);
     setNewEvent("");
-    console.log(taskLists);
+    saveData(); // 调用 saveData 函数
+    // console.log(taskLists);
   };
   const [newEvent, setNewEvent] = useState("");
   const [TestID, setTestID] = useState("");
@@ -129,7 +108,9 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
         ),
       }))
     );
+    saveData();
   };
+
   return (
     <Card
       ref={drop}
@@ -151,6 +132,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
               taskLists={taskLists}
               setTaskLists={setTaskLists}
               updateTaskText={updateTaskText}
+              saveData={saveData}
             />
           ))}
         </Box>
@@ -203,7 +185,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists }) => {
   );
 };
 
-const Task = ({ task, taskLists, setTaskLists, updateTaskText }) => {
+const Task = ({ task, taskLists, setTaskLists, updateTaskText, saveData }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedText, setEditedText] = useState(task.text);
@@ -214,7 +196,7 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText }) => {
       isDragging: !!monitor.isDragging(),
     }),
   }));
-  useEffect(() => {}, [isEditing]);
+  useEffect(() => { }, [isEditing]);
   useEffect(() => {
     console.log(taskLists);
   }, [taskLists]);
@@ -235,6 +217,7 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText }) => {
     });
     setTaskLists(updatedTaskLists);
     handleClose();
+    saveData();
   };
 
   const handleTextChange = (e) => {
@@ -340,22 +323,66 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText }) => {
     </div>
   );
 };
+
+
 const KanbanBoard = () => {
-  const [taskLists, setTaskLists] = useState(data);
+  const [taskLists, setTaskLists] = useState([]);
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  }, [taskLists]);
+
+  useEffect(() => {
+    const fetchTaskLists = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(API_BASE_URL + '/tasklists/' + id);
+        console.log("Fetching task lists!");
+        console.log("Team ID:", id);
+        console.log("API Base URL:", API_BASE_URL);
+        console.log("Response:", response.data);
+        setTaskLists(response.data)
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching task lists:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchTaskLists();
+  }, [id]);
+
+  const saveData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.post(API_BASE_URL + "/saveTask", {
+        taskLists: taskLists.map(({ id, name, tasks }) => ({ name, tasks })),
+        team_id: id,
+      });
+
+      if (!response.ok) {
+        setLoading(false);
+        throw new Error("Error saving task data");
+      }
+    } catch (error) {
+      console.error("Failed to save task data:", error);
+      setLoading(false);
+    }
+  };
 
   // 判定弹窗是否打开
   const [open, setOpen] = React.useState(false);
-  useEffect(() => {
-    console.log(taskLists);
-  }, [taskLists]);
 
   const handleAddTaskList = () => {
     const newTaskList = [
       ...taskLists,
-      { id: taskLists.length + 1, name: NewTask, tasks: [] },
+      { id: uuidv4(), name: NewTask, tasks: [] },
     ];
     setTaskLists(newTaskList);
     setNewTask("");
+    setOpen(false);
+    saveData();
   };
   const [NewTask, setNewTask] = useState("");
   const handleClickOpen = () => {
@@ -378,12 +405,31 @@ const KanbanBoard = () => {
     newTaskLists.find((list) => list.id === newListId).tasks.push(task);
     setTaskLists(newTaskLists);
     setOpen(false);
+    saveData();
   };
 
   const taskListWidth = 300; // 设置每个任务列表的宽度
   const totalWidth = taskLists.length * taskListWidth; // 计算所有任务列表的总宽度
   return (
-    <div>
+    <div style={{ position: "relative", minHeight: "100vh" }}>
+    {loading && (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 999,
+          background: "rgba(0, 0, 0, 0.5)",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    )}
       <Button
         variant="contained"
         color="primary"
@@ -435,26 +481,42 @@ const KanbanBoard = () => {
         </DialogActions>
       </Dialog>
 
-      <div style={{ padding: "5vh", width: totalWidth }}>
-        <Box
-          display="flex"
-          flexDirection="row"
-          justifyContent="space-around"
-          marginTop={4}
-        >
-          {taskLists.map((list) => (
-            <TaskList
-              key={list.id}
-              list={list}
-              moveTask={moveTask}
-              taskLists={taskLists}
-              setTaskLists={setTaskLists}
-            />
-          ))}
-        </Box>
-      </div>
+      {taskLists.length === 0 ? (
+        <Empty />
+      ) : (
+        <div style={{ padding: "5vh", width: totalWidth }}>
+          <Box
+            display="flex"
+            flexDirection="row"
+            justifyContent="space-around"
+            marginTop={4}
+          >
+            {taskLists.map((list) => (
+              <TaskList
+                id={id}
+                key={list.id}
+                list={list}
+                moveTask={moveTask}
+                taskLists={taskLists}
+                setTaskLists={setTaskLists}
+                saveData={saveData}
+              />
+            ))}
+          </Box>
+        </div>
+      )}
     </div>
   );
 };
+
+const Empty = () => {
+  return (
+    <div style={{ textAlign: "center", marginTop: "2rem" }}>
+      <h2>No content</h2>
+      <p>Please add a task list to get started with Kanban</p>
+    </div>
+  );
+};
+
 
 export default KanbanBoard;

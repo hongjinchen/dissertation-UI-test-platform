@@ -27,9 +27,6 @@ const EditUserInfo = () => {
   const [username, setNickname] = useState('');
   const [avatar, setAvatar] = useState('');
   const [showEdit, setShowEdit] = useState(false);
-  // const toggleComponent = () => {
-  //   setShowEdit(!showEdit);
-  // };
 
   const handleNicknameChange = (event) => {
     setNickname(event.target.value);

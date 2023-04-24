@@ -1,5 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import GroupContext from "./GroupContext";
+import { useParams } from 'react-router-dom';
+
+
 import Dashboard from "./pages/GroupSpace";
 import IssueManagement from "./pages/IssueManagement";
 import UserCenter from "./pages/UserCenter";
@@ -17,15 +21,19 @@ const AppRoutes = () => {
   return (
     <Router>
       <Routes>
-        <Route exact path="/" element={<Dashboard />}/>
-        <Route exact path="/issue/:id" element={<IssueManagement />}/>
-        <Route exact path="/script/:id" element={<ScriptManagement />}/>
+        <Route exact path="/" element={<Dashboard />} />
+        <Route exact path="/issue/:id" element={<IssueManagement />} />
+        <Route exact path="/script/:id" element={<ScriptManagement />} />
         {/* <Route exact path="/userCenter/:id" element={<UserCenter />}/> */}
-        <Route exact path="/userCenter" element={<UserCenter />}/> 
-        <Route exact path="/group/:id" element={<GroupPage />}/>
-        <Route exact path="/login" element={<Login />}/>
-        <Route exact path="/register" element={<Register />}/>
-        <Route exact path="/forgotPassword" element={<ForgotPasswordFlow />}/>
+        <Route exact path="/userCenter" element={<UserCenter />} />
+        <Route exact path="/group/:id" element={
+          <GroupContext.Provider value={useParams().id}>
+            <GroupPage />
+          </GroupContext.Provider>
+        } />
+        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/register" element={<Register />} />
+        <Route exact path="/forgotPassword" element={<ForgotPasswordFlow />} />
         <Route exact path="/testReport/:id" element={<TestReport />} />
         <Route exact path="/testCase" element={<TestCase />} />
       </Routes>

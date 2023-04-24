@@ -106,12 +106,13 @@ export const updateEmail = async (userId, newEmail) => {
 };
 
 
-export const createTeam = async (teamName, teamDescription, teamMembers) => {
+export const createTeam = async (teamName, teamDescription, teamMembers,user_id) => {
   try {
     const response = await axios.post(API_BASE_URL + '/createTeam', {
       team_name: teamName,
       team_description: teamDescription,
-      team_members: teamMembers.map((member) => member.id)
+      team_members: teamMembers.map((member) => member.id),
+      user_id: user_id,
     });
 
     return response.data;
@@ -121,11 +122,10 @@ export const createTeam = async (teamName, teamDescription, teamMembers) => {
   }
 };
 
-export const searchUsers = async (userName) => {
-  console.log("Searching for users with user name:", userName);
+export const searchUsers = async (userName,user_id) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/searchUsers`, {
-      params: { userName: userName },
+      params: { userName: userName, user_id: user_id }, // Pass user_id as a request parameter
     });
 
     if (response.data.status === 'success') {

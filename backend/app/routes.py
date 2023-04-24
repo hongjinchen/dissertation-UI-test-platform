@@ -6,9 +6,11 @@ from app import app, db
 from app.models import User
 from app.models import Team
 from app.models import UserTeam
+from app.models import TestCase, TestCaseElement,TaskList,Task
 import jwt
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
+import logging
 
 
 @app.after_request
@@ -190,12 +192,13 @@ def update_email(user_id):
 @app.route('/searchUsers', methods=['GET'])
 def search_users():
     userName = request.args.get('userName', '')
+    user_id = request.args.get('user_id', None)  # Get the passed user_id
 
     if not userName:
         return jsonify({"error": "Search term is required"}), 400
 
-    # users = User.query.filter(User.username.like(f'%{userName}%')).all()
-    users = User.query.with_entities(User.user_id, User.username, User.email, User.description, User.avatar_link).filter(User.username.like(f'%{userName}%')).all()
+    # Exclude the user_id from search results
+    users = User.query.with_entities(User.user_id, User.username, User.email, User.description, User.avatar_link).filter(User.username.like(f'%{userName}%'), User.user_id != user_id).all()
 
     if not users:
         return jsonify({"error": "No users found"}), 404
@@ -210,6 +213,7 @@ def search_users():
         } for user in users
     ]})
 
+
 @app.route('/createTeam', methods=['POST'])
 def create_team():
     data = request.get_json()
@@ -217,31 +221,48 @@ def create_team():
     team_name = data.get('team_name', '')
     team_description = data.get('team_description', '')
     team_members = data.get('team_members', [])
+    user_id = data.get('user_id', None)
 
     if not team_name:
-        return jsonify({"status": "failed","error": "Team name is required"}), 400
+        return jsonify({"status": "failed", "error": "Team name is required"}), 400
 
     if not team_members:
-        return jsonify({"status": "failed","error": "Team must have at least one member"}), 400
+        return jsonify({"status": "failed", "error": "Team must have at least one member"}), 400
+
+    if not user_id:
+        return jsonify({"status": "failed", "error": "Manager user_id is required"}), 400
+
+    manager = User.query.get(user_id)
+    if not manager:
+        return jsonify({"status": "failed", "error": f"User with ID {user_id} not found"}), 400
 
     new_team = Team(
         name=team_name,
         description=team_description,
         created_at=datetime.utcnow(),
-        updated_at=datetime.utcnow()
+        updated_at=datetime.utcnow(),
+        manager_id=user_id
     )
 
-    for user_id in team_members:
-        user = User.query.get(user_id)
+    # Add manager as a member with role 'manager'
+    manager_membership = UserTeam(
+        user_id=user_id,
+        role='manager',
+        joined_at=datetime.utcnow()
+    )
+    new_team.members.append(manager_membership)
+
+    for member_id in team_members:
+        user = User.query.get(member_id)
         if user:
             new_member = UserTeam(
-                user_id=user_id,
+                user_id=member_id,
                 role='member',
                 joined_at=datetime.utcnow()
             )
             new_team.members.append(new_member)
         else:
-            return jsonify({"status": "failed","error": f"User with ID {user_id} not found"}), 400
+            return jsonify({"status": "failed", "error": f"User with ID {member_id} not found"}), 400
 
     try:
         db.session.add(new_team)
@@ -253,6 +274,8 @@ def create_team():
 
     return jsonify({"status": "success", "team_id": new_team.team_id})
 
+
+
 @app.route('/getTeamMembers/<int:team_id>', methods=['GET'])
 def get_team_members(team_id):
     team = Team.query.get(team_id)
@@ -262,7 +285,24 @@ def get_team_members(team_id):
     members = team.members
     member_data = []
 
+    # Find manager membership in the members list
+    manager_membership = next((member for member in members if member.user_id == team.manager_id), None)
+
+    if manager_membership:
+        manager = manager_membership.user
+        member_data.append({
+            'user_id': manager.user_id,
+            'username': manager.username,
+            'email': manager.email,
+            'role': 'manager',
+            'joined_at': manager_membership.joined_at.isoformat(),
+            'avatar_link': manager.avatar_link,
+        })
+
     for member in members:
+        if member.user_id == team.manager_id:
+            continue  # Skip manager since it's already added
+
         user = member.user
         member_data.append({
             'user_id': user.user_id,
@@ -274,6 +314,8 @@ def get_team_members(team_id):
         })
 
     return jsonify({"status": "success", "members": member_data})
+
+
 
 @app.route('/getUserTeams/<int:user_id>', methods=['GET'])
 def get_user_teams(user_id):
@@ -293,3 +335,91 @@ def get_user_teams(user_id):
         })
 
     return jsonify({"status": "success", "teams": team_data})
+
+
+@app.route('/getTeamScript/<int:team_id>', methods=['GET'])
+def get_team_script(team_id):
+    test_cases = TestCase.query.filter_by(team_id=team_id).all()
+    test_cases_list = []
+
+    for test_case in test_cases:
+        test_cases_list.append({
+            'id': test_case.id,
+            'name': test_case.name,
+            'created_at': test_case.created_at,
+            'team_id': test_case.team_id,
+            'type': test_case.type,
+            'parameters': test_case.parameters
+        })
+
+    return jsonify(test_cases_list)
+
+@app.route('/saveTask', methods=['POST'])
+def save_task():
+    data = request.get_json()
+    task_lists = data['taskLists']
+    team_id = data['team_id']
+
+    try:
+        # 删除现有任务列表和任务
+        Task.query.filter(Task.task_list_id.in_(
+            db.session.query(TaskList.id).filter(TaskList.team_id == team_id)
+        )).delete(synchronize_session=False)
+        TaskList.query.filter(TaskList.team_id == team_id).delete(synchronize_session=False)
+        db.session.commit()
+
+        # 保存新的任务列表和任务
+        for task_list_data in task_lists:
+            task_list = TaskList(
+                name=task_list_data['name'],
+                created_at=datetime.now(),  # 当前时间作为创建时间
+                team_id=team_id
+            )
+
+            db.session.add(task_list)
+            db.session.commit()
+
+            for task_data in task_list_data['tasks']:
+                task = Task(
+                    title=task_data['text'],
+                    description=None,  # 设置为 None，因为你的数据结构中没有描述字段
+                    status='not started',  # 将状态设置为 not started，因为你的数据结构中没有状态字段
+                    task_list_id=task_list.id,
+                    user_case_id=task_data['testcase']
+                )
+
+                db.session.add(task)
+                db.session.commit()
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error: " + str(e)}), 500
+
+    return jsonify({"message": "Task data saved successfully"})
+
+@app.route('/tasklists/<int:team_id>', methods=['GET'])
+def get_task_lists(team_id):
+    if not team_id:
+        return jsonify({"error": "Missing team_id"}), 400
+
+    try:
+        team_id = int(team_id)
+    except ValueError:
+        return jsonify({"error": "Invalid team_id"}), 400
+
+    task_lists = TaskList.query.filter_by(team_id=team_id).all()
+    output = []
+    for task_list in task_lists:
+        tasks = []
+        for task in task_list.tasks:
+            tasks.append({
+                'id': task.id,
+                'text': task.title,
+                'testcase': task.user_case_id
+            })
+        output.append({
+            'id': task_list.id,
+            'name': task_list.name,
+            'tasks': tasks
+        })
+    return jsonify(output)

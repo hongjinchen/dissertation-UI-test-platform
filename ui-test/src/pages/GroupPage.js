@@ -11,7 +11,6 @@ import Navigation from "../components/SubNavigation";
 import KanbanPreview from "../components/overview";
 import MemberList from "../components/MemberList";
 import Title from '../Title';
-import axios from "axios";
 import {fetchMembers} from "../api";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -110,7 +109,7 @@ export default function GroupPage() {
 ];
   return (
     <div className={classes.root}>
-      <Navigation   title="My Group"/>
+      <Navigation   title="My Group" id="id"/>
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />

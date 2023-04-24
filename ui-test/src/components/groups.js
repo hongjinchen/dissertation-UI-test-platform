@@ -91,7 +91,7 @@ export default function CenteredGrid() {
   const [searchResults, setSearchResults] = useState([]);
 
   const handleSearch = async (userName) => {
-    const newSearchResults = await searchUsers(userName);
+    const newSearchResults = await searchUsers(userName, Cookies.get('userId'));
     console.log(newSearchResults);
     setSearchResults(newSearchResults);
   };
@@ -105,7 +105,7 @@ export default function CenteredGrid() {
   };
 
   const submitForm = async () => {
-    const response = await createTeam(teamName, teamDescription, teamMembers);
+    const response = await createTeam(teamName, teamDescription, teamMembers,Cookies.get('userId'));
     console.log(response);
     if (response.status === 'success') {
       alert('Team created successfully');

@@ -36,8 +36,9 @@ export const MainListItems = () => {
   );
 };
 
-export const secondaryListItems = (
-  <div>
+export function SecondaryListItems({ id }) {
+return(
+    <div>
     <ListItem button component={Link} to="/">
       <ListItemIcon>
         <AssignmentIcon />
@@ -45,25 +46,27 @@ export const secondaryListItems = (
       <ListItemText primary="Return" />
     </ListItem>
 
-    <ListItem button component={Link} to="/group">
+    <ListItem button component={Link} to={`/group/${id}`}>
       <ListItemIcon>
         <AssignmentIcon />
       </ListItemIcon>
       <ListItemText primary="Statistics" />
     </ListItem>
 
-    <ListItem button component={Link} to="/script">
+    <ListItem button component={Link} to={`/script/${id}`}>
       <ListItemIcon>
         <AssignmentIcon />
       </ListItemIcon>
       <ListItemText primary="Script Management" />
     </ListItem>
 
-    <ListItem button component={Link} to="/issue">
+    <ListItem button component={Link} to={`/issue/${id}`}>
       <ListItemIcon>
         <AssignmentIcon />
       </ListItemIcon>
       <ListItemText primary="Issue management" />
     </ListItem>
   </div>
-);
+)
+
+};

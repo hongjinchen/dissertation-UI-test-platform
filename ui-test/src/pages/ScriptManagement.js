@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import clsx from "clsx";
+import { useParams } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
 import Navigation from "../components/SubNavigation";
 import {
@@ -18,10 +19,13 @@ import {
   InputLabel,
   LinearProgress,
   TablePagination,
+  Typography
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import SelectReport from "../components/SelectReport";
+import axios from "axios";
+import { API_BASE_URL } from "../config";
 // import
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,6 +61,15 @@ const useStyles = makeStyles((theme) => ({
   SearchfixedHeight: {
     height: "20hv",
   },
+  centeredGrid: {
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  button: {
+    '&:active': {
+      transform: 'translateY(2px)',
+    },
+  },
 }));
 
 export default function ScriptManagement() {
@@ -71,30 +84,28 @@ export default function ScriptManagement() {
     }, 1000);
   }, []);
 
-  // 生成示例代码
-  const generateScriptList = (count) => {
-    const scriptList = [];
-    for (let i = 1; i <= count; i++) {
-      scriptList.push({
-        id: i,
-        name: `Script ${i}`,
-        time: `2021-02-${Math.floor(Math.random() * 28) + 1} ${
-          Math.floor(Math.random() * 23) + 1
-        }:${Math.floor(Math.random() * 59)}`,
-        Lable: `${Math.floor(Math.random() * 5) + 1}`,
-        State: Math.random() > 0.5 ? "finished" : "in progress",
-        Passrate: `${Math.floor(Math.random() * 100)}%`,
-        Creator: `Creator ${Math.floor(Math.random() * 10) + 1}`,
-      });
-    }
-    return scriptList;
-  };
-
-  const scriptList = generateScriptList(100);
   const [idSearch, setIdSearch] = useState("");
   const [nameSearch, setNameSearch] = useState("");
   const [creatorSearch, setCreatorSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("");
+  const { id } = useParams(); // 获取路由参数
+
+  const [scriptList, setScriptList] = useState([]);
+
+  const fetchScripts = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(API_BASE_URL + '/getTeamScript/' + id);
+      setScriptList(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching scripts:', error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchScripts();
+  }, []);
 
   const handleIdSearch = (e) => {
     setIdSearch(e.target.value);
@@ -184,12 +195,24 @@ export default function ScriptManagement() {
                 </div>
               </Paper>
             </Grid>
-
+            {/* Add new part */}
+            <Grid item xs={12} className={classes.centeredGrid}>
+              <Button
+                color="primary"
+                variant="contained"
+                size="large"
+                component={Link}
+                to="/testCase"
+                className={classes.button}
+              >
+                Create a new test case
+              </Button>
+            </Grid>
             {/* List Part */}
             <Grid item xs={12}>
               <Paper className={classes.paper}>
                 {loading && <LinearProgress />}
-                {!loading && (
+                {!loading && filteredScriptList.length > 0 && (
                   <Table stickyHeader aria-label="sticky table">
                     <TableHead>
                       <TableRow>
@@ -245,6 +268,11 @@ export default function ScriptManagement() {
                         ))}
                     </TableBody>
                   </Table>
+                )}
+                {!loading && filteredScriptList.length === 0 && (
+                  <Typography variant="h5" align="center" style={{ padding: '24px' }}>
+                    No scripts found. Please adjust your search and filter criteria.
+                  </Typography>
                 )}
                 {!loading && (
                   <TablePagination

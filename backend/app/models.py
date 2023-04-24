@@ -50,6 +50,7 @@ class UserTeam(db.Model):
     team = relationship("Team", back_populates="members")
 
 class TestCase(db.Model):
+    __tablename__ = 'testcase'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=True)
@@ -67,16 +68,18 @@ class TestCaseElement(db.Model):
 
 
 class Task(db.Model):
+    __tablename__ = "tasks"
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
     status = db.Column(db.Enum('not started', 'in process', 'finished'), nullable=True)
-    task_list_id = db.Column(db.Integer, db.ForeignKey('task_list.id'), nullable=True)
+    task_list_id = db.Column(db.Integer, db.ForeignKey('taskslist.id'), nullable=True)
     user_case_id = db.Column(db.Integer, nullable=True)
 
     task_list = relationship("TaskList", back_populates="tasks")
 
 class TaskList(db.Model):
+    __tablename__ = 'taskslist'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=True)
@@ -84,3 +87,5 @@ class TaskList(db.Model):
 
     team = relationship("Team", back_populates="task_lists")
     tasks = relationship("Task", back_populates="task_list")
+
+
