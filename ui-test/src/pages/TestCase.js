@@ -8,12 +8,12 @@ import LeftSideBar from '../components/LeftSideBar';
 import DroppableArea from '../components/DroppableArea';
 
 function TestCase() {
-  const {id}=useParams();
+  const {id, testCaseId}=useParams();
   return (
     <DndProvider backend={HTML5Backend}>
       <Box sx={{ display: 'flex' , maxHeight: "90vh" }}>
         <LeftSideBar />
-        <DroppableArea id={id} />
+        <DroppableArea id={id} testCaseId={testCaseId}/>
       </Box>
     </DndProvider>
   );

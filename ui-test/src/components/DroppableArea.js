@@ -3,7 +3,7 @@ import { useDrop } from "react-dnd";
 import { Box } from "@mui/material";
 import { Button } from "@mui/material";
 import DroppableItem from "./DroppableItem";
-import { saveDroppedItems,saveTestCase } from "../api"
+import { saveTestCase } from "../api"
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,7 +15,9 @@ import {
   Checkbox,
   TextField,
 } from "@mui/material";
-const DroppableArea = ({id}) => {
+import DeleteIcon from "@mui/icons-material/Delete";
+
+const DroppableArea = ({ id, testCaseId }) => {
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [environments, setEnvironments] = useState({
@@ -37,19 +39,19 @@ const DroppableArea = ({id}) => {
   };
   // 提交内容时的逻辑
   const handleRunClick = () => {
+    const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
     setEnvironments({ chrome: false, edge: false, safari: false, firefox: false });
     setLabel("");
     setOpenDialog(true);
     const currentDate = new Date();
     const isoString = currentDate.toISOString();
-    const data ={
+    const data = {
       test_event: {
         name: "Test Event 1",
         created_at: isoString,
         created_by: 1,
-        environment: "Google Chrome",
-        label: "Label 1",
-        state: "Finished",
+        environment: selectedEnvironments,
+        label: label,
         team_id: id
       },
       test_cases: [
@@ -165,6 +167,35 @@ const DroppableArea = ({id}) => {
     }),
   }));
 
+  // 删除功能
+  const [{ isOverTrash }, trashDrop] = useDrop(() => ({
+    accept: ["Given", "When", "Then"],
+    drop: (item, monitor) => {
+      console.log(item)
+      if (!item.isNew) {
+        if (item.isChild) {
+          setDroppedItems((items) =>
+            items.map((i) => {
+              if (i.id === item.parentId) {
+                return {
+                  ...i,
+                  children: i.children.filter((_, idx) => idx !== item.index),
+                };
+              }
+              return i;
+            })
+          );
+        } else {
+          console.log("????")
+          setDroppedItems((items) => items.filter((_, idx) => idx !== item.index));
+        }
+      }
+    },
+    collect: (monitor) => ({
+      isOverTrash: monitor.isOver({ shallow: true }),
+    }),
+  }));
+
   return (
     <Box
       ref={(node) => {
@@ -180,6 +211,7 @@ const DroppableArea = ({id}) => {
       {droppedItems.map((item, index) => (
         <div key={index} style={{ display: "flex" }}>
           <DroppableItem
+            id={item.id}
             type={item.type}
             inputValue={item.inputValue}
             index={index}
@@ -198,8 +230,8 @@ const DroppableArea = ({id}) => {
                   index={idx}
                   parentId={item.id}
                   isChild
-                  droppedItems={droppedItems} // 添加这行
-                  setDroppedItems={setDroppedItems} // 添加这行
+                  droppedItems={droppedItems}
+                  setDroppedItems={setDroppedItems}
                 />
               ))}
             </div>
@@ -221,6 +253,25 @@ const DroppableArea = ({id}) => {
           Run OR Save
         </Button>
       </div>
+      <Box
+
+        ref={trashDrop}
+        sx={{
+          position: "absolute",
+          top: 10,
+          right: 10,
+          width: 40,
+          height: 40,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: isOverTrash ? "red" : "transparent",
+          borderRadius: "50%",
+        }}
+      >
+        <DeleteIcon />
+      </Box>
+
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>Run Test</DialogTitle>
         <DialogContent>

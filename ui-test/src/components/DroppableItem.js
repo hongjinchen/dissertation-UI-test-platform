@@ -6,6 +6,7 @@ import { darken } from "@mui/system";
 
 const DroppableItem = ({
   type,
+  id,
   inputValue,
   children,
   index,
@@ -15,21 +16,39 @@ const DroppableItem = ({
   droppedItems,
 }) => {
   const rearrangeItems = (sourceIndex, targetIndex) => {
+    console.log("!!!!!!")
     const newItems = [...droppedItems];
-    const [removed] = newItems.splice(sourceIndex, 1);
-    newItems.splice(targetIndex, 0, removed);
+  
+    const sourceParentId = newItems[sourceIndex].parentId;
+    const targetParentId = newItems[targetIndex].parentId;
+  
+    // 如果 source 和 target 的 parentId 相同，则在同一父元素下移动
+    if (sourceParentId === targetParentId) {
+      const [removed] = newItems.splice(sourceIndex, 1);
+      newItems.splice(targetIndex, 0, removed);
+    } else {
+      // 如果 source 和 target 的 parentId 不同，则在不同的父元素之间移动
+      const sourceParentIndex = newItems.findIndex((item) => item.id === sourceParentId);
+      const targetParentIndex = newItems.findIndex((item) => item.id === targetParentId);
+  
+      const [removed] = newItems[sourceParentIndex].children.splice(index, 1);
+      newItems[targetParentIndex].children.splice(index, 0, removed);
+    }
+    
     setDroppedItems(newItems);
   };
-
+  
   const [{ isDragging }, drag] = useDrag(() => ({
     type: type,
     item: {
       type,
       inputValue,
       index,
-      parentId,
       isNew: isNew || false,
-      isChild: parentId ? true : false, // Add the new isChild property
+      isChild: type !== "Given",
+      ...(type === "Given"
+        ? { id } // 当 type 为 "Given" 时，包含 id
+        : { parentId }), // 当 type 不为 "Given" 时，包含 parentId
     },
     collect: (monitor) => {
       const isDragging = monitor.isDragging();
@@ -40,6 +59,7 @@ const DroppableItem = ({
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ["When", "Then", "Given"],
     drop: (item, monitor) => {
+      // console.log(monitor)
       if (type === "Given") {
         return {
           parentId: parentId,
@@ -48,18 +68,15 @@ const DroppableItem = ({
       }
       
       if (!item.isNew) {
-        console.log("item!!!", monitor);
+        const sourceIndex = item.index;
+        const targetIndex = index;
+        rearrangeItems(sourceIndex, targetIndex);
         if (item.isChild) {
           return {
             parentId: parentId || item.parentId,
             targetIndex: index + 1,
           };
         }
-        console.log("item!!!", item);
-        // 如果不是新建的元素，调用 rearrangeItems 函数
-        const sourceIndex = item.index;
-        const targetIndex = index;
-        rearrangeItems(sourceIndex, targetIndex);
       }
       
     },

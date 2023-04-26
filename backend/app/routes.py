@@ -6,12 +6,12 @@ from app import app, db
 from app.models import User
 from app.models import Team
 from app.models import UserTeam
-from app.models import TestCase, TestCaseElement,TaskList,Task,TestEvent
+from app.models import TestCase, TestCaseElement,TaskList,Task,TestEvent,TestReport
 import jwt
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
 import logging
-
+import base64
 
 @app.after_request
 def add_cors_headers(response):
@@ -482,3 +482,26 @@ def create_test_event():
         db.session.rollback()
         print(e)
         return jsonify(status='failed', message=str(e)), 400
+
+@app.route('/api/test-report/<int:report_id>', methods=['GET'])
+def get_test_report(report_id):
+    report = TestReport.query.filter_by(id=report_id).first()
+    if report:
+        test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
+        if test_event:
+            with open(report.html_report, 'r', encoding='utf-8') as f:
+                html_content = f.read()
+            encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+            report_data = {
+                'name': test_event.name,
+                'createdAt': test_event.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                'createdBy': test_event.created_by,
+                'test_event_id': report.test_event_id,
+                'environment': test_event.environment,
+                'labels': test_event.label.split(','),
+                'state': test_event.state,
+                'successRate': report.success_rate,
+                'htmlReport': encoded_html_report,
+            }
+            return jsonify(report_data), 200
+    return jsonify({'error': 'Report not found'}), 404
