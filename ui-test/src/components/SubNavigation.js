@@ -10,10 +10,8 @@ import {
   Typography,
   Divider,
   IconButton,
-  Badge,
   MenuIcon,
   ChevronLeftIcon,
-  NotificationsIcon,
 } from "../components/muiComponents";
 import { SecondaryListItems } from "../components/listItems";
 const drawerWidth = 240;
@@ -117,11 +115,11 @@ export default function Navigation({ title }) {
           >
             {title}
           </Typography>
-          <IconButton color="inherit">
+          {/* <IconButton color="inherit">
             <Badge badgeContent={4} color="secondary">
               <NotificationsIcon />
             </Badge>
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
       </AppBar>
       <Drawer

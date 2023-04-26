@@ -1,16 +1,19 @@
-import React,{useEffect} from 'react';
+import React, { useEffect } from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import DashboardIcon from '@material-ui/icons/Dashboard';
+import GroupIcon from '@material-ui/icons/Group';
+import DescriptionIcon from '@material-ui/icons/Description';
+import ErrorIcon from '@material-ui/icons/Error';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link } from "react-router-dom";
 import Cookies from 'js-cookie';
 
-export const MainListItems = () => {
+export const MainListItems = ({ id }) => {
   const token = Cookies.get('token');
-
+  console.log("MainListItems", id);
   useEffect(() => {
     // 在此处添加你需要监控 token 是否为空的逻辑
     console.log("Token changed:", token);
@@ -25,7 +28,7 @@ export const MainListItems = () => {
         <ListItemText primary="Dashboard" />
       </ListItem>
       {token && (
-        <ListItem button component={Link} to={`/userCenter`}>
+        <ListItem button component={Link} to={`/userCenter/${id}`}>
           <ListItemIcon>
             <AccountCircleIcon />
           </ListItemIcon>
@@ -37,36 +40,36 @@ export const MainListItems = () => {
 };
 
 export function SecondaryListItems({ id }) {
-return(
+  return (
     <div>
-    <ListItem button component={Link} to="/">
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Return" />
-    </ListItem>
+      <ListItem button component={Link} to="/">
+        <ListItemIcon>
+          <AssignmentIcon />
+        </ListItemIcon>
+        <ListItemText primary="Return" />
+      </ListItem>
 
-    <ListItem button component={Link} to={`/group/${id}`}>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Statistics" />
-    </ListItem>
+      <ListItem button component={Link} to={`/group/${id}`}>
+        <ListItemIcon>
+          <GroupIcon />
+        </ListItemIcon>
+        <ListItemText primary="Statistics" />
+      </ListItem>
 
-    <ListItem button component={Link} to={`/script/${id}`}>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Script Management" />
-    </ListItem>
+      <ListItem button component={Link} to={`/script/${id}`}>
+        <ListItemIcon>
+          <DescriptionIcon />
+        </ListItemIcon>
+        <ListItemText primary="Script Management" />
+      </ListItem>
 
-    <ListItem button component={Link} to={`/issue/${id}`}>
-      <ListItemIcon>
-        <AssignmentIcon />
-      </ListItemIcon>
-      <ListItemText primary="Issue management" />
-    </ListItem>
-  </div>
-)
+      <ListItem button component={Link} to={`/issue/${id}`}>
+        <ListItemIcon>
+          <ErrorIcon />
+        </ListItemIcon>
+        <ListItemText primary="Issue management" />
+      </ListItem>
+    </div>
+  )
 
 };

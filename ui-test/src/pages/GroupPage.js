@@ -12,6 +12,8 @@ import KanbanPreview from "../components/overview";
 import MemberList from "../components/MemberList";
 import Title from '../Title';
 import {fetchMembers} from "../api";
+import { Link } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -63,6 +65,9 @@ const useStyles = makeStyles((theme) => ({
   },
   fixedHeight: {
     height: "20vh",
+  },
+  noUnderline: {
+    textDecoration: 'none',
   },
 }));
 
@@ -123,10 +128,10 @@ export default function GroupPage() {
             </Grid>
 
             {/* kanban component */}
-            <Grid item xs={6}>
+            <Grid item xs={6}  component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
               <Paper className={classes.kanban}>
-                <Title>Kanban</Title>
-              <KanbanPreview data={KanbanData} />
+                <Title color="darkgrey">Kanban</Title>
+              <KanbanPreview data={KanbanData} id={id}/>
               </Paper>
             </Grid>
 

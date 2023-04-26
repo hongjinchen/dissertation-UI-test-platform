@@ -24,8 +24,10 @@ import {
 import { Link } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import SelectReport from "../components/SelectReport";
+import AddIcon from '@material-ui/icons/Add';
 import axios from "axios";
 import { API_BASE_URL } from "../config";
+import EmptyPlaceholder from "../components/EmptyPlaceholder";
 // import
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,11 +66,22 @@ const useStyles = makeStyles((theme) => ({
   centeredGrid: {
     display: 'flex',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
-    '&:active': {
-      transform: 'translateY(2px)',
-    },
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: theme.spacing(1),
+    padding: theme.spacing(1, 3),
+    textTransform: 'none',
+    // '&:active': {
+    //   transform: 'translateY(2px)',
+    // },
+  },
+  buttonLabel: {
+    marginLeft: theme.spacing(1),
+    fontSize: '1.25rem',
   },
 }));
 
@@ -198,14 +211,13 @@ export default function ScriptManagement() {
             {/* Add new part */}
             <Grid item xs={12} className={classes.centeredGrid}>
               <Button
-                color="primary"
-                variant="contained"
-                size="large"
+                variant="contained" color="primary"
                 component={Link}
-                to="/testCase"
+                to={`/testCase/${id}`}
                 className={classes.button}
+                startIcon={<AddIcon />}
               >
-                Create a new test case
+                <span className={classes.buttonLabel}>Create a new test case</span>
               </Button>
             </Grid>
             {/* List Part */}
@@ -270,9 +282,10 @@ export default function ScriptManagement() {
                   </Table>
                 )}
                 {!loading && filteredScriptList.length === 0 && (
-                  <Typography variant="h5" align="center" style={{ padding: '24px' }}>
-                    No scripts found. Please adjust your search and filter criteria.
-                  </Typography>
+                  <EmptyPlaceholder text=" No scripts found. Please adjust your search and filter criteria."/>
+                  // <Typography variant="h5" align="center" style={{ padding: '24px' }}>
+                   
+                  // </Typography>
                 )}
                 {!loading && (
                   <TablePagination

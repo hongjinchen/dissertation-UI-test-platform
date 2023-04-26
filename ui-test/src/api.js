@@ -1,6 +1,5 @@
 import { API_BASE_URL, axiosInstance } from "./config";
 import axios from 'axios';
-import Cookies from 'js-cookie';
 export const registerUser = async (username, email, password) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL + '/register', {
@@ -106,7 +105,7 @@ export const updateEmail = async (userId, newEmail) => {
 };
 
 
-export const createTeam = async (teamName, teamDescription, teamMembers,user_id) => {
+export const createTeam = async (teamName, teamDescription, teamMembers, user_id) => {
   try {
     const response = await axios.post(API_BASE_URL + '/createTeam', {
       team_name: teamName,
@@ -122,7 +121,7 @@ export const createTeam = async (teamName, teamDescription, teamMembers,user_id)
   }
 };
 
-export const searchUsers = async (userName,user_id) => {
+export const searchUsers = async (userName, user_id) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/searchUsers`, {
       params: { userName: userName, user_id: user_id }, // Pass user_id as a request parameter
@@ -160,5 +159,30 @@ export const fetchMembers = async (id) => {
     return response;
   } catch (error) {
     console.error("Error fetching team members:", error);
+  }
+};
+
+export const saveDroppedItems = async (droppedItems) => {
+  try {
+    const response = await axios.post('/api/saveDroppedItems', droppedItems);
+    console.log('保存成功:', response.data);
+  } catch (error) {
+    console.error('保存失败:', error);
+  }
+};
+
+export const saveTestCase = async (data) => {
+  try {
+    const response = await axiosInstance.post(API_BASE_URL + '/saveTestEvents', data, { withCredentials: true });
+
+    if (response.data.status === 'success') {
+      // 保存 token 到 Cookies
+      return response.data.status; // 返回响应状态
+    } else {
+      return response.data.message;
+    }
+  } catch (error) {
+    // 处理错误响应
+    console.error(error);
   }
 };

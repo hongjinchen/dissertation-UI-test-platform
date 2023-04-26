@@ -6,7 +6,7 @@ from app import app, db
 from app.models import User
 from app.models import Team
 from app.models import UserTeam
-from app.models import TestCase, TestCaseElement,TaskList,Task
+from app.models import TestCase, TestCaseElement,TaskList,Task,TestEvent
 import jwt
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
@@ -316,7 +316,6 @@ def get_team_members(team_id):
     return jsonify({"status": "success", "members": member_data})
 
 
-
 @app.route('/getUserTeams/<int:user_id>', methods=['GET'])
 def get_user_teams(user_id):
     user = User.query.get(user_id)
@@ -338,6 +337,15 @@ def get_user_teams(user_id):
 
 
 @app.route('/getTeamScript/<int:team_id>', methods=['GET'])
+def get_team_script(team_id):
+    test_events = TestEvent.query.filter_by(team_id=team_id).all()
+
+    if test_events:
+        test_event_data = [{"id": event.id, "name": event.name, "created_at": event.created_at, "created_by": event.created_by, "environment": event.environment, "label": event.label, "state": event.state, "success_rate": event.success_rate, "parameters": event.parameters} for event in test_events]
+        return jsonify(test_event_data)
+    else:
+        return jsonify({"message": "No TestEvent found for the given team_id"}), 404
+    
 def get_team_script(team_id):
     test_cases = TestCase.query.filter_by(team_id=team_id).all()
     test_cases_list = []
@@ -423,3 +431,54 @@ def get_task_lists(team_id):
             'tasks': tasks
         })
     return jsonify(output)
+
+@app.route('/saveTestEvents', methods=['POST'])
+def create_test_event():
+    data = request.get_json()
+    print(data)
+
+    try:
+        test_event_data = data['test_event']
+        created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
+        test_event = TestEvent(
+            name=test_event_data['name'],
+            created_at=created_at,
+            created_by=test_event_data['created_by'],
+            environment=test_event_data['environment'],
+            label=test_event_data['label'],
+            state=test_event_data['state'],
+            team_id=int(test_event_data['team_id'])
+        )
+        db.session.add(test_event)
+        db.session.flush()
+
+        for test_case_data in data['test_cases']:
+            test_case = TestCase(
+                name=test_case_data['name'],
+                created_at=created_at,
+                type=test_case_data['type'],
+                parameters=test_case_data['parameters'],
+                test_event_id=test_event.id
+            )
+            db.session.add(test_case)
+            db.session.flush()
+
+            for test_case_element_data in test_case_data['test_case_elements']:
+                test_case_element = TestCaseElement(
+                    story_id=test_case_element_data['story_id'],
+                    type=test_case_element_data['type'],
+                    parameters=test_case_element_data['parameters']
+                )
+                db.session.add(test_case_element)
+
+        db.session.commit()
+        return jsonify(status='success', message='成功存入'), 201
+
+    except KeyError as ke:
+        db.session.rollback()
+        print(f"KeyError: {ke}")
+        return jsonify(status='failed', message=f"KeyError: {ke}"), 400
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+        return jsonify(status='failed', message=str(e)), 400

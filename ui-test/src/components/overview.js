@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   makeStyles,
   Grid,
   Card,
   CardContent,
   Typography,
-} from "@material-ui/core";
-import  { randomColor }  from "../theme/RamdomColor";
-
+} from '@material-ui/core';
+import { API_BASE_URL } from '../config';
+import axios from 'axios';
+import EmptyPlaceholder from './EmptyPlaceholder';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,31 +31,48 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const KanbanPreview = ({ data }) => {
+const KanbanPreview = ({ data, id }) => {
   const classes = useStyles();
+  const [taskLists, setTaskLists] = useState([]);
 
+  useEffect(() => {
+    const fetchTaskLists = async () => {
+      try {
+        const response = await axios.get(API_BASE_URL + '/tasklists/' + id);
+        setTaskLists(response.data)
+      } catch (error) {
+        console.error('Error fetching task lists:', error);
+      }
+    };
+
+    fetchTaskLists();
+  }, [id]);
   return (
     <div>
-      <Grid container spacing={3}>
-        {data.map((item) => (
-          <Grid item key={item.id}>
-            <Card className={classes.card}>
-              <CardContent>
-                <Typography
-                  variant="h5"
-                  component="h2"
-                  className={classes.typeText}
-                >
-                  {item.type}
-                </Typography>
-                <Typography variant="body2" component="p">
-                  Count: {item.count}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      {taskLists.length === 0 ? (
+        <EmptyPlaceholder text="The current team has no issues that need to be addressed." />
+      ) : (
+        <Grid container spacing={3}>
+          {taskLists.map((item) => (
+            <Grid item key={item.id}>
+              <Card className={classes.card}>
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    className={classes.typeText}
+                  >
+                    {item.name}
+                  </Typography>
+                  <Typography variant="body2" component="p">
+                    Count: {item.tasks.length}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </div>
   );
 };

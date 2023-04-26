@@ -25,7 +25,7 @@ const AppRoutes = () => {
         <Route exact path="/issue/:id" element={<IssueManagement />} />
         <Route exact path="/script/:id" element={<ScriptManagement />} />
         {/* <Route exact path="/userCenter/:id" element={<UserCenter />}/> */}
-        <Route exact path="/userCenter" element={<UserCenter />} />
+        <Route exact path="/userCenter/:id" element={<UserCenter />} />
         <Route exact path="/group/:id" element={
           <GroupContext.Provider value={useParams().id}>
             <GroupPage />
@@ -35,7 +35,7 @@ const AppRoutes = () => {
         <Route exact path="/register" element={<Register />} />
         <Route exact path="/forgotPassword" element={<ForgotPasswordFlow />} />
         <Route exact path="/testReport/:id" element={<TestReport />} />
-        <Route exact path="/testCase" element={<TestCase />} />
+        <Route exact path="/testCase/:id" element={<TestCase />} />
       </Routes>
     </Router>
   );

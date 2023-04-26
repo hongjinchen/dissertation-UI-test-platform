@@ -182,7 +182,7 @@ export default function Navigation({ title }) {
           </IconButton>
         </div>
         <Divider />
-        <List><MainListItems /></List>
+        <List><MainListItems id={Cookies.get('userId')}/></List>
         <Divider />
       </Drawer>
 

@@ -1,10 +1,15 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
+import {
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Link,
+  ButtonBase,
+} from '@material-ui/core';
+import { Link as RouterLink } from 'react-router-dom';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -14,10 +19,19 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     padding: theme.spacing(2),
   },
+  listItemLink: {
+    textDecoration: 'none',
+    color: 'inherit',
+  },
   typeText: {
     overflow: "hidden", // 隐藏溢出的文本
     textOverflow: "ellipsis", // 文本溢出时显示省略号
     whiteSpace: "nowrap", // 不换行
+  },
+  listItemButton: {
+    width: '100%',
+    display: 'block',
+    textAlign: 'inherit',
   },
 }));
 
@@ -27,17 +41,22 @@ export default function MemberList({ data }) {
 
   return (
     <List className={classes.root}>
-      
       {data.map((member) => (
-        <ListItem divider>
-          <ListItemAvatar>
-            <Avatar src={member.avatar_link} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={member.username}
-            secondary={member.role}
-          />
-        </ListItem>
+        <Link
+          key={member.user_id}
+          component={RouterLink}
+          to={`/userCenter/${member.user_id}`}
+          className={classes.listItemLink}
+        >
+          <ButtonBase className={classes.listItemButton}>
+            <ListItem divider>
+              <ListItemAvatar>
+                <Avatar src={member.avatar_link} />
+              </ListItemAvatar>
+              <ListItemText primary={member.username} secondary={member.role} />
+            </ListItem>
+          </ButtonBase>
+        </Link>
       ))}
     </List>
   );

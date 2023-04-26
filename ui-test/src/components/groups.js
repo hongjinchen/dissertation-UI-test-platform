@@ -11,13 +11,12 @@ import {
   Box,
   Dialog,
   Slide,
-} from  "@material-ui/core";
+} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
-import {createTeam,searchUsers } from "../api";
+import { createTeam, searchUsers } from "../api";
 import Cookies from 'js-cookie';
-import axios from 'axios';
-import {fetchUserTeams} from "../api";
+import { fetchUserTeams } from "../api";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -105,7 +104,7 @@ export default function CenteredGrid() {
   };
 
   const submitForm = async () => {
-    const response = await createTeam(teamName, teamDescription, teamMembers,Cookies.get('userId'));
+    const response = await createTeam(teamName, teamDescription, teamMembers, Cookies.get('userId'));
     console.log(response);
     if (response.status === 'success') {
       alert('Team created successfully');
@@ -132,9 +131,10 @@ export default function CenteredGrid() {
       const response = await fetchUserTeams(Cookies.get('userId'));
       setGroups(response.data.teams);
     };
-  
+
     getUserData();
   }, [isAdding]);
+  
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -152,98 +152,98 @@ export default function CenteredGrid() {
         </Grid>
 
         <Grid item xs={3}>
-        <div>
-      <Paper className={classes.paperCreat} onClick={AddNewGroup}>
-        <Box display="flex" flexDirection="column" alignItems="center">
-          <AddIcon className={classes.addButton} fontSize="large" />
-          <Typography>Create a new group</Typography>
-        </Box>
-      </Paper>
-      <Dialog
-        open={isAdding}
-        TransitionComponent={Slide}
-        keepMounted
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
-        // maxWidth="sm"
-        fullWidth
-      >
-        <Grid container style={{ padding: "20px" }}>
-          <Grid item xs={12}>
-          <Typography variant="h5">Create Team</Typography>
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Team Name"
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              multiline
-              rows={4}
-              label="Team Description"
-              value={teamDescription}
-              onChange={(e) => setTeamDescription(e.target.value)}
-              inputProps={{ maxLength: 200 }}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Search Members"
-              value={searchUserName}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            <Button onClick={() => handleSearch(searchUserName)}>Search</Button>
-          </Grid>
-
-          <Grid item xs={12}>
-            <List>
-              {searchResults.map((user) => (
-                <ListItem
-                  className={classes.listItem}
-                  button
-                  key={user.id}
-                  onClick={() => addMember(user)}
-                >
-                  {user.name}
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
-
-          <Grid item xs={12}>
-            <List>
-              {teamMembers.map((member, index) => (
-                <ListItem className={classes.listItem} key={index}>
-                  {member.name}
-                  <Button onClick={() => removeMember(index)}>Remove</Button>
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
-
-          <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={submitForm}
+          <div>
+            <Paper className={classes.paperCreat} onClick={AddNewGroup}>
+              <Box display="flex" flexDirection="column" alignItems="center">
+                <AddIcon className={classes.addButton} fontSize="large" />
+                <Typography>Create a new group</Typography>
+              </Box>
+            </Paper>
+            <Dialog
+              open={isAdding}
+              TransitionComponent={Slide}
+              keepMounted
+              onClose={handleClose}
+              aria-labelledby="alert-dialog-slide-title"
+              aria-describedby="alert-dialog-slide-description"
+              // maxWidth="sm"
               fullWidth
             >
-              Create Team
-            </Button>
-          </Grid>
-        </Grid>
-      </Dialog>
-    </div>
+              <Grid container style={{ padding: "20px" }}>
+                <Grid item xs={12}>
+                  <Typography variant="h5">Create Team</Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Team Name"
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value)}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={4}
+                    label="Team Description"
+                    value={teamDescription}
+                    onChange={(e) => setTeamDescription(e.target.value)}
+                    inputProps={{ maxLength: 200 }}
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Search Members"
+                    value={searchUserName}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  <Button onClick={() => handleSearch(searchUserName)}>Search</Button>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <List>
+                    {searchResults.map((user) => (
+                      <ListItem
+                        className={classes.listItem}
+                        button
+                        key={user.id}
+                        onClick={() => addMember(user)}
+                      >
+                        {user.name}
+                      </ListItem>
+                    ))}
+                  </List>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <List>
+                    {teamMembers.map((member, index) => (
+                      <ListItem className={classes.listItem} key={index}>
+                        {member.name}
+                        <Button onClick={() => removeMember(index)}>Remove</Button>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={submitForm}
+                    fullWidth
+                  >
+                    Create Team
+                  </Button>
+                </Grid>
+              </Grid>
+            </Dialog>
+          </div>
         </Grid>
 
         {groups.map((group, index) => (

@@ -27,11 +27,10 @@ import { API_BASE_URL } from "../config";
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import EmptyPlaceholder from "./EmptyPlaceholder";
 
 const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
   // 拖拽组件
-  const { id } = useParams();
   const [{ isOver }, drop] = useDrop({
     accept: "task",
     drop: (item) => moveTask(item.id, list.id),
@@ -94,6 +93,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
 
     setTaskLists(updatedData);
     setNewEvent("");
+    setTestID("");
     saveData(); // 调用 saveData 函数
     // console.log(taskLists);
   };
@@ -117,11 +117,11 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
       sx={{
         minWidth: 275,
         margin: 2,
-        backgroundColor: isOver ? "lightgrey" : "white",
+        backgroundColor: isOver ? "lightgrey" : "#BBBED0",
       }}
     >
       <CardContent>
-        <Typography variant="h6" component="div">
+        <Typography variant="h6" component="div" sx={{ color: "#214365" }}>
           {list.name}
         </Typography>
         <Box>
@@ -246,7 +246,7 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText, saveData }) => {
         ref={drag}
         sx={{
           margin: 1,
-          backgroundColor: isDragging ? "lightgrey" : "white",
+          backgroundColor: isDragging ? "lightgrey" : "#5B7495",
         }}
       >
         {isEditing ? (
@@ -257,9 +257,11 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText, saveData }) => {
                   value={editedText}
                   onChange={handleTextChange}
                   onKeyPress={handleKeyPress}
-                  // onBlur={handleBlur}
                   autoFocus
                   fullWidth
+                  InputProps={{
+                    style: { color: "#214365" },
+                  }}
                 />
               </Grid>
 
@@ -291,7 +293,7 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText, saveData }) => {
           <CardContent>
             <Grid container spacing={3}>
               <Grid item xs={8}>
-                <Box component="span">{task.text}</Box>
+                <Box component="span" sx={{ color: "#214365" }}>{task.text}</Box>
               </Grid>
 
               <Grid item xs={4}>
@@ -338,10 +340,6 @@ const KanbanBoard = () => {
       setLoading(true);
       try {
         const response = await axios.get(API_BASE_URL + '/tasklists/' + id);
-        console.log("Fetching task lists!");
-        console.log("Team ID:", id);
-        console.log("API Base URL:", API_BASE_URL);
-        console.log("Response:", response.data);
         setTaskLists(response.data)
         setLoading(false);
       } catch (error) {
@@ -412,24 +410,24 @@ const KanbanBoard = () => {
   const totalWidth = taskLists.length * taskListWidth; // 计算所有任务列表的总宽度
   return (
     <div style={{ position: "relative", minHeight: "100vh" }}>
-    {loading && (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          zIndex: 999,
-          background: "rgba(0, 0, 0, 0.5)",
-        }}
-      >
-        <CircularProgress />
-      </div>
-    )}
+      {loading && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 999,
+            background: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
+          <CircularProgress />
+        </div>
+      )}
       <Button
         variant="contained"
         color="primary"
@@ -512,8 +510,7 @@ const KanbanBoard = () => {
 const Empty = () => {
   return (
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
-      <h2>No content</h2>
-      <p>Please add a task list to get started with Kanban</p>
+      <EmptyPlaceholder text="Please add a task list to get started with Kanban." />
     </div>
   );
 };

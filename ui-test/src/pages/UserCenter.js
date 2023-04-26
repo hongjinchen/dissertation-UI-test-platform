@@ -24,6 +24,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import Cookies from 'js-cookie';
 import { fetchUserData, updateUserInfo, updateUserPassword, updateEmail } from '../api';
+import { useParams } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,8 +60,27 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: "20vh",
   },
+  infoContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoAvatar: {
+    width: theme.spacing(10),
+    height: theme.spacing(10),
+    boxShadow: theme.shadows[3],
+  },
+  infoBox: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 }));
 function UserCenter() {
+  const { id } = useParams();
+
   // user information
   const [username, setNickname] = useState("");
   const [email, setEmail] = useState("");
@@ -75,6 +95,22 @@ function UserCenter() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isOwner, setIsOwner] = useState(true);
+
+  useEffect(() => {
+    console.log(id);
+    const getUserData = async () => {
+      const userData = await fetchUserData(id);
+
+      if (userData) {
+        setNickname(userData.username);
+        setEmail(userData.email);
+        setAvatar(userData.avatar);
+      }
+    };
+
+    setIsOwner(id === Cookies.get('userId'));
+    getUserData();
+  }, [showEditInfo, showUpdateEmail, id]); // 在依赖数组中添加 visitedUserId
 
   // 在useState声明部分下方添加表单状态
   const [form, setForm] = useState({
@@ -127,20 +163,6 @@ function UserCenter() {
     }, 2000)
   };
 
-  useEffect(() => {
-    const getUserData = async () => {
-      const userData = await fetchUserData(Cookies.get('userId'));
-
-      if (userData) {
-        setNickname(userData.username);
-        setEmail(userData.email);
-        setAvatar(userData.avatar);
-      }
-    };
-
-    getUserData();
-  }, [showEditInfo, showUpdateEmail]); // 添加空数组以确保仅在组件挂载时运行
-
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   if (!isLoggedIn) {
@@ -182,12 +204,11 @@ function UserCenter() {
           <Grid container spacing={3}>
             {/* User information display */}
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}  sm={isOwner ? 6 : 12}>
               <Paper className={fixedHeightPaper}>
-                <Typography variant="h6">My information</Typography>
-                <Box display="flex" alignItems="center">
-                  <Avatar src={avatar} />
-                  <Box ml={2}>
+                <Box className={classes.infoContainer}>
+                  <Avatar src={avatar} className={classes.infoAvatar} />
+                  <Box ml={2} className={classes.infoBox}>
                     <Typography>username: {username}</Typography>
                     <Typography>Email: {email}</Typography>
                   </Box>
