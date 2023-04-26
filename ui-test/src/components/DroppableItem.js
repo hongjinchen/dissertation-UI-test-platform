@@ -15,29 +15,7 @@ const DroppableItem = ({
   setDroppedItems,
   droppedItems,
 }) => {
-  const rearrangeItems = (sourceIndex, targetIndex) => {
-    console.log("!!!!!!")
-    const newItems = [...droppedItems];
-  
-    const sourceParentId = newItems[sourceIndex].parentId;
-    const targetParentId = newItems[targetIndex].parentId;
-  
-    // 如果 source 和 target 的 parentId 相同，则在同一父元素下移动
-    if (sourceParentId === targetParentId) {
-      const [removed] = newItems.splice(sourceIndex, 1);
-      newItems.splice(targetIndex, 0, removed);
-    } else {
-      // 如果 source 和 target 的 parentId 不同，则在不同的父元素之间移动
-      const sourceParentIndex = newItems.findIndex((item) => item.id === sourceParentId);
-      const targetParentIndex = newItems.findIndex((item) => item.id === targetParentId);
-  
-      const [removed] = newItems[sourceParentIndex].children.splice(index, 1);
-      newItems[targetParentIndex].children.splice(index, 0, removed);
-    }
-    
-    setDroppedItems(newItems);
-  };
-  
+  // react-dnd
   const [{ isDragging }, drag] = useDrag(() => ({
     type: type,
     item: {
@@ -52,38 +30,53 @@ const DroppableItem = ({
     },
     collect: (monitor) => {
       const isDragging = monitor.isDragging();
+      // if (isDragging) {
+      //   console.log('Dragging item:', monitor.getItem());
+      // }
       return { isDragging };
     },
   }));
-  
+
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ["When", "Then", "Given"],
     drop: (item, monitor) => {
-      // console.log(monitor)
-      if (type === "Given") {
+      if (type === "Given" && item.isNew) {
         return {
           parentId: parentId,
-          targetIndex: index, // 添加 targetIndex
+          targetIndex: index,
         };
       }
+
+      // if ((item.type === "When" || item.type === "Then") && !item.isNew) {
+      //   console.log("item", item);
+      //   console.log("droppedItems",droppedItems)
+      //   const dragIndex = item.index;
+      //   const hoverIndex = index;
+      //   if (dragIndex === hoverIndex) return;
+
+      //   moveItem(dragIndex, hoverIndex);
+      // }
       
-      if (!item.isNew) {
-        const sourceIndex = item.index;
-        const targetIndex = index;
-        rearrangeItems(sourceIndex, targetIndex);
-        if (item.isChild) {
-          return {
-            parentId: parentId || item.parentId,
-            targetIndex: index + 1,
-          };
-        }
+      if (item.isChild) {
+        return {
+          parentId: parentId || item.parentId,
+          targetIndex: index + 1,
+        };
       }
-      
     },
     collect: (monitor) => ({
       isOver: monitor.isOver({ shallow: true }),
     }),
   }));
+
+  const moveItem = (dragIndex, hoverIndex) => {
+    const draggedItem = droppedItems[dragIndex];
+    const newDroppedItems = [...droppedItems];
+    newDroppedItems.splice(dragIndex, 1);
+    newDroppedItems.splice(hoverIndex, 0, draggedItem);
+    setDroppedItems(newDroppedItems);
+  };
+
   const getItemColor = (isOver) => {
     let color;
     switch (type) {
@@ -99,7 +92,7 @@ const DroppableItem = ({
       default:
         color = "#BBBED0";
     }
-    
+
     return isOver ? darken(color, 0.1) : color; // 如果 isOver 为 true，颜色变深
   };
 

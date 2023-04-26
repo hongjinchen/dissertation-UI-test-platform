@@ -186,7 +186,6 @@ const DroppableArea = ({ id, testCaseId }) => {
             })
           );
         } else {
-          console.log("????")
           setDroppedItems((items) => items.filter((_, idx) => idx !== item.index));
         }
       }
@@ -195,6 +194,16 @@ const DroppableArea = ({ id, testCaseId }) => {
       isOverTrash: monitor.isOver({ shallow: true }),
     }),
   }));
+
+  // 移动功能
+  const moveItem = (dragIndex, hoverIndex) => {
+    const dragItem = droppedItems[dragIndex];
+    const updatedItems = [...droppedItems];
+    updatedItems.splice(dragIndex, 1);
+    updatedItems.splice(hoverIndex, 0, dragItem);
+  
+    setDroppedItems(updatedItems);
+  };
 
   return (
     <Box
@@ -219,6 +228,7 @@ const DroppableArea = ({ id, testCaseId }) => {
             isNew={item.isNew}
             droppedItems={droppedItems}
             setDroppedItems={setDroppedItems}
+            moveItem={moveItem}
           />
           {item.children && (
             <div>
@@ -232,6 +242,7 @@ const DroppableArea = ({ id, testCaseId }) => {
                   isChild
                   droppedItems={droppedItems}
                   setDroppedItems={setDroppedItems}
+                  moveItem={moveItem}
                 />
               ))}
             </div>
