@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
 import logging
 import base64
+import json
 
 @app.after_request
 def add_cors_headers(response):
@@ -21,24 +22,46 @@ def add_cors_headers(response):
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
 
+# def token_required(f):
+#     @wraps(f)
+#     def decorated(*args, **kwargs):
+#         token = request.cookies.get("token")
+
+#         if not token:
+#             return jsonify({"message": "Not authenticated"}), 401
+
+#         try:
+#             data = jwt.decode(token, app.config["SECRET_KEY"])
+#             request.user_id = data["user_id"]
+#         except:
+#             return jsonify({"message": "Invalid token"}), 401
+
+#         return f(*args, **kwargs)
+
+#     return decorated
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.cookies.get("token")
+        token = None
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].split(" ")[1]
 
         if not token:
-            return jsonify({"message": "Not authenticated"}), 401
+            return jsonify({'message': 'Token is missing!'}), 401
 
         try:
-            data = jwt.decode(token, app.config["SECRET_KEY"])
-            request.user_id = data["user_id"]
-        except:
-            return jsonify({"message": "Invalid token"}), 401
+            data = jwt.decode(token, 'YOUR_SECRET_KEY', algorithms=["HS256"])
+            # 这里可以获取 token 中的用户信息，并检查用户权限等
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token is expired!'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Token is invalid!'}), 401
 
         return f(*args, **kwargs)
 
     return decorated
-    
+
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
@@ -316,6 +339,7 @@ def get_team_members(team_id):
     return jsonify({"status": "success", "members": member_data})
 
 
+@token_required
 @app.route('/getUserTeams/<int:user_id>', methods=['GET'])
 def get_user_teams(user_id):
     user = User.query.get(user_id)
@@ -444,9 +468,9 @@ def create_test_event():
             name=test_event_data['name'],
             created_at=created_at,
             created_by=test_event_data['created_by'],
-            environment=test_event_data['environment'],
+            environment=json.dumps(test_event_data['environment']),
             label=test_event_data['label'],
-            state=test_event_data['state'],
+            state="In process",
             team_id=int(test_event_data['team_id'])
         )
         db.session.add(test_event)
@@ -454,7 +478,6 @@ def create_test_event():
 
         for test_case_data in data['test_cases']:
             test_case = TestCase(
-                name=test_case_data['name'],
                 created_at=created_at,
                 type=test_case_data['type'],
                 parameters=test_case_data['parameters'],
@@ -465,7 +488,7 @@ def create_test_event():
 
             for test_case_element_data in test_case_data['test_case_elements']:
                 test_case_element = TestCaseElement(
-                    story_id=test_case_element_data['story_id'],
+                    story_id=test_case.id,
                     type=test_case_element_data['type'],
                     parameters=test_case_element_data['parameters']
                 )

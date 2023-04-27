@@ -1,5 +1,31 @@
 import { API_BASE_URL, axiosInstance } from "./config";
 import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const api = axios.create({
+  baseURL: API_BASE_URL, // 设置您的 API 基本 URL
+});
+
+// 请求拦截器
+api.interceptors.request.use(
+  (config) => {
+    const token = Cookies.get('token');
+
+    // 如果存在 token，则在请求头中添加 Authorization 信息
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// user 部分 接口
+
+// 注册
 export const registerUser = async (username, email, password) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL + '/register', {
@@ -20,6 +46,7 @@ export const registerUser = async (username, email, password) => {
   }
 };
 
+// 登录
 export const loginUser = async (email, password) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL + '/login', {
@@ -41,7 +68,7 @@ export const loginUser = async (email, password) => {
   }
 };
 
-
+// 获取用户信息
 export const fetchUserData = async (userId) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/user/${userId}`);
@@ -52,6 +79,7 @@ export const fetchUserData = async (userId) => {
     console.error('Error fetching user data:', error);
   }
 };
+
 
 export const updateUserInfo = async (userId, username, personalIntroduction) => {
   try {
@@ -104,7 +132,7 @@ export const updateEmail = async (userId, newEmail) => {
   }
 };
 
-
+// team 部分 接口
 export const createTeam = async (teamName, teamDescription, teamMembers, user_id) => {
   try {
     const response = await axios.post(API_BASE_URL + '/createTeam', {
@@ -145,7 +173,7 @@ export const searchUsers = async (userName, user_id) => {
 
 export const fetchUserTeams = async (userId) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/getUserTeams/${userId}`);
+    const response = await api.get(`/getUserTeams/${userId}`);
     return response;
   } catch (error) {
     console.error("Error fetching user teams:", error);

@@ -16,6 +16,7 @@ import {
   TextField,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Cookies from 'js-cookie';
 
 const DroppableArea = ({ id, testCaseId }) => {
   const [loading, setLoading] = useState(false);
@@ -27,6 +28,7 @@ const DroppableArea = ({ id, testCaseId }) => {
     firefox: false,
   });
   const [label, setLabel] = useState("");
+  const [testCaseName, setTestCaseName] = useState("");
 
   const navigate = useNavigate();
   const [droppedItems, setDroppedItems] = useState([]);
@@ -39,65 +41,80 @@ const DroppableArea = ({ id, testCaseId }) => {
   };
   // 提交内容时的逻辑
   const handleRunClick = () => {
-    const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
-    setEnvironments({ chrome: false, edge: false, safari: false, firefox: false });
-    setLabel("");
     setOpenDialog(true);
-    const currentDate = new Date();
-    const isoString = currentDate.toISOString();
-    const data = {
-      test_event: {
-        name: "Test Event 1",
-        created_at: isoString,
-        created_by: 1,
-        environment: selectedEnvironments,
-        label: label,
-        team_id: id
-      },
-      test_cases: [
-        {
-          name: "Test Case 1",
-          created_at: "2023-04-26T12:30:00.000Z",
-          type: "Type A",
-          parameters: "Parameter 1",
-          test_case_elements: [
-            {
-              story_id: 1,
-              type: "Given",
-              parameters: "Parameter 1"
-            },
-            {
-              story_id: 1,
-              type: "When",
-              parameters: "Parameter 2"
-            }
-          ]
-        },
-        {
-          name: "Test Case 2",
-          created_at: "2023-04-26T12:30:00.000Z",
-          type: "Type B",
-          parameters: "Parameter 2",
-          test_case_elements: [
-            {
-              story_id: 2,
-              type: "Given",
-              parameters: "Parameter 3"
-            },
-            {
-              story_id: 2,
-              type: "Then",
-              parameters: "Parameter 4"
-            }
-          ]
-        }
-      ]
-    }
-    submitTestCase(data);
   };
   const handleSave = () => {
     console.log("Environments:", environments);
     console.log("Label:", label);
+    const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
+    setEnvironments({ chrome: false, edge: false, safari: false, firefox: false });
+    setLabel("");
+    const currentDate = new Date();
+    const isoString = currentDate.toISOString();
+
+    const test_cases = droppedItems.map((item, index) => {
+      return {
+        created_at: isoString,
+        type: item.type, 
+        parameters: item.inputValue, 
+        test_case_elements: [
+          {
+            type: item.type,
+            parameters: item.inputValue,
+          },
+          ...item.children.map((child) => ({
+            type: child.type,
+            parameters: child.inputValue,
+          })),
+        ],
+      };
+    });
+
+    const data = {
+      test_event: {
+        name: testCaseName,
+        created_at: isoString,
+        created_by: Cookies.get('userId'),
+        environment: selectedEnvironments,
+        label: label,
+        team_id: id
+      },
+      test_cases: test_cases
+      // test_cases: [
+      //   {
+      //     created_at: "2023-04-26T12:30:00.000Z",
+      //     type: "Type A",
+      //     parameters: "Parameter 1",
+      //     test_case_elements: [
+      //       {
+      //         type: "Given",
+      //         parameters: "Parameter 1"
+      //       },
+      //       {
+      //         type: "When",
+      //         parameters: "Parameter 2"
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     created_at: "2023-04-26T12:30:00.000Z",
+      //     type: "Type B",
+      //     parameters: "Parameter 2",
+      //     test_case_elements: [
+      //       {
+      //         type: "Given",
+      //         parameters: "Parameter 3"
+      //       },
+      //       {
+      //         type: "Then",
+      //         parameters: "Parameter 4"
+      //       }
+      //     ]
+      //   }
+      // ]
+    }
+    console.log(data);
+    submitTestCase(data);
     setOpenDialog(false);
   };
 
@@ -195,15 +212,6 @@ const DroppableArea = ({ id, testCaseId }) => {
     }),
   }));
 
-  // 移动功能
-  const moveItem = (dragIndex, hoverIndex) => {
-    const dragItem = droppedItems[dragIndex];
-    const updatedItems = [...droppedItems];
-    updatedItems.splice(dragIndex, 1);
-    updatedItems.splice(hoverIndex, 0, dragItem);
-  
-    setDroppedItems(updatedItems);
-  };
 
   return (
     <Box
@@ -228,7 +236,6 @@ const DroppableArea = ({ id, testCaseId }) => {
             isNew={item.isNew}
             droppedItems={droppedItems}
             setDroppedItems={setDroppedItems}
-            moveItem={moveItem}
           />
           {item.children && (
             <div>
@@ -242,7 +249,6 @@ const DroppableArea = ({ id, testCaseId }) => {
                   isChild
                   droppedItems={droppedItems}
                   setDroppedItems={setDroppedItems}
-                  moveItem={moveItem}
                 />
               ))}
             </div>
@@ -287,6 +293,14 @@ const DroppableArea = ({ id, testCaseId }) => {
         <DialogTitle>Run Test</DialogTitle>
         <DialogContent>
           <div>
+            <h4>Test Case Name:</h4>
+            <TextField
+              required
+              fullWidth
+              placeholder="Enter a test case name"
+              value={testCaseName}
+              onInput={(e) => setTestCaseName(e.target.value)}
+            />
             <h4>Select Environment:</h4>
             <FormControlLabel
               control={

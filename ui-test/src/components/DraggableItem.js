@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useDrag } from "react-dnd";
-import { Box, TextField } from "@mui/material";
+import { Box } from "@mui/material";
 import { getItemColor } from "../utils"; // Import the getItemColor function
 
 const DraggableItem = ({ type, color, children, InputComponent,onDragBegin,parentId }) => {
@@ -21,6 +21,7 @@ const DraggableItem = ({ type, color, children, InputComponent,onDragBegin,paren
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
     inputValueRef.current = event.target.value;
+    console.log("save input value")
   };
 
   const InputWrapper = () => (

@@ -69,7 +69,6 @@ class TestEvent(db.Model):
 class TestCase(db.Model):
     __tablename__ = 'testcase'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, nullable=True)
     type = db.Column(db.String(255), nullable=True)
     parameters = db.Column(db.Text, nullable=True)

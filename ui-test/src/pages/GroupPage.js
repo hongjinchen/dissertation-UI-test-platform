@@ -13,6 +13,7 @@ import MemberList from "../components/MemberList";
 import Title from '../Title';
 import {fetchMembers} from "../api";
 import { Link } from "react-router-dom";
+import withAuth from '../withAuth'; // 导入 withAuth 高阶组件
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -71,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function GroupPage() {
+function GroupPage() {
   const classes = useStyles();
   const [members, setMembers] = useState([]);
   const { id } = useParams(); // 获取路由参数
@@ -147,3 +148,5 @@ export default function GroupPage() {
     </div>
   );
 }
+
+export default withAuth(GroupPage); // 导出经过 withAuth 高阶组件包装的组件
