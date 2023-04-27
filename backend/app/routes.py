@@ -475,7 +475,7 @@ def create_test_event():
         )
         db.session.add(test_event)
         db.session.flush()
-
+        print(data['test_cases'])
         for test_case_data in data['test_cases']:
             test_case = TestCase(
                 created_at=created_at,
@@ -528,3 +528,60 @@ def get_test_report(report_id):
             }
             return jsonify(report_data), 200
     return jsonify({'error': 'Report not found'}), 404
+
+@app.route('/testEventName', methods=['GET'])
+def get_testevent_name():
+    testevent_id = request.args.get('testeventID', type=int)
+
+    if testevent_id is not None:
+        testevent = TestEvent.query.get(testevent_id)
+
+        if testevent is not None:
+            return jsonify({'name': testevent.name})
+        else:
+            return jsonify({'error': 'TestEvent not found'}), 404
+    else:
+        return jsonify({'error': 'testeventID parameter is required'}), 400
+
+@app.route('/getTestCases', methods=['GET'])
+def get_testcases():
+    testevent_id = request.args.get('testeventID', type=int)
+
+    if testevent_id is not None:
+        testevent = TestEvent.query.get(testevent_id)
+
+        if testevent is not None:
+            test_cases = TestCase.query.filter_by(test_event_id=testevent_id).order_by(TestCase.created_at).all()
+            result = []
+
+            for index, test_case in enumerate(test_cases):
+                children = []
+                elements = TestCaseElement.query.filter_by(story_id=test_case.id).order_by(TestCaseElement.id).all()
+
+                for element in elements:
+                    child = {
+                        "type": element.type,
+                        "inputValue": element.parameters,
+                        "isNew": False,
+                        "isChild": True,
+                        "parentId": test_case.id,
+                        "index": elements.index(element)
+                    }
+                    children.append(child)
+
+                tc = {
+                    "id": test_case.id,
+                    "type": test_case.type,
+                    "children": children,
+                    "inputValue": test_case.parameters,
+                    "isNew": False,
+                    "isChild": False,
+                    "index": index
+                }
+                result.append(tc)
+
+            return jsonify(result)
+        else:
+            return jsonify({'error': 'TestEvent not found'}), 404
+    else:
+        return jsonify({'error': 'testeventID parameter is required'}), 400

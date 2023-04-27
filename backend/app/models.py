@@ -20,6 +20,7 @@ class User(UserMixin, db.Model):
         return str(self.user_id)
 
 class UserContribution(db.Model):
+    __tablename__ = 'usercontribution'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id', ondelete='CASCADE'), nullable=True)
     activity_period = db.Column(db.String(7), nullable=True)
@@ -77,6 +78,7 @@ class TestCase(db.Model):
     test_event = relationship("TestEvent", back_populates="test_cases")
     
 class TestCaseElement(db.Model):
+    __tablename__ = "testcaseelement"
     id = db.Column(db.Integer, primary_key=True)
     story_id = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String(255), nullable=True)

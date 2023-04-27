@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Cookies from 'js-cookie';
-
+import {fetchTestCaseData} from "../api";
 const DroppableArea = ({ id, testCaseId }) => {
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -35,6 +35,21 @@ const DroppableArea = ({ id, testCaseId }) => {
   useEffect(() => {
     console.log("Updated droppedItems:", droppedItems);
   }, [droppedItems]);
+
+  useEffect(() => {
+    async function getName() {
+      const fetchedData = await fetchTestCaseData(testCaseId);
+      if (testCaseId) {
+        setDroppedItems(fetchedData);
+        console.log("fetchedData:", fetchedData);
+      }
+    }
+    if (testCaseId) {
+      getName();
+    }
+    console.log('testCaseId:', testCaseId);
+  }, [testCaseId]);
+
   const submitTestCase = async (data) => {
     const response = await saveTestCase(data);
     console.log(response);
@@ -44,8 +59,6 @@ const DroppableArea = ({ id, testCaseId }) => {
     setOpenDialog(true);
   };
   const handleSave = () => {
-    console.log("Environments:", environments);
-    console.log("Label:", label);
     const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
     setEnvironments({ chrome: false, edge: false, safari: false, firefox: false });
     setLabel("");
@@ -58,10 +71,6 @@ const DroppableArea = ({ id, testCaseId }) => {
         type: item.type, 
         parameters: item.inputValue, 
         test_case_elements: [
-          {
-            type: item.type,
-            parameters: item.inputValue,
-          },
           ...item.children.map((child) => ({
             type: child.type,
             parameters: child.inputValue,
@@ -80,38 +89,6 @@ const DroppableArea = ({ id, testCaseId }) => {
         team_id: id
       },
       test_cases: test_cases
-      // test_cases: [
-      //   {
-      //     created_at: "2023-04-26T12:30:00.000Z",
-      //     type: "Type A",
-      //     parameters: "Parameter 1",
-      //     test_case_elements: [
-      //       {
-      //         type: "Given",
-      //         parameters: "Parameter 1"
-      //       },
-      //       {
-      //         type: "When",
-      //         parameters: "Parameter 2"
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     created_at: "2023-04-26T12:30:00.000Z",
-      //     type: "Type B",
-      //     parameters: "Parameter 2",
-      //     test_case_elements: [
-      //       {
-      //         type: "Given",
-      //         parameters: "Parameter 3"
-      //       },
-      //       {
-      //         type: "Then",
-      //         parameters: "Parameter 4"
-      //       }
-      //     ]
-      //   }
-      // ]
     }
     console.log(data);
     submitTestCase(data);

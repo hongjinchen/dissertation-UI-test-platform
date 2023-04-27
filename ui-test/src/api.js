@@ -214,3 +214,27 @@ export const saveTestCase = async (data) => {
     console.error(error);
   }
 };
+export const fetchName = async (testCaseId) => {
+  const response = await fetch(API_BASE_URL + `/testEventName?testeventID=${testCaseId}`);
+
+  if (response.ok) {
+    const data = await response.json();
+    return data.name;
+  } else {
+    const errorData = await response.json();
+    console.error(`Error fetching name: ${errorData.error}`);
+    return null;
+  }
+}
+
+export const fetchTestCaseData = async (testCaseId) => {
+  const response = await fetch(API_BASE_URL + `/getTestCases?testeventID=${testCaseId}`);
+  if (response.ok) {
+    const data = await response.json();
+    return data;
+  } else {
+    const errorData = await response.json();
+    console.error(`Error fetching data: ${errorData.error}`);
+    return null;
+  }
+}
