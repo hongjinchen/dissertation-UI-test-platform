@@ -365,7 +365,7 @@ def get_team_script(team_id):
     test_events = TestEvent.query.filter_by(team_id=team_id).all()
 
     if test_events:
-        test_event_data = [{"id": event.id, "name": event.name, "created_at": event.created_at, "created_by": event.created_by, "environment": event.environment, "label": event.label, "state": event.state, "success_rate": event.success_rate, "parameters": event.parameters} for event in test_events]
+        test_event_data = [{"id": event.id, "name": event.name, "created_at": event.created_at, "created_by": event.created_by, "environment": event.environment, "label": event.label, "state": event.state} for event in test_events]
         return jsonify(test_event_data)
     else:
         return jsonify({"message": "No TestEvent found for the given team_id"}), 404
@@ -585,3 +585,58 @@ def get_testcases():
             return jsonify({'error': 'TestEvent not found'}), 404
     else:
         return jsonify({'error': 'testeventID parameter is required'}), 400
+
+
+@app.route('/searchTestCase', methods=['POST'])
+def search_test_case():
+    data = request.get_json()
+    test_id = data.get('TestReportid')
+
+    if not test_id:
+        return jsonify({"error": "TestReportid is required"}), 400
+
+    # 在 TestReport 表中搜索包含 test_id 的 test_event_id
+    test_reports = TestReport.query.filter_by(id=test_id).all()
+
+    if not test_reports:
+        return jsonify({"status": "No matching TestReports found"}), 404
+
+    results = []
+    for test_report in test_reports:
+        test_event = TestEvent.query.filter_by(id=test_report.test_event_id).first()
+
+        if test_event:
+            result = {
+                "id": test_report.id,
+                "test_event_name": test_event.name,
+                "success_rate": test_report.success_rate
+            }
+            results.append(result)
+    return jsonify(status='success', results=results), 200
+
+@app.route('/searchTestReport', methods=['POST'])
+def search_test_report():
+    data = request.get_json()
+    test_id = data.get('TestCaseid')
+
+    if not test_id:
+        return jsonify({"error": "TestReportid is required"}), 400
+
+    # 在 TestReport 表中搜索包含 test_id 的 test_event_id
+    test_reports = TestReport.query.filter_by(test_event_id=test_id).all()
+
+    if not test_reports:
+        return jsonify({"status": "No matching TestReports found"})
+
+    results = []
+    for test_report in test_reports:
+        test_event = TestEvent.query.filter_by(id=test_report.test_event_id).first()
+
+        if test_event:
+            result = {
+                "id": test_report.id,
+                "test_event_name": test_event.name,
+                "success_rate": test_report.success_rate
+            }
+            results.append(result)
+    return jsonify(status='success', results=results), 200

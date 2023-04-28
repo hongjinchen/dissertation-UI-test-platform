@@ -12,7 +12,6 @@ import {
   Badge,
   MenuIcon,
   ChevronLeftIcon,
-  NotificationsIcon,
   Button,
 } from "../components/muiComponents";
 import { MainListItems } from '../components/listItems';

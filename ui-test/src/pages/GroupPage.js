@@ -84,7 +84,7 @@ function GroupPage() {
       setMembers(response.data.members);
     };
     fetchMembersList();
-  }, []);
+  }, [id]);
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const KanbanData = [
     {

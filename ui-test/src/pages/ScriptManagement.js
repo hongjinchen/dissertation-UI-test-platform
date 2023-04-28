@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import clsx from "clsx";
-import { useParams } from 'react-router-dom';
 import { makeStyles } from "@material-ui/core/styles";
-import Navigation from "../components/SubNavigation";
+import { useParams } from 'react-router-dom';
+import clsx from "clsx";
 import {
   Table,
   TableBody,
@@ -19,15 +18,17 @@ import {
   InputLabel,
   LinearProgress,
   TablePagination,
-  Typography
+  Button,
 } from "@material-ui/core";
+import { blue } from "@material-ui/core/colors";
 import { Link } from "react-router-dom";
-import Button from "@material-ui/core/Button";
-import SelectReport from "../components/SelectReport";
 import AddIcon from '@material-ui/icons/Add';
+
+import Navigation from "../components/SubNavigation";
+import EmptyPlaceholder from "../components/EmptyPlaceholder";
 import axios from "axios";
 import { API_BASE_URL } from "../config";
-import EmptyPlaceholder from "../components/EmptyPlaceholder";
+import ReportDialog from "../components/ReportDialog";
 // import
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -75,13 +76,14 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.spacing(1),
     padding: theme.spacing(1, 3),
     textTransform: 'none',
-    // '&:active': {
-    //   transform: 'translateY(2px)',
-    // },
   },
   buttonLabel: {
     marginLeft: theme.spacing(1),
     fontSize: '1.25rem',
+  },
+  avatar: {
+    backgroundColor: blue[100],
+    color: blue[600],
   },
 }));
 
@@ -160,6 +162,18 @@ export default function ScriptManagement() {
     setPage(0);
   };
 
+  // 选择报告
+  const [open, setOpen] = React.useState(false);
+  const [selectedReport, setSelectedReport] = React.useState("");
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value) => {
+    setOpen(false);
+    setSelectedReport(value);
+  };
+
   return (
     <div className={classes.root}>
       <Navigation title="Script management" />
@@ -233,7 +247,6 @@ export default function ScriptManagement() {
                         <TableCell align="center">Time</TableCell>
                         <TableCell align="center">Label</TableCell>
                         <TableCell align="center">State</TableCell>
-                        <TableCell align="center">Passrate</TableCell>
                         <TableCell align="center">Creator</TableCell>
                         <TableCell align="center">Operation</TableCell>
                       </TableRow>
@@ -252,9 +265,6 @@ export default function ScriptManagement() {
                             <TableCell align="center">{script.Label}</TableCell>
                             <TableCell align="center">{script.State}</TableCell>
                             <TableCell align="center">
-                              {script.Passrate}
-                            </TableCell>
-                            <TableCell align="center">
                               {script.Creator}
                             </TableCell>
                             <TableCell align="center">
@@ -264,14 +274,21 @@ export default function ScriptManagement() {
                                   justifyContent: "center",
                                 }}
                               >
-                                <SelectReport id={script.id}></SelectReport>
-                                {/* <Button
-                                variant="contained"
-                                style={{ marginRight: "10px" }}
-                              >
-                                View report
-                              </Button> */}
-                                <Button variant="contained" color="primary" component={Link} to={"/testCase"}>
+                                {/* <SelectReport id={script.id}></SelectReport> */}
+                                <Button
+                                  variant="contained"
+                                  style={{ marginRight: "10px" }}
+                                  onClick={handleClickOpen}
+                                >
+                                  View report
+                                </Button>
+                                <ReportDialog
+                                  selectedValue={selectedReport}
+                                  id={script.id}
+                                  open={open}
+                                  onClose={handleClose}
+                                />
+                                <Button variant="contained" color="primary" component={Link}  to={`/testCase/${script.id}`}>
                                   View script
                                 </Button>
                               </div>
@@ -282,10 +299,7 @@ export default function ScriptManagement() {
                   </Table>
                 )}
                 {!loading && filteredScriptList.length === 0 && (
-                  <EmptyPlaceholder text=" No scripts found. Please adjust your search and filter criteria."/>
-                  // <Typography variant="h5" align="center" style={{ padding: '24px' }}>
-                   
-                  // </Typography>
+                  <EmptyPlaceholder text=" No scripts found. Please adjust your search and filter criteria." />
                 )}
                 {!loading && (
                   <TablePagination

@@ -1,5 +1,5 @@
 // KanbanBoard.js
-import React, { useState, useEffect, } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import { useParams } from 'react-router-dom';
 import { useDrop } from "react-dnd";
 import { useDrag } from "react-dnd";
@@ -10,6 +10,9 @@ import {
   TextField,
   Typography,
   IconButton,
+  List,
+  ListItem,
+  ListItemText
 } from "@mui/material";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -28,6 +31,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import CircularProgress from '@mui/material/CircularProgress';
 import EmptyPlaceholder from "./EmptyPlaceholder";
+import { searchTestCase } from "../api";
 
 const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
   // 拖拽组件
@@ -59,15 +63,16 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
       isOver: !!monitor.isOver(),
     }),
   });
-
   // 判定弹窗是否打开
   const [open, setOpen] = React.useState(false);
+
   const handleClickOpen = () => {
     setOpen(true);
-    console.log(list);
   };
   const handleClose = () => {
     setOpen(false);
+    setSearchResults([]);
+    setTestID("");
     setNewEvent("");
   };
 
@@ -95,10 +100,11 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
     setNewEvent("");
     setTestID("");
     saveData(); // 调用 saveData 函数
-    // console.log(taskLists);
   };
   const [newEvent, setNewEvent] = useState("");
   const [TestID, setTestID] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
   const updateTaskText = (taskId, newText) => {
     setTaskLists((prevTaskLists) =>
       prevTaskLists.map((list) => ({
@@ -110,6 +116,24 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
     );
     saveData();
   };
+
+  // 在TestID改变时发送请求
+  useEffect(() => {
+    const data = { TestReportid: TestID }
+    if (TestID) {
+      setSearchResults([]);
+      const getTestReport = async () => {
+        const response = await searchTestCase(data);
+        if (response.status === 'success') {
+          setSearchResults(response.results);
+        } else {
+          alert(response.data.status);
+        }
+      };
+
+      getTestReport();
+    }
+  }, [TestID]);
 
   return (
     <Card
@@ -170,6 +194,16 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
               fullWidth
               margin="normal"
             />
+            <List>
+              {searchResults.map((result, index) => (
+                <ListItem key={result.id}>
+                  <ListItemText
+                    primary={result.test_event_name}
+                    secondary={`Success Rate: ${result.success_rate}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
@@ -197,9 +231,7 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText, saveData }) => {
     }),
   }));
   useEffect(() => { }, [isEditing]);
-  useEffect(() => {
-    console.log(taskLists);
-  }, [taskLists]);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -315,7 +347,7 @@ const Task = ({ task, taskLists, setTaskLists, updateTaskText, saveData }) => {
             >
               <MenuItem onClick={handleDelete}>Delete</MenuItem>
               <MenuItem onClick={(event) => handleEdit(event)}>Edit</MenuItem>
-              <MenuItem component={Link} to={`/testReport/${task.id}`}>
+              <MenuItem component={Link} to={`/testReport/${task.testcase}`}>
                 View Test Results
               </MenuItem>
             </Menu>
@@ -351,24 +383,25 @@ const KanbanBoard = () => {
     fetchTaskLists();
   }, [id]);
 
-  const saveData = async () => {
+  const saveData = useCallback(async () => {
     setLoading(true);
     try {
+      console.log(taskLists);
       const response = await axios.post(API_BASE_URL + "/saveTask", {
         taskLists: taskLists.map(({ id, name, tasks }) => ({ name, tasks })),
         team_id: id,
       });
 
-      if (!response.ok) {
-        setLoading(false);
+      if (response.status !== 200) {
+        alert("Save failed!");
         throw new Error("Error saving task data");
-      }
+      } 
+      setLoading(false);
     } catch (error) {
       console.error("Failed to save task data:", error);
       setLoading(false);
     }
-  };
-
+  }, [taskLists, id]);
   // 判定弹窗是否打开
   const [open, setOpen] = React.useState(false);
 
@@ -378,6 +411,7 @@ const KanbanBoard = () => {
       { id: uuidv4(), name: NewTask, tasks: [] },
     ];
     setTaskLists(newTaskList);
+    console.log("handleAddTaskList",taskLists);
     setNewTask("");
     setOpen(false);
     saveData();

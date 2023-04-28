@@ -35,8 +35,7 @@ export const registerUser = async (username, email, password) => {
     }, { withCredentials: true });
 
     if (response.data.status === 'success') {
-      // 保存 token 到 Cookies
-      return response.data.status; // 返回响应状态
+      return response.data.status;
     } else {
       return response.data.message;
     }
@@ -204,8 +203,7 @@ export const saveTestCase = async (data) => {
     const response = await axiosInstance.post(API_BASE_URL + '/saveTestEvents', data, { withCredentials: true });
 
     if (response.data.status === 'success') {
-      // 保存 token 到 Cookies
-      return response.data.status; // 返回响应状态
+      return response.data.status;
     } else {
       return response.data.message;
     }
@@ -238,3 +236,25 @@ export const fetchTestCaseData = async (testCaseId) => {
     return null;
   }
 }
+
+export const searchTestCase = async (data) => {
+  try {
+    const response = await axiosInstance.post(API_BASE_URL + '/searchTestCase', data, { withCredentials: true });
+    return response.data;
+
+  } catch (error) {
+    // 处理错误响应
+    console.error(error);
+  }
+};
+
+export const searchTestReport = async (data) => {
+  try {
+    const response = await axiosInstance.post(API_BASE_URL + '/searchTestReport', data, { withCredentials: true });
+    return response.data;
+
+  } catch (error) {
+    // 处理错误响应
+    console.error(error);
+  }
+};

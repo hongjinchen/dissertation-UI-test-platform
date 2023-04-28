@@ -14,7 +14,7 @@ import {
   ChevronLeftIcon,
 } from "../components/muiComponents";
 import { SecondaryListItems } from "../components/listItems";
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -115,11 +115,6 @@ export default function Navigation({ title }) {
           >
             {title}
           </Typography>
-          {/* <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton> */}
         </Toolbar>
       </AppBar>
       <Drawer

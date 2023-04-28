@@ -75,7 +75,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   listItem: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
     justifyContent: "space-between",
+  },
+
+  searchResults: {
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius,
   },
 }));
 
@@ -93,6 +100,14 @@ export default function CenteredGrid() {
     const newSearchResults = await searchUsers(userName, Cookies.get('userId'));
     console.log(newSearchResults);
     setSearchResults(newSearchResults);
+  };
+
+  const resetForm = () => {
+    setTeamName("");
+    setTeamDescription("");
+    setSearchTerm("");
+    setTeamMembers([]);
+    setSearchResults([]);
   };
 
   const addMember = (user) => {
@@ -121,6 +136,7 @@ export default function CenteredGrid() {
     setIsAdding(true);
   };
   const handleClose = () => {
+    resetForm();
     setIsAdding(false);
   };
 
@@ -134,7 +150,7 @@ export default function CenteredGrid() {
 
     getUserData();
   }, [isAdding]);
-  
+
   return (
     <div className={classes.root}>
       <Grid container spacing={3}>
@@ -187,7 +203,7 @@ export default function CenteredGrid() {
                   <TextField
                     fullWidth
                     multiline
-                    rows={4}
+                    minRows={2}
                     label="Team Description"
                     value={teamDescription}
                     onChange={(e) => setTeamDescription(e.target.value)}
@@ -232,11 +248,11 @@ export default function CenteredGrid() {
                 </Grid>
 
                 <Grid item xs={12}>
+                  <Button onClick={handleClose}>Back</Button>
                   <Button
                     variant="contained"
                     color="primary"
                     onClick={submitForm}
-                    fullWidth
                   >
                     Create Team
                   </Button>

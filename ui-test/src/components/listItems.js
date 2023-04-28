@@ -15,8 +15,8 @@ export const MainListItems = ({ id }) => {
   const token = Cookies.get('token');
   console.log("MainListItems", id);
   useEffect(() => {
-    // 在此处添加你需要监控 token 是否为空的逻辑
-    console.log("Token changed:", token);
+    //需要监控 token 是否为空
+    // console.log("Token changed:", token);
   }, [token]);
 
   return (
@@ -53,21 +53,21 @@ export function SecondaryListItems({ id }) {
         <ListItemIcon>
           <GroupIcon />
         </ListItemIcon>
-        <ListItemText primary="Statistics" />
+        <ListItemText primary="Group Overview" />
       </ListItem>
 
       <ListItem button component={Link} to={`/script/${id}`}>
         <ListItemIcon>
           <DescriptionIcon />
         </ListItemIcon>
-        <ListItemText primary="Script Management" />
+        <ListItemText primary="Test Case Management" />
       </ListItem>
 
       <ListItem button component={Link} to={`/issue/${id}`}>
         <ListItemIcon>
           <ErrorIcon />
         </ListItemIcon>
-        <ListItemText primary="Issue management" />
+        <ListItemText primary="Issue Management" />
       </ListItem>
     </div>
   )

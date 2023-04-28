@@ -20,8 +20,11 @@ import {
   Dialog,
   Slide,
 } from "@material-ui/core";
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import Avatar from '@material-ui/core/Avatar';
 import AddIcon from "@material-ui/icons/Add";
-import {createTeam,searchUsers } from "../api";
+import { createTeam, searchUsers } from "../api";
 import Cookies from 'js-cookie';
 
 const useStyles = makeStyles((theme) => ({
@@ -44,7 +47,14 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   listItem: {
+    borderBottom: `1px solid ${theme.palette.divider}`,
     justifyContent: "space-between",
+  },
+
+  searchResults: {
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius,
   },
 }));
 
@@ -58,9 +68,17 @@ export default function CreateTeam() {
   const [searchResults, setSearchResults] = useState([]);
 
   const handleSearch = async (userName) => {
-    const newSearchResults = await searchUsers(userName,Cookies.get('userId'));
+    const newSearchResults = await searchUsers(userName, Cookies.get('userId'));
     console.log(newSearchResults);
     setSearchResults(newSearchResults);
+  };
+
+  const resetForm = () => {
+    setTeamName("");
+    setTeamDescription("");
+    setSearchTerm("");
+    setTeamMembers([]);
+    setSearchResults([]);
   };
 
   const addMember = (user) => {
@@ -72,7 +90,7 @@ export default function CreateTeam() {
   };
 
   const submitForm = async () => {
-    const response = await createTeam(teamName, teamDescription, teamMembers,Cookies.get('userId'));
+    const response = await createTeam(teamName, teamDescription, teamMembers, Cookies.get('userId'));
     console.log(response);
     if (response.status === 'success') {
       alert('Team created successfully');
@@ -89,6 +107,8 @@ export default function CreateTeam() {
     setIsAdding(true);
   };
   const handleClose = () => {
+    console.log("close");
+    resetForm();
     setIsAdding(false);
   };
   return (
@@ -106,12 +126,11 @@ export default function CreateTeam() {
         onClose={handleClose}
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
-        // maxWidth="sm"
         fullWidth
       >
         <Grid container style={{ padding: "20px" }}>
           <Grid item xs={12}>
-          <Typography variant="h5">Create Team</Typography>
+            <Typography variant="h5">Create Team</Typography>
           </Grid>
 
           <Grid item xs={12}>
@@ -127,7 +146,6 @@ export default function CreateTeam() {
             <TextField
               fullWidth
               multiline
-              rows={4}
               label="Team Description"
               value={teamDescription}
               onChange={(e) => setTeamDescription(e.target.value)}
@@ -146,18 +164,23 @@ export default function CreateTeam() {
           </Grid>
 
           <Grid item xs={12}>
-            <List>
-              {searchResults.map((user) => (
-                <ListItem
-                  className={classes.listItem}
-                  button
-                  key={user.id}
-                  onClick={() => addMember(user)}
-                >
-                  {user.name}
-                </ListItem>
-              ))}
-            </List>
+            <Paper className={classes.searchResults} elevation={1}>
+              <List>
+                {searchResults.map((user) => (
+                  <ListItem
+                    className={classes.listItem}
+                    button
+                    key={user.id}
+                    onClick={() => addMember(user)}
+                  >
+                    <ListItemAvatar>
+                      <Avatar>{user.name.charAt(0)}</Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={user.name} />
+                  </ListItem>
+                ))}
+              </List>
+            </Paper>
           </Grid>
 
           <Grid item xs={12}>
@@ -172,11 +195,11 @@ export default function CreateTeam() {
           </Grid>
 
           <Grid item xs={12}>
+          <Button onClick={handleClose}>Back</Button>
             <Button
               variant="contained"
               color="primary"
               onClick={submitForm}
-              fullWidth
             >
               Create Team
             </Button>

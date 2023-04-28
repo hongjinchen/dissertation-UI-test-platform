@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, TextField, Grid, Typography, Container } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link, useNavigate } from 'react-router-dom';
@@ -34,7 +34,7 @@ export default function Login() {
       console.log("Login success");
       // 将userId存储为cookie
       Cookies.set('userId', result.userId);
-      console.log(Cookies.get('userId'));
+      console.log(Cookies.get('token'));
       navigate('/');
     } else {
       alert(status);
