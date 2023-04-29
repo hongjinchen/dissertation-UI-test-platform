@@ -6,6 +6,7 @@ import {
   Typography,
   Button,
 } from "../components/muiComponents";
+import { TextField } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -15,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     textAlign: "center",
     color: theme.palette.text.secondary,
-    height: "100%",
+    height: "80%",
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
@@ -45,6 +46,19 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline",
     },
   },
+  gridContainer: {
+    height: "auto", // 使高度自适应内容
+    overflowY: "auto", // 如果内容超出最大高度，则显示滚动条
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center", // 垂直居中对齐
+    width: "100%",
+  },
+  formContainer: {
+    minWidth: 0, // 为了防止表单元素挤压其他内容
+  },
 }));
 
 export default function CenteredGrid() {
@@ -68,9 +82,16 @@ export default function CenteredGrid() {
   ];
   return (
     <div className={classes.root}>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+      <Grid container spacing={3} className={classes.gridContainer}>
+        <Grid item xs={12} className={classes.header}>
           <Typography variant="h5">Tutorials</Typography>
+          <form className={classes.formContainer} noValidate autoComplete="off">
+            <TextField
+              id="standard-basic"
+              label="Search"
+              placeholder="Enter the name of group"
+            />
+          </form>
         </Grid>
         {tutorial.map((tutorial, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>

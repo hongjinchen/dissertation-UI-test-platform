@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
-import { createTeam, searchUsers,fetchUserTeams } from "../api";
+import { createTeam, searchUsers, fetchUserTeams } from "../api";
 import Cookies from 'js-cookie';
 
 const useStyles = makeStyles((theme) => ({
@@ -83,6 +83,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     padding: theme.spacing(2),
     borderRadius: theme.shape.borderRadius,
+  },
+  fixedHeight: {
+    height: "14vh", // 设置一个固定高度，可以根据实际需求进行调整
   },
 }));
 
@@ -157,19 +160,10 @@ export default function CenteredGrid() {
         <Grid item xs={12}>
           <Typography variant="h5">Group Space</Typography>
         </Grid>
-        <Grid item xs={12} className={classes.textFieldContainer}>
-          <form className={classes.root} noValidate autoComplete="off">
-            <TextField
-              id="standard-basic"
-              label="Search"
-              placeholder="Enter the name of group"
-            />
-          </form>
-        </Grid>
 
         <Grid item xs={3}>
           <div>
-            <Paper className={classes.paperCreat} onClick={AddNewGroup}>
+            <Paper className={`${classes.paperCreat} ${classes.fixedHeight}`} onClick={AddNewGroup}>
               <Box display="flex" flexDirection="column" alignItems="center">
                 <AddIcon className={classes.addButton} fontSize="large" />
                 <Typography>Create a new group</Typography>
@@ -264,7 +258,7 @@ export default function CenteredGrid() {
 
         {groups.map((group, index) => (
           <Grid item xs={3} key={index}>
-            <Paper className={classes.paper}>
+            <Paper className={`${classes.paper} ${classes.fixedHeight}`}>
               <div>
                 <Typography
                   variant="h6"

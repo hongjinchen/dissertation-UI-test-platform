@@ -67,12 +67,16 @@ const useStyles = makeStyles((theme) => ({
   tutorial: {
     padding: theme.spacing(2),
     display: "flex",
-    overflow: "auto",
+    overflow: "visible", // 修改此行，以便容器高度可以根据内容自动调整
     flexDirection: "column",
-    height: "30vh",
+    height: "auto", // 使高度自适应内容
+    // maxHeight: "50vh", // 设置最大高度
+    // overflowY: "auto", // 如果内容超出最大高度，则显示滚动条
   },
   fixedHeight: {
-    height: "55vh",
+    height: "auto", // 使高度自适应内容
+    maxHeight: "55vh", // 设置最大高度
+    overflowY: "auto", // 如果内容超出最大高度，则显示滚动条
   },
 }));
 
@@ -111,7 +115,7 @@ export default function Dashboard() {
             </Grid>
 
             {/* Tutorial component */}
-            <Grid item xs={12}>
+            <Grid item xs={12} style={{ height: "fit-content" }}>
               <Paper className={classes.tutorial}>
                 <Tutorial />
               </Paper>
