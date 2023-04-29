@@ -1,8 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+
+import {
+  makeStyles,
+} from '@material-ui/core/styles';
+import { Box,Typography } from '@material-ui/core';
+
 import InboxIcon from '@material-ui/icons/Inbox';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme) => ({
   container: {

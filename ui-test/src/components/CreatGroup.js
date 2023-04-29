@@ -7,6 +7,8 @@
 // 隐私设置：提供一个标签为 "团队可见性" 的下拉菜单，让管理员选择团队的可见性。可见性选项可以包括 "公开"（任何人都可以查看和请求加入）和 "私有"（仅受邀请的成员可以查看和加入）。
 // 提交按钮：一个 "创建团队" 的按钮，管理员可以点击该按钮来提交创建团队的表单。
 import React, { useState } from "react";
+import Cookies from 'js-cookie';
+
 import {
   Typography,
   TextField,
@@ -19,13 +21,15 @@ import {
   Box,
   Dialog,
   Slide,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
 } from "@material-ui/core";
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
+
 import AddIcon from "@material-ui/icons/Add";
+
 import { createTeam, searchUsers } from "../api";
-import Cookies from 'js-cookie';
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {

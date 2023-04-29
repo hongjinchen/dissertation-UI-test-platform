@@ -22,24 +22,6 @@ def add_cors_headers(response):
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
 
-# def token_required(f):
-#     @wraps(f)
-#     def decorated(*args, **kwargs):
-#         token = request.cookies.get("token")
-
-#         if not token:
-#             return jsonify({"message": "Not authenticated"}), 401
-
-#         try:
-#             data = jwt.decode(token, app.config["SECRET_KEY"])
-#             request.user_id = data["user_id"]
-#         except:
-#             return jsonify({"message": "Invalid token"}), 401
-
-#         return f(*args, **kwargs)
-
-#     return decorated
-
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -62,6 +44,7 @@ def token_required(f):
 
     return decorated
 
+# user part
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':

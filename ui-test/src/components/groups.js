@@ -14,9 +14,9 @@ import {
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
-import { createTeam, searchUsers } from "../api";
+import { createTeam, searchUsers,fetchUserTeams } from "../api";
 import Cookies from 'js-cookie';
-import { fetchUserTeams } from "../api";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,

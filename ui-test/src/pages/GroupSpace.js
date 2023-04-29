@@ -1,8 +1,10 @@
+// React相关
 import React from "react";
+// 实用工具库
 import clsx from "clsx";
+// Material UI组件库
 import {
   makeStyles,
-  CssBaseline,
   Box,
   Typography,
   Container,
@@ -10,12 +12,13 @@ import {
   Paper,
   Link as MuiLink,
 } from "../components/muiComponents";
+// Cookies库
 import Cookies from 'js-cookie';
-
-
+// 自定义React组件
 import Groups from "../components/groups";
 import Tutorial from "../components/tutorialOverview";
 import Navigation from "../components/navigation";
+
 
 function Copyright() {
   return (

@@ -1,15 +1,20 @@
 import React, { useEffect } from 'react';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import GroupIcon from '@material-ui/icons/Group';
-import DescriptionIcon from '@material-ui/icons/Description';
-import ErrorIcon from '@material-ui/icons/Error';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link } from "react-router-dom";
 import Cookies from 'js-cookie';
+
+import {
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from '@material-ui/core';
+
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import GroupIcon from '@mui/icons-material/Group';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ErrorIcon from '@mui/icons-material/Error';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 export const MainListItems = ({ id }) => {
   const token = Cookies.get('token');

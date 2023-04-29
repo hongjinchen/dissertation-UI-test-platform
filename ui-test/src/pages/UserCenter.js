@@ -1,4 +1,7 @@
+// React相关
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
+// Material UI组件库
 import {
   Container,
   Typography,
@@ -16,15 +19,20 @@ import {
   DialogActions,
   Paper,
 } from "@material-ui/core";
+// 第三方React组件库
 import CalendarHeatmap from "react-calendar-heatmap";
-import Navigation from "../components/navigation";
-
 import "react-calendar-heatmap/dist/styles.css";
+
+// 自定义React组件
+import Navigation from "../components/navigation";
+// 样式相关库
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
+// Cookies库
 import Cookies from 'js-cookie';
+// API调用
 import { fetchUserData, updateUserInfo, updateUserPassword, updateEmail } from '../api';
-import { useParams } from 'react-router-dom';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {

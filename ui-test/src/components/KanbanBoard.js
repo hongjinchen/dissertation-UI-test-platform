@@ -1,8 +1,13 @@
 // KanbanBoard.js
-import React, { useState, useEffect, useCallback} from "react";
-import { useParams } from 'react-router-dom';
-import { useDrop } from "react-dnd";
-import { useDrag } from "react-dnd";
+import React, { useState, useEffect, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { useDrop, useDrag } from "react-dnd";
+import { findIndex } from "lodash";
+import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import AddIcon from '@mui/icons-material/Add';
+
 import {
   Box,
   Card,
@@ -12,26 +17,27 @@ import {
   IconButton,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
 } from "@mui/material";
-import Dialog from "@material-ui/core/Dialog";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import Grid from "@material-ui/core/Grid";
-import Slide from "@material-ui/core/Slide";
-import { findIndex } from "lodash";
-import { Button } from "@material-ui/core";
-import { Menu, MenuItem } from "@material-ui/core";
-import AddIcon from "@mui/icons-material/Add";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  DialogTitle,
+  Grid,
+  Slide,
+  Button,
+  Menu,
+  MenuItem,
+} from "@material-ui/core";
+
 import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../config";
-import axios from 'axios';
-import { v4 as uuidv4 } from 'uuid';
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 import EmptyPlaceholder from "./EmptyPlaceholder";
 import { searchTestCase } from "../api";
+
 
 const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
   // 拖拽组件

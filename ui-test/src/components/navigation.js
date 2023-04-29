@@ -1,5 +1,7 @@
 import React from "react";
 import clsx from "clsx";
+import Cookies from 'js-cookie';
+
 import {
   makeStyles,
   Drawer,
@@ -10,17 +12,19 @@ import {
   Divider,
   IconButton,
   Badge,
-  MenuIcon,
-  ChevronLeftIcon,
   Button,
 } from "../components/muiComponents";
-import { MainListItems } from '../components/listItems';
 
-import { Link } from "react-router-dom";
+import {
+  MenuIcon,
+  ChevronLeftIcon,
+} from "../components/muiComponents";
+
 import LoginIcon from "@mui/icons-material/Login";
 import SignUpIcon from '@mui/icons-material/PersonAdd';
-import Cookies from 'js-cookie';
 
+import { Link } from "react-router-dom";
+import { MainListItems } from "../components/listItems";
 
 const drawerWidth = 240;
 

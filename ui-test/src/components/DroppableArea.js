@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDrop } from "react-dnd";
-import { Box } from "@mui/material";
-import { Button } from "@mui/material";
-import DroppableItem from "./DroppableItem";
-import { saveTestCase } from "../api"
-import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+
 import {
+  Box,
+  Button,
+  CircularProgress,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -15,9 +15,13 @@ import {
   Checkbox,
   TextField,
 } from "@mui/material";
+
 import DeleteIcon from "@mui/icons-material/Delete";
-import Cookies from 'js-cookie';
-import {fetchTestCaseData} from "../api";
+
+import DroppableItem from "./DroppableItem";
+import { saveTestCase, fetchTestCaseData } from "../api";
+
+
 const DroppableArea = ({ id, testCaseId }) => {
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
