@@ -22,8 +22,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
     overflow: "hidden",
-    backgroundColor: "#333",
-    color: "#fff",
+    backgroundColor: theme.palette.secondary.main,
   },
   tutorialName: {
     fontSize: "1.2rem",

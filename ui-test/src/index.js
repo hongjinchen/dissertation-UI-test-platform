@@ -1,15 +1,20 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-// import App from './App';
-// import Dashboard from './pages/GroupSpace';
+import theme from './theme';
+
 import reportWebVitals from './reportWebVitals';
 import AppRoutes from './routes';
+// 导入ThemeProvider
+import { ThemeProvider } from '@material-ui/core/styles';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AppRoutes />
+      <ThemeProvider theme={theme}>
+    <AppRoutes />     
+      </ThemeProvider>
   </React.StrictMode>
 );
 

@@ -12,7 +12,7 @@ const TestReportPage = () => {
         const fetchReport = async () => {
             const reportID=2
             try {
-                const response = await fetch(API_BASE_URL+`/api/test-report/${reportID}`);
+                const response = await fetch(API_BASE_URL+`/test-report/${reportID}`);
                 if (response.ok) {
                     const reportData = await response.json();
                     const decodedHtmlReport = atob(reportData.htmlReport);

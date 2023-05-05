@@ -129,11 +129,11 @@ function GroupPage() {
         <Container maxWidth="lg" className={classes.container}>
           {/* graph component */}
           <Grid container spacing={3}>
-            <Grid item xs={12}>
+
+            {/* <Grid item xs={12}>
               <Paper className={fixedHeightPaper}>
-                {/* <Chart /> */}
               </Paper>
-            </Grid>
+            </Grid> */}
 
             {/* kanban component */}
             <Grid item xs={6}  component={Link} to={`/issue/${id}`} className={classes.noUnderline}>

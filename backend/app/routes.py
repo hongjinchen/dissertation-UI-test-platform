@@ -7,6 +7,9 @@ from app.models import User
 from app.models import Team
 from app.models import UserTeam
 from app.models import TestCase, TestCaseElement,TaskList,Task,TestEvent,TestReport
+# from process_test_cases import TestCases
+import unittest
+import HtmlTestRunner
 import jwt
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
@@ -348,26 +351,11 @@ def get_team_script(team_id):
     test_events = TestEvent.query.filter_by(team_id=team_id).all()
 
     if test_events:
-        test_event_data = [{"id": event.id, "name": event.name, "created_at": event.created_at, "created_by": event.created_by, "environment": event.environment, "label": event.label, "state": event.state} for event in test_events]
+        test_event_data = [{"id": event.id, "name": event.name, "created_at": event.created_at, "created_by": event.creator.username, "environment": event.environment, "label": event.label, "state": event.state} for event in test_events]
         return jsonify(test_event_data)
     else:
         return jsonify({"message": "No TestEvent found for the given team_id"}), 404
     
-def get_team_script(team_id):
-    test_cases = TestCase.query.filter_by(team_id=team_id).all()
-    test_cases_list = []
-
-    for test_case in test_cases:
-        test_cases_list.append({
-            'id': test_case.id,
-            'name': test_case.name,
-            'created_at': test_case.created_at,
-            'team_id': test_case.team_id,
-            'type': test_case.type,
-            'parameters': test_case.parameters
-        })
-
-    return jsonify(test_cases_list)
 
 @app.route('/saveTask', methods=['POST'])
 def save_task():
@@ -442,7 +430,6 @@ def get_task_lists(team_id):
 @app.route('/saveTestEvents', methods=['POST'])
 def create_test_event():
     data = request.get_json()
-    print(data)
 
     try:
         test_event_data = data['test_event']
@@ -489,7 +476,67 @@ def create_test_event():
         print(e)
         return jsonify(status='failed', message=str(e)), 400
 
-@app.route('/api/test-report/<int:report_id>', methods=['GET'])
+
+@app.route('/runTestEvents', methods=['POST'])
+def run_test_event():
+    data = request.get_json()
+
+    try:
+        test_event_data = data['test_event']
+        created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
+        test_event = TestEvent(
+            name=test_event_data['name'],
+            created_at=created_at,
+            created_by=test_event_data['created_by'],
+            environment=json.dumps(test_event_data['environment']),
+            label=test_event_data['label'],
+            state="In process",
+            team_id=int(test_event_data['team_id'])
+        )
+        db.session.add(test_event)
+        db.session.flush()
+        for test_case_data in data['test_cases']:
+            test_case = TestCase(
+                created_at=created_at,
+                type=test_case_data['type'],
+                parameters=test_case_data['parameters'],
+                test_event_id=test_event.id
+            )
+            db.session.add(test_case)
+            db.session.flush()
+
+            for test_case_element_data in test_case_data['test_case_elements']:
+                test_case_element = TestCaseElement(
+                    story_id=test_case.id,
+                    type=test_case_element_data['type'],
+                    parameters=test_case_element_data['parameters']
+                )
+                db.session.add(test_case_element)
+
+        db.session.commit()
+
+       # Run test cases
+        test_suite = unittest.TestLoader().loadTestsFromTestCase(TestCases)
+        runner = HtmlTestRunner.HTMLTestRunner(output="test_reports", combine_reports=True)
+        test_result = runner.run(test_suite)
+
+        # Return test results
+        if test_result.wasSuccessful():
+            return jsonify(status='success', message='Test successfully completed'), 201
+        else:
+            return jsonify(status='failed', message='Test not successfully completed'), 400
+
+    except KeyError as ke:
+        db.session.rollback()
+        print(f"KeyError: {ke}")
+        return jsonify(status='failed', message=f"KeyError: {ke}"), 400
+    except Exception as e:
+        db.session.rollback()
+        print(e)
+        return jsonify(status='failed', message=str(e)), 400
+
+
+@app.route('/test-report/<int:report_id>', methods=['GET'])
 def get_test_report(report_id):
     report = TestReport.query.filter_by(id=report_id).first()
     if report:

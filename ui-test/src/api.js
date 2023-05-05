@@ -258,3 +258,13 @@ export const searchTestReport = async (data) => {
     console.error(error);
   }
 };
+
+export const fetchScripts = async (id) => {
+  try {
+    const response = await axios.get(API_BASE_URL + '/getTeamScript/' + id);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching scripts:', error);
+    throw error;
+  }
+};

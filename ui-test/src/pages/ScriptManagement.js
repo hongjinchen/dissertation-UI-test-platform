@@ -29,7 +29,7 @@ import EmptyPlaceholder from "../components/EmptyPlaceholder";
 import axios from "axios";
 import { API_BASE_URL } from "../config";
 import ReportDialog from "../components/ReportDialog";
-
+import { fetchScripts } from '../api';
 // import
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -108,20 +108,21 @@ export default function ScriptManagement() {
 
   const [scriptList, setScriptList] = useState([]);
 
-  const fetchScripts = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(API_BASE_URL + '/getTeamScript/' + id);
-      setScriptList(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching scripts:', error);
-      setLoading(false);
-    }
-  };
   useEffect(() => {
-    fetchScripts();
-  }, []);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchScripts(id);
+        setScriptList(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching scripts:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
 
   const handleIdSearch = (e) => {
     setIdSearch(e.target.value);
@@ -262,11 +263,11 @@ export default function ScriptManagement() {
                           <TableRow key={script.id}>
                             <TableCell align="center">{script.id}</TableCell>
                             <TableCell align="center">{script.name}</TableCell>
-                            <TableCell align="center">{script.time}</TableCell>
-                            <TableCell align="center">{script.Label}</TableCell>
-                            <TableCell align="center">{script.State}</TableCell>
+                            <TableCell align="center">{script.created_at}</TableCell>
+                            <TableCell align="center">{script.label}</TableCell>
+                            <TableCell align="center">{script.state}</TableCell>
                             <TableCell align="center">
-                              {script.Creator}
+                              {script.created_by}
                             </TableCell>
                             <TableCell align="center">
                               <div
@@ -289,7 +290,7 @@ export default function ScriptManagement() {
                                   open={open}
                                   onClose={handleClose}
                                 />
-                                <Button variant="contained" color="primary" component={Link}  to={`/testCase/${script.id}`}>
+                                <Button variant="contained" color="primary" component={Link}  to={`/testCase/${id}/${script.id}`}>
                                   View script
                                 </Button>
                               </div>
