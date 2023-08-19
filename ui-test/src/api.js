@@ -212,6 +212,23 @@ export const saveTestCase = async (data) => {
     console.error(error);
   }
 };
+
+export const runTestEvent = async (data) => {
+  try {
+    const response = await axiosInstance.post(API_BASE_URL + '/runTestEvents', data, { withCredentials: true });
+
+    if (response.data.status === 'success') {
+      return { status: 'success', report_id: response.data.report_id };  // 假设服务器返回了 reportId
+    } else {
+      return { status: 'failed', message: response.data.message };
+    }
+  } catch (error) {
+    // 处理错误响应
+    console.error(error);
+    return { status: 'failed', message: error.message };
+  }
+};
+
 export const fetchName = async (testCaseId) => {
   const response = await fetch(API_BASE_URL + `/testEventName?testeventID=${testCaseId}`);
 

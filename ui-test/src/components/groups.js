@@ -272,7 +272,7 @@ export default function CenteredGrid() {
                   align="left"
                   className={classes.joined_at}
                 >
-                  {group.joined_at}
+                  {group.joined_at.replace("T", " ")}
                 </Typography>
               </div>
               <Button

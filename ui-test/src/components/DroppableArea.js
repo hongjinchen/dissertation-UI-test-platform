@@ -19,7 +19,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import DroppableItem from "./DroppableItem";
-import { saveTestCase, fetchTestCaseData } from "../api";
+import { saveTestCase, runTestEvent, fetchTestCaseData } from "../api";
 
 
 const DroppableArea = ({ id, testCaseId }) => {
@@ -36,6 +36,8 @@ const DroppableArea = ({ id, testCaseId }) => {
 
   const navigate = useNavigate();
   const [droppedItems, setDroppedItems] = useState([]);
+  const [error, setError] = useState(null);
+
   useEffect(() => {
     console.log("Updated droppedItems:", droppedItems);
   }, [droppedItems]);
@@ -63,6 +65,12 @@ const DroppableArea = ({ id, testCaseId }) => {
     setOpenDialog(true);
   };
   const handleSave = () => {
+    if (testCaseName === '' || !Object.values(environments).some(val => val)) {
+      // 可以设置一个状态变量来显示错误信息
+      setError("Please fill out all required fields");
+      alert("Please fill out all required fields");
+      return;
+    }
     const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
     setEnvironments({ chrome: false, edge: false, safari: false, firefox: false });
     setLabel("");
@@ -72,8 +80,9 @@ const DroppableArea = ({ id, testCaseId }) => {
     const test_cases = droppedItems.map((item, index) => {
       return {
         created_at: isoString,
-        type: item.type, 
-        parameters: item.inputValue, 
+        type: item.type,
+        subtype: item.subtype,
+        parameters: item.inputValue,
         test_case_elements: [
           ...item.children.map((child) => ({
             type: child.type,
@@ -99,17 +108,61 @@ const DroppableArea = ({ id, testCaseId }) => {
     setOpenDialog(false);
   };
 
-  const handleRun = () => {
-    console.log("Environments:", environments);
-    console.log("Label:", label);
+  const handleRun = async () => {
+    if (testCaseName === '' || !Object.values(environments).some(val => val)) {
+      setError("Please fill out all required fields");
+      alert("Please fill out all required fields");
+      return;
+    }
     setLoading(true);
-    // 在这里，可以将用户的选择和输入值发送给后端或执行其他操作
-    const reportId = 1;
-    setTimeout(() => {
+    const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
+
+    const currentDate = new Date();
+    const isoString = currentDate.toISOString();
+
+    const test_cases = droppedItems.map((item, index) => {
+      return {
+        created_at: isoString,
+        type: item.type,
+        subtype: item.subtype,
+        parameters: item.inputValue,
+        test_case_elements: [
+          ...item.children.map((child) => ({
+            type: child.type,
+            subtype: child.subType,
+            parameters: child.inputValue,
+          })),
+        ],
+      };
+    });
+
+    const data = {
+      test_event: {
+        name: testCaseName,
+        created_at: isoString,
+        created_by: Cookies.get('userId'),
+        environment: selectedEnvironments,
+        label: label,
+        team_id: id
+      },
+      test_cases: test_cases
+    };
+
+    const result = await runTestEvent(data);
+    console.log(result);
+    // 检查结果
+    if (result.status === 'success') {
+      // 如果测试成功，我们将导航到报告页面
       setLoading(false);
-      navigate('/testReport/' + reportId);
-    }, 3000);
-    setOpenDialog(false);
+      navigate('/testReport/' + result.report_id);  // 使用 'report_id' 而不是 'reportId'
+      setOpenDialog(false);
+    } else {
+      // 如果测试失败，我们将在控制台打印一个错误消息，并停止加载动画
+      console.error("Test not successfully completed: ", result.message);
+      setLoading(false);
+      // 这里你可以添加一个弹出窗口来显示错误消息
+      alert(result.message);
+    }
   };
 
   const handleDrop = (item, parentId, items) => {
@@ -126,6 +179,7 @@ const DroppableArea = ({ id, testCaseId }) => {
         ...newItems[givenIndex].children,
         {
           type: item.type,
+          subType: item.subType,
           inputValue: item.inputValue,
           isNew: false,
           isChild: true,
@@ -148,13 +202,16 @@ const DroppableArea = ({ id, testCaseId }) => {
             {
               id: Date.now(),
               type: item.type,
+              subtype: item.subType,
               children: [],
               inputValue: item.inputValue,
               isNew: false,
               isChild: item.isChild || false,
               index: droppedItems.length, // 添加 childIndex 属性
+              selectorValue: item.selectorValue,
             },
           ]);
+          console.log("item.subType:", item.subType);
         } else {
           setDroppedItems((items) => handleDrop(item, parentId, items));
         }
@@ -211,6 +268,7 @@ const DroppableArea = ({ id, testCaseId }) => {
           <DroppableItem
             id={item.id}
             type={item.type}
+            subtype={item.subtype}
             inputValue={item.inputValue}
             index={index}
             parentId={item.id}
@@ -224,10 +282,12 @@ const DroppableArea = ({ id, testCaseId }) => {
                 <DroppableItem
                   key={idx}
                   type={child.type}
+                  subtype={child.subType}
                   inputValue={child.inputValue}
                   index={idx}
                   parentId={item.id}
                   isChild
+                  selectorValue={child.selectorValue}
                   droppedItems={droppedItems}
                   setDroppedItems={setDroppedItems}
                 />

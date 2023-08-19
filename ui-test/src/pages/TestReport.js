@@ -10,13 +10,12 @@ const TestReportPage = () => {
     useEffect(() => {
         // TODO: 从服务器获取报告数据并设置为状态
         const fetchReport = async () => {
-            const reportID=2
             try {
-                const response = await fetch(API_BASE_URL+`/test-report/${reportID}`);
+                const response = await fetch(`${API_BASE_URL}/test-report/${id}`);
                 if (response.ok) {
                     const reportData = await response.json();
                     const decodedHtmlReport = atob(reportData.htmlReport);
-                    reportData.htmlReport=decodedHtmlReport
+                    reportData.htmlReport = decodedHtmlReport;
                     setReport(reportData);
                 } else {
                     console.error('Error fetching report data:', response.status, response.statusText);
@@ -25,6 +24,7 @@ const TestReportPage = () => {
                 console.error('Error fetching report data:', error);
             }
         };
+        
         fetchReport();
     }, [id]);
 

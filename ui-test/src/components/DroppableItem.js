@@ -6,12 +6,14 @@ import { darken } from "@mui/system";
 
 const DroppableItem = ({
   type,
+  subtype,
   id,
   inputValue,
   children,
   index,
   parentId,
   isNew,
+  selectorValue,
   setDroppedItems,
   droppedItems,
 }) => {
@@ -30,9 +32,6 @@ const DroppableItem = ({
     },
     collect: (monitor) => {
       const isDragging = monitor.isDragging();
-      // if (isDragging) {
-      //   console.log('Dragging item:', monitor.getItem());
-      // }
       return { isDragging };
     },
   }));
@@ -47,16 +46,6 @@ const DroppableItem = ({
         };
       }
 
-      // if ((item.type === "When" || item.type === "Then") && !item.isNew) {
-      //   console.log("item", item);
-      //   console.log("droppedItems",droppedItems)
-      //   const dragIndex = item.index;
-      //   const hoverIndex = index;
-      //   if (dragIndex === hoverIndex) return;
-
-      //   moveItem(dragIndex, hoverIndex);
-      // }
-      
       if (item.isChild) {
         return {
           parentId: parentId || item.parentId,
@@ -69,13 +58,13 @@ const DroppableItem = ({
     }),
   }));
 
-  const moveItem = (dragIndex, hoverIndex) => {
-    const draggedItem = droppedItems[dragIndex];
-    const newDroppedItems = [...droppedItems];
-    newDroppedItems.splice(dragIndex, 1);
-    newDroppedItems.splice(hoverIndex, 0, draggedItem);
-    setDroppedItems(newDroppedItems);
-  };
+  // const moveItem = (dragIndex, hoverIndex) => {
+  //   const draggedItem = droppedItems[dragIndex];
+  //   const newDroppedItems = [...droppedItems];
+  //   newDroppedItems.splice(dragIndex, 1);
+  //   newDroppedItems.splice(hoverIndex, 0, draggedItem);
+  //   setDroppedItems(newDroppedItems);
+  // };
 
   const getItemColor = (isOver) => {
     let color;
@@ -109,7 +98,32 @@ const DroppableItem = ({
         boxShadow: isOver ? "0 0 10px rgba(0, 0, 0, 0.5)" : "none", // 根据 isOver 改变阴影效果
       }}
     >
-      {type}: {inputValue}
+      {type}
+      <Box
+        sx={{
+          fontSize: '16px',
+          padding: '2px',
+          margin: '5px 0',
+          textAlign: 'center'
+        }}
+      >
+        <Box
+          sx={{
+            borderRadius: '5px',
+            marginBottom: '1rem'
+          }}
+        >
+           {subtype}
+        </Box>
+        <Box
+          sx={{
+            border: '1px solid blue',
+            borderRadius: '5px'
+          }}
+        >
+           {inputValue}
+        </Box>
+      </Box>
       <Box sx={{ paddingLeft: 2 }}>{children}</Box>
     </Box>
   );

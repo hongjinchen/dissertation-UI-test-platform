@@ -72,6 +72,7 @@ class TestCase(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     created_at = db.Column(db.DateTime, nullable=True)
     type = db.Column(db.String(255), nullable=True)
+    subtype = db.Column(db.String(50), nullable=False)
     parameters = db.Column(db.Text, nullable=True)
     test_event_id = db.Column(db.Integer, db.ForeignKey('testevent.id', ondelete='CASCADE'), nullable=True)  # 添加外键引用
 
@@ -82,6 +83,7 @@ class TestCaseElement(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     story_id = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String(255), nullable=True)
+    subtype = db.Column(db.String(50), nullable=False)
     parameters = db.Column(db.Text, nullable=True)
 
 class TestReport(db.Model):

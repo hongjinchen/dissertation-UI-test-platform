@@ -22,6 +22,7 @@ const LeftSideBar = () => {
           type={command.type}
           color={command.color}
           InputComponent={command.InputComponent}
+          subType={command.subType} 
           onDragBegin={() => {
             if (command.type === 'Given') {
               const newGivenId = Date.now();

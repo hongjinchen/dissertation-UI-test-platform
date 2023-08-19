@@ -7,7 +7,9 @@ from app.models import User
 from app.models import Team
 from app.models import UserTeam
 from app.models import TestCase, TestCaseElement,TaskList,Task,TestEvent,TestReport
-# from process_test_cases import TestCases
+# from test_cases import TestCases
+
+from .test_cases  import run_tests
 import unittest
 import HtmlTestRunner
 import jwt
@@ -16,10 +18,15 @@ from sqlalchemy.exc import SQLAlchemyError
 import logging
 import base64
 import json
+import os
+
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+    allowed_origins = ['https://139.155.144.136', 'http://localhost:3000']
+    origin = request.headers.get('Origin')
+    if origin in allowed_origins:
+        response.headers.add('Access-Control-Allow-Origin', origin)
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -283,8 +290,6 @@ def create_team():
 
     return jsonify({"status": "success", "team_id": new_team.team_id})
 
-
-
 @app.route('/getTeamMembers/<int:team_id>', methods=['GET'])
 def get_team_members(team_id):
     team = Team.query.get(team_id)
@@ -324,7 +329,6 @@ def get_team_members(team_id):
 
     return jsonify({"status": "success", "members": member_data})
 
-
 @token_required
 @app.route('/getUserTeams/<int:user_id>', methods=['GET'])
 def get_user_teams(user_id):
@@ -345,7 +349,6 @@ def get_user_teams(user_id):
 
     return jsonify({"status": "success", "teams": team_data})
 
-
 @app.route('/getTeamScript/<int:team_id>', methods=['GET'])
 def get_team_script(team_id):
     test_events = TestEvent.query.filter_by(team_id=team_id).all()
@@ -356,7 +359,6 @@ def get_team_script(team_id):
     else:
         return jsonify({"message": "No TestEvent found for the given team_id"}), 404
     
-
 @app.route('/saveTask', methods=['POST'])
 def save_task():
     data = request.get_json()
@@ -450,6 +452,7 @@ def create_test_event():
             test_case = TestCase(
                 created_at=created_at,
                 type=test_case_data['type'],
+                subtype=test_case_data['subtype'],  # 注意这里添加了 subtype
                 parameters=test_case_data['parameters'],
                 test_event_id=test_event.id
             )
@@ -460,6 +463,7 @@ def create_test_event():
                 test_case_element = TestCaseElement(
                     story_id=test_case.id,
                     type=test_case_element_data['type'],
+                    subtype=test_case_element_data['subtype'],  # 注意这里添加了 subtype
                     parameters=test_case_element_data['parameters']
                 )
                 db.session.add(test_case_element)
@@ -476,11 +480,16 @@ def create_test_event():
         print(e)
         return jsonify(status='failed', message=str(e)), 400
 
+def construct_locator(locator_type, parameters):
+    if locator_type == 'XPATH':
+        return f'//button[contains(text(), "{parameters}")]'
+    # You can add additional cases for other locator types if needed.
+    return parameters
 
 @app.route('/runTestEvents', methods=['POST'])
 def run_test_event():
     data = request.get_json()
-
+    print(data)
     try:
         test_event_data = data['test_event']
         created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
@@ -495,36 +504,47 @@ def run_test_event():
         )
         db.session.add(test_event)
         db.session.flush()
-        for test_case_data in data['test_cases']:
-            test_case = TestCase(
-                created_at=created_at,
-                type=test_case_data['type'],
-                parameters=test_case_data['parameters'],
-                test_event_id=test_event.id
-            )
-            db.session.add(test_case)
-            db.session.flush()
 
-            for test_case_element_data in test_case_data['test_case_elements']:
-                test_case_element = TestCaseElement(
-                    story_id=test_case.id,
-                    type=test_case_element_data['type'],
-                    parameters=test_case_element_data['parameters']
-                )
-                db.session.add(test_case_element)
+        # 生成报告文件名和路径
+        report_directory = "test_reports"
+        base_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        absolute_report_directory = os.path.join(base_directory, report_directory)
 
+        os.makedirs(absolute_report_directory, exist_ok=True)
+
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        report_filename = f"report_{test_event.id}_{timestamp}.html"
+        report_filepath = os.path.join(report_directory, report_filename)
+        absolute_report_filepath = os.path.join(absolute_report_directory, report_filename)
+
+        # 在 test_event 中存储报告的相对路径
+        test_event.report_url = report_filepath
         db.session.commit()
 
-       # Run test cases
-        test_suite = unittest.TestLoader().loadTestsFromTestCase(TestCases)
-        runner = HtmlTestRunner.HTMLTestRunner(output="test_reports", combine_reports=True)
-        test_result = runner.run(test_suite)
+        # 获取测试用例
+        test_case_list = data['test_cases']
+        # 获取浏览器环境
+        for env in data['test_event']['environment']:
+            test_result = run_tests(env, test_case_list, absolute_report_filepath)
+            passed_tests = test_result.testsRun - (len(test_result.failures) + len(test_result.errors))
+            success_rate = (passed_tests / test_result.testsRun) * 100
 
-        # Return test results
+            # 创建一个新的测试报告对象
+            test_report = TestReport(
+                test_event_id=test_event.id,
+                html_report=absolute_report_filepath,  
+                # success_rate=float(test_result.wasSuccessful())  
+                success_rate=success_rate
+            )
+            # 添加新的测试报告到数据库
+            db.session.add(test_report)
+            db.session.commit()
+        
         if test_result.wasSuccessful():
-            return jsonify(status='success', message='Test successfully completed'), 201
+            print("test_report.id",test_report.id)
+            return jsonify(status='success', message='Test successfully completed', report_id=test_report.id), 201
         else:
-            return jsonify(status='failed', message='Test not successfully completed'), 400
+            return jsonify(status='failed', message='Test not successfully completed', report_id=test_report.id), 201
 
     except KeyError as ke:
         db.session.rollback()
@@ -542,13 +562,34 @@ def get_test_report(report_id):
     if report:
         test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
         if test_event:
-            with open(report.html_report, 'r', encoding='utf-8') as f:
+            # 从报告的文件夹路径中获取报告的文件列表
+            report_folder = report.html_report
+            files_and_directories = os.listdir(report_folder)
+
+            # 寻找第一个文件
+            report_file = None
+            for item in files_and_directories:
+                full_path = os.path.join(report_folder, item)
+                if os.path.isfile(full_path):
+                    report_file = full_path
+                    break
+
+            # 检查是否找到文件
+            if report_file is None:
+                return jsonify({'error': 'Report file not found'}), 404
+
+            with open(report_file, 'r', encoding='utf-8') as f:
                 html_content = f.read()
+
             encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+            
+            # Get the username associated with test_event.created_by
+            created_by_username = test_event.creator.username
+
             report_data = {
                 'name': test_event.name,
                 'createdAt': test_event.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                'createdBy': test_event.created_by,
+                'createdBy': created_by_username,  # Use the retrieved username here
                 'test_event_id': report.test_event_id,
                 'environment': test_event.environment,
                 'labels': test_event.label.split(','),
@@ -557,7 +598,9 @@ def get_test_report(report_id):
                 'htmlReport': encoded_html_report,
             }
             return jsonify(report_data), 200
+
     return jsonify({'error': 'Report not found'}), 404
+
 
 @app.route('/testEventName', methods=['GET'])
 def get_testevent_name():
