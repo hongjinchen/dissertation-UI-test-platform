@@ -1,87 +1,89 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDrag } from "react-dnd";
 import { Box } from "@material-ui/core";
-import { getItemColor } from "../utils"; // Import the getItemColor function
+import { getItemColor } from "../utils";
 
-const DraggableItem = ({ type, subType, color, children, InputComponent, onDragBegin, parentId }) => {
-  const [inputState, setInputState] = useState({ inputValue: "", selectorValue: "" });
-  const inputValueRef = useRef(inputState.inputValue); // 使用 useRef 存储输入值
+const DraggableItem = ({ type, subType, color, children, InputComponent, onDragBegin, parentId, params }) => {
+  const [dragParams, setDragParams] = useState(params);
+  const dragParamsRef = useRef(dragParams);  // 使用 useRef 来存储 dragParams 的值
+
+  useEffect(() => {
+    dragParamsRef.current = dragParams;  // 更新 useRef 的当前值
+  }, [dragParams]);
 
   const [{ isDragging }, drag] = useDrag(() => ({
     type,
     item: () => {
-      return { 
-        type, 
-        subType, 
-        inputValue: inputValueRef.current, 
-        parentId, 
+      return {
+        type,
+        subType,
+        params: dragParamsRef.current, // 使用 useRef 的当前值
+        parentId,
         isNew: true,
-        selectorValue: inputState.selectorValue  // Add this line
+        selectorValue: dragParamsRef.current.reduce((acc, cur) => cur.type || "", ""),
       };
     },
     canDrag: () => {
-      // 如果需要输入组件，且输入值为空，则不允许拖拽，并弹出警告
-      if (InputComponent && inputValueRef.current.trim() === "") {
+      if (InputComponent && dragParams.some(param => param.value.trim() === "")) {
         window.alert("Please fill in the input before dragging!");
         return false;
       }
-      // 否则，允许拖拽
       return true;
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
     end: (item, monitor) => {
+      console.log("item——end:", item);
       if (monitor.didDrop()) {
-        console.log(item.selectorValue);  // Print the selected value
-        setInputState({ inputValue: "", selectorValue: "" });
-        inputValueRef.current = "";
+        setDragParams(dragParams.map(p => ({ value: "", type: "" })));
       }
     },
-    
   }));
 
-  const handleInputChange = (event) => {
-    const newInputValue = event.target.value;
-    setInputState(prevState => ({ ...prevState, inputValue: newInputValue }));
-    inputValueRef.current = newInputValue;
+  const handleInputChange = (index, event) => {
+    const newDragParams = [...dragParams];
+    newDragParams[index].value = event.target.value;
+    setDragParams(newDragParams);
   };
 
-  const handleSelectorChange = (event) => {
-    setInputState(prevState => ({ ...prevState, selectorValue: event.target.value }));
+  const handleSelectorChange = (index, event) => {
+    const newDragParams = [...dragParams];
+    newDragParams[index].type = event.target.value;
+    setDragParams(newDragParams);
   };
 
-  const InputWrapper = () => (
-    <InputComponent
-      onChange={handleInputChange}
-      value={inputState.inputValue}
-      onSelectorChange={handleSelectorChange}
-      selectorValue={inputState.selectorValue}
-    />
+  const InputComponents = () => (
+    dragParams.map((param, idx) => (
+      <InputComponent
+        key={idx}
+        onChange={(e) => handleInputChange(idx, e)}
+        value={param.value}
+        onSelectorChange={(e) => handleSelectorChange(idx, e)}
+        selectorValue={param.type}
+      />
+    ))
   );
+
   return (
     <Box
       ref={drag}
       style={{
-        padding: 8,  // 1em is usually 16px, adjust as needed
-        margin: 8,  // adjust as needed
-        borderRadius: 4,  // adjust as needed
+        padding: 8,
+        margin: 8,
+        borderRadius: 4,
         backgroundColor: getItemColor(type),
         opacity: isDragging ? 0.5 : 1,
         cursor: "grab",
       }}
     >
       {children}
-      {subType && ( // Render subType if it exists
+      {subType && (
         <Box style={{ marginTop: 8 }}>
           <p>{subType}</p>
         </Box>
       )}
-      {InputComponent && (
-        <Box style={{ marginTop: 8 }}>
-          <InputWrapper />
-        </Box>
-      )}
+      {InputComponent && <InputComponents />}
     </Box>
   );
 };

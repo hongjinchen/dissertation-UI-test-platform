@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Container, Typography, Button, Box, Grid } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, Alert } from '@mui/material';
 import { API_BASE_URL } from "../config";
 
 const TestReportPage = () => {
     const { id } = useParams();
     const [report, setReport] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // TODO: 从服务器获取报告数据并设置为状态
         const fetchReport = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/test-report/${id}`);
@@ -17,19 +18,29 @@ const TestReportPage = () => {
                     const decodedHtmlReport = atob(reportData.htmlReport);
                     reportData.htmlReport = decodedHtmlReport;
                     setReport(reportData);
+                } else if (response.status === 404) {
+                    setError('报告不存在');
                 } else {
                     console.error('Error fetching report data:', response.status, response.statusText);
+                    setError('无法加载报告，请稍后再试');
                 }
             } catch (error) {
                 console.error('Error fetching report data:', error);
+                setError('无法加载报告，请稍后再试');
+            } finally {
+                setLoading(false);
             }
         };
-        
+
         fetchReport();
     }, [id]);
 
-    if (!report) {
+    if (loading) {
         return <Typography>Loading...</Typography>;
+    }
+
+    if (error) {
+        return <Alert severity="error">{error}</Alert>;
     }
 
     const {

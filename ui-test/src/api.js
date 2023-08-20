@@ -216,14 +216,8 @@ export const saveTestCase = async (data) => {
 export const runTestEvent = async (data) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL + '/runTestEvents', data, { withCredentials: true });
-
-    if (response.data.status === 'success') {
-      return { status: 'success', report_id: response.data.report_id };  // 假设服务器返回了 reportId
-    } else {
-      return { status: 'failed', message: response.data.message };
-    }
+    return response.data;  // 直接返回服务器响应的数据
   } catch (error) {
-    // 处理错误响应
     console.error(error);
     return { status: 'failed', message: error.message };
   }

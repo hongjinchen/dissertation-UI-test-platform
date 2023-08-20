@@ -489,7 +489,6 @@ def construct_locator(locator_type, parameters):
 @app.route('/runTestEvents', methods=['POST'])
 def run_test_event():
     data = request.get_json()
-    print(data)
     try:
         test_event_data = data['test_event']
         created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
@@ -505,46 +504,48 @@ def run_test_event():
         db.session.add(test_event)
         db.session.flush()
 
-        # 生成报告文件名和路径
         report_directory = "test_reports"
         base_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         absolute_report_directory = os.path.join(base_directory, report_directory)
 
         os.makedirs(absolute_report_directory, exist_ok=True)
 
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        report_filename = f"report_{test_event.id}_{timestamp}.html"
-        report_filepath = os.path.join(report_directory, report_filename)
-        absolute_report_filepath = os.path.join(absolute_report_directory, report_filename)
-
-        # 在 test_event 中存储报告的相对路径
-        test_event.report_url = report_filepath
-        db.session.commit()
-
-        # 获取测试用例
         test_case_list = data['test_cases']
-        # 获取浏览器环境
+
+        # 创建一个存储各个环境报告路径的列表
+        report_files = []
+        total_success_rate = 0  # 计算所有环境的平均成功率
+        env_count = len(data['test_event']['environment'])
+
         for env in data['test_event']['environment']:
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            report_filename = f"report_{test_event.id}_{timestamp}.html"
+            absolute_report_filepath = os.path.join(absolute_report_directory, report_filename)
+            report_files.append(absolute_report_filepath)  # 将报告路径添加到列表中
+
             test_result = run_tests(env, test_case_list, absolute_report_filepath)
             passed_tests = test_result.testsRun - (len(test_result.failures) + len(test_result.errors))
-            success_rate = (passed_tests / test_result.testsRun) * 100
+            total_success_rate += (passed_tests / test_result.testsRun) * 100
 
-            # 创建一个新的测试报告对象
-            test_report = TestReport(
-                test_event_id=test_event.id,
-                html_report=absolute_report_filepath,  
-                # success_rate=float(test_result.wasSuccessful())  
-                success_rate=success_rate
-            )
-            # 添加新的测试报告到数据库
-            db.session.add(test_report)
-            db.session.commit()
+        # 将报告路径列表转换为JSON字符串
+        reports_json = json.dumps(report_files)
         
-        if test_result.wasSuccessful():
-            print("test_report.id",test_report.id)
-            return jsonify(status='success', message='Test successfully completed', report_id=test_report.id), 201
-        else:
-            return jsonify(status='failed', message='Test not successfully completed', report_id=test_report.id), 201
+        # 计算平均成功率
+        average_success_rate = total_success_rate / env_count
+        
+        # 创建一个新的测试报告对象
+        test_report = TestReport(
+            test_event_id=test_event.id,
+            html_report=reports_json,
+            success_rate=average_success_rate
+        )
+        
+        # 添加新的测试报告到数据库
+        db.session.add(test_report)
+        db.session.commit()
+
+        print("test_report.id", test_report.id)
+        return jsonify(status='completed', message='Test completed', report_id=test_report.id), 201        
 
     except KeyError as ke:
         db.session.rollback()
@@ -555,51 +556,183 @@ def run_test_event():
         print(e)
         return jsonify(status='failed', message=str(e)), 400
 
+# @app.route('/runTestEvents', methods=['POST'])
+# def run_test_event():
+#     data = request.get_json()
+#     # print(data)
+#     try:
+#         test_event_data = data['test_event']
+#         created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
+#         test_event = TestEvent(
+#             name=test_event_data['name'],
+#             created_at=created_at,
+#             created_by=test_event_data['created_by'],
+#             environment=json.dumps(test_event_data['environment']),
+#             label=test_event_data['label'],
+#             state="In process",
+#             team_id=int(test_event_data['team_id'])
+#         )
+#         db.session.add(test_event)
+#         db.session.flush()
+
+#         # 生成报告文件名和路径
+#         report_directory = "test_reports"
+#         base_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#         absolute_report_directory = os.path.join(base_directory, report_directory)
+
+#         os.makedirs(absolute_report_directory, exist_ok=True)
+
+#         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+#         report_filename = f"report_{test_event.id}_{timestamp}.html"
+#         report_filepath = os.path.join(report_directory, report_filename)
+#         absolute_report_filepath = os.path.join(absolute_report_directory, report_filename)
+
+#         # 在 test_event 中存储报告的相对路径
+#         test_event.report_url = report_filepath
+#         db.session.commit()
+
+#         # 获取测试用例
+#         test_case_list = data['test_cases']
+#         # 获取浏览器环境
+#         for env in data['test_event']['environment']:
+#             test_result = run_tests(env, test_case_list, absolute_report_filepath)
+#             passed_tests = test_result.testsRun - (len(test_result.failures) + len(test_result.errors))
+#             success_rate = (passed_tests / test_result.testsRun) * 100
+
+#             # 创建一个新的测试报告对象
+#             test_report = TestReport(
+#                 test_event_id=test_event.id,
+#                 html_report=absolute_report_filepath,  
+#                 # success_rate=float(test_result.wasSuccessful())  
+#                 success_rate=success_rate
+#             )
+#             # 添加新的测试报告到数据库
+#             db.session.add(test_report)
+#             db.session.commit()
+        
+#         if test_result.wasSuccessful():
+#             print("test_report.id",test_report.id)
+#             return jsonify(status='success', message='Test successfully completed', report_id=test_report.id), 201
+#         else:
+#             return jsonify(status='failed', message='Test not successfully completed', report_id=test_report.id), 201
+
+#     except KeyError as ke:
+#         db.session.rollback()
+#         print(f"KeyError: {ke}")
+#         return jsonify(status='failed', message=f"KeyError: {ke}"), 400
+#     except Exception as e:
+#         db.session.rollback()
+#         print(e)
+#         return jsonify(status='failed', message=str(e)), 400
+    
+def merge_html_reports(report_paths):
+    merged_content = ""
+    for path in report_paths:
+        with open(path, 'r', encoding='utf-8') as f:
+            merged_content += f.read()
+    return merged_content
 
 @app.route('/test-report/<int:report_id>', methods=['GET'])
+# def get_test_report(report_id):
+#     report = TestReport.query.filter_by(id=report_id).first()
+#     if report:
+#         test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
+#         if test_event:
+#             # 从报告的文件夹路径中获取报告的文件列表
+#             report_folder = report.html_report
+#             files_and_directories = os.listdir(report_folder)
+
+#             # 寻找第一个文件
+#             report_file = None
+#             for item in files_and_directories:
+#                 full_path = os.path.join(report_folder, item)
+#                 if os.path.isfile(full_path):
+#                     report_file = full_path
+#                     break
+
+#             # 检查是否找到文件
+#             if report_file is None:
+#                 return jsonify({'error': 'Report file not found'}), 404
+
+#             with open(report_file, 'r', encoding='utf-8') as f:
+#                 html_content = f.read()
+
+#             encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+            
+#             # Get the username associated with test_event.created_by
+#             created_by_username = test_event.creator.username
+
+#             report_data = {
+#                 'name': test_event.name,
+#                 'createdAt': test_event.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+#                 'createdBy': created_by_username,  # Use the retrieved username here
+#                 'test_event_id': report.test_event_id,
+#                 'environment': test_event.environment,
+#                 'labels': test_event.label.split(','),
+#                 'state': test_event.state,
+#                 'successRate': report.success_rate,
+#                 'htmlReport': encoded_html_report,
+#             }
+#             return jsonify(report_data), 200
+
+#     return jsonify({'error': 'Report not found'}), 404
 def get_test_report(report_id):
     report = TestReport.query.filter_by(id=report_id).first()
-    if report:
-        test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
-        if test_event:
-            # 从报告的文件夹路径中获取报告的文件列表
-            report_folder = report.html_report
-            files_and_directories = os.listdir(report_folder)
+    
+    if not report:
+        print("Report not found.")
+        return jsonify({'error': 'Report not found'}), 404
 
-            # 寻找第一个文件
-            report_file = None
-            for item in files_and_directories:
-                full_path = os.path.join(report_folder, item)
-                if os.path.isfile(full_path):
-                    report_file = full_path
-                    break
+    # 尝试解析 report.html_report 为一个Python列表
+    try:
+        report_files = json.loads(report.html_report)
+    except json.JSONDecodeError:
+        print("Report contains invalid JSON.")
+        return jsonify({'error': 'Report contains invalid JSON'}), 404
 
-            # 检查是否找到文件
-            if report_file is None:
-                return jsonify({'error': 'Report file not found'}), 404
+    test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
+    if not test_event:
+        print("Associated Test Event not found.")
+        return jsonify({'error': 'Associated Test Event not found'}), 404
 
-            with open(report_file, 'r', encoding='utf-8') as f:
+    encoded_html_reports = []
+
+    for report_file_path in report_files:
+        # 简单的路径验证：只处理指定文件夹中的报告
+        if "dissertation-UI-test-platform\\backend\\test_reports" not in report_file_path:
+            print(f"Invalid file path: {report_file_path}")
+            continue
+
+        if not os.path.exists(report_file_path):
+            print(f"File not found: {report_file_path}")
+            continue
+
+        try:
+            with open(report_file_path, 'r', encoding='utf-8') as f:
                 html_content = f.read()
+                encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+                encoded_html_reports.append(encoded_html_report)
+        except Exception as e:
+            # 这里可以记录错误，或者返回具体的错误信息给前端
+            print(f"Error reading file {report_file_path}: {e}")
+            continue
 
-            encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
-            
-            # Get the username associated with test_event.created_by
-            created_by_username = test_event.creator.username
+    # 获取与test_event.created_by关联的用户名
+    created_by_username = test_event.creator.username
 
-            report_data = {
-                'name': test_event.name,
-                'createdAt': test_event.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                'createdBy': created_by_username,  # Use the retrieved username here
-                'test_event_id': report.test_event_id,
-                'environment': test_event.environment,
-                'labels': test_event.label.split(','),
-                'state': test_event.state,
-                'successRate': report.success_rate,
-                'htmlReport': encoded_html_report,
-            }
-            return jsonify(report_data), 200
-
-    return jsonify({'error': 'Report not found'}), 404
+    report_data = {
+        'name': test_event.name,
+        'createdAt': test_event.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'createdBy': created_by_username,
+        'test_event_id': report.test_event_id,
+        'environment': test_event.environment,
+        'labels': test_event.label.split(','),
+        'state': test_event.state,
+        'successRate': report.success_rate,
+        'htmlReports': encoded_html_reports,  # 注意这里是列表，包含多个报告
+    }
+    print("Report Data:", report_data)
+    return jsonify(report_data), 200
 
 
 @app.route('/testEventName', methods=['GET'])

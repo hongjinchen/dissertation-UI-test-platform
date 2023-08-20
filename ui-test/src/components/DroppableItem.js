@@ -8,7 +8,7 @@ const DroppableItem = ({
   type,
   subtype,
   id,
-  inputValue,
+  params,
   children,
   index,
   parentId,
@@ -22,7 +22,7 @@ const DroppableItem = ({
     type: type,
     item: {
       type,
-      inputValue,
+      params,
       index,
       isNew: isNew || false,
       isChild: type !== "Given",
@@ -121,7 +121,12 @@ const DroppableItem = ({
             borderRadius: '5px'
           }}
         >
-           {inputValue}
+           {/* 显示params的值 */}
+           {params.map((param, idx) => (
+             <div key={idx}>
+               {param.type}: {param.value}
+             </div>
+           ))}
         </Box>
       </Box>
       <Box sx={{ paddingLeft: 2 }}>{children}</Box>

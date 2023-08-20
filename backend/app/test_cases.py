@@ -37,9 +37,7 @@ def construct_locator(locator_type, parameters):
 # Given
 def open_website(driver, url):
     driver.get(url)
-    time.sleep(4)
-    print("Open website: " + url)
-
+    
 # When
 def click_button(driver, locator_type, locator_value):
     element = driver.find_element(getattr(By, locator_type.upper()), locator_value)
@@ -72,6 +70,9 @@ def drag_and_drop(driver, source_locator_type, source_locator_value, target_loca
     target_element = driver.find_element(getattr(By, target_locator_type.upper()), target_locator_value)
     ActionChains(driver).drag_and_drop(source_element, target_element).perform()
 
+# refreshes 
+def refresh_page(driver):
+    driver.refresh()
 # Handling Warning Dialog
 def accept_alert(driver):
     alert = driver.switch_to.alert
@@ -84,9 +85,6 @@ def dismiss_alert(driver):
 # Switching to a new window or tab
 def switch_to_window(driver, window_handle):
     driver.switch_to.window(window_handle)
-
-def refresh_page(driver):
-    driver.refresh()
 
 # Then
 def check_url_change(self, driver, old_url, expected_url):
@@ -130,17 +128,18 @@ def check_alert_present(self, driver):
 
 action_mapping = {
     "Given": open_website,
-    "User click the button": click_button,  # 匹配 "click_button"
-    "User input data": enter_text,  # 匹配 "enter_text"
-    "User refreshes the page": None,  # 这个需要新建一个对应的函数
-    "User upload file": upload_file,  # 匹配 "upload_file"
-    "User moves to element": move_to_element,  # 匹配 "move_to_element"
-    "User right clicks": right_click,  # 匹配 "right_click"
-    "User double clicks": double_click,  # 匹配 "double_click"
-    "Check element exists": check_element_exists,  # 匹配 "check_element_exists"
-    "Check element visible": check_element_visible,  # 匹配 "check_element_visible"
-    "Check element selected": check_element_selected,  # 匹配 "check_element_selected"
-    "User refreshes the page": refresh_page,  # 对应新建的 "refresh_page" 函数
+    "User click the button": click_button, 
+    "User input data": enter_text, 
+    "User refreshes the page": refresh_page, 
+    "User upload file": upload_file, 
+    "User moves to element": move_to_element, 
+    "User right clicks": right_click, 
+    "User double clicks": double_click,  
+    "Check element exists": check_element_exists, 
+    "Check element visible": check_element_visible, 
+    "Check element selected": check_element_selected, 
+    "User refreshes the page": refresh_page, 
+    "Check text exists": check_element_text,
 
     # 下面是原来的函数，如果你的前端没有对应的subtype，你可以保留这部分
     "accept_alert": accept_alert,
@@ -148,7 +147,6 @@ action_mapping = {
     "switch_to_window": switch_to_window,
     
     "check_url_change": check_url_change,
-    "check_element_text": check_element_text,
     "check_element_style": check_element_style,
     "check_alert_present": check_alert_present,
 }
@@ -177,7 +175,6 @@ class TestCases(unittest.TestCase):
 
     def setUp(self):
         self.driver = get_webdriver(self.environment)
-        time.sleep(2)
 
     def tearDown(self):
         if self.driver:
@@ -187,20 +184,32 @@ class TestCases(unittest.TestCase):
         if self.driver is None:
             return
 
+        # Handling the "Given" step first
+        if test_case['type'] == 'Given' and test_case['subtype'] == 'Users open the page':
+            parameters = test_case['parameters']
+            for param in parameters:
+                if param['type'] == 'URL':
+                    open_website(self.driver, param['value'])
+
         # Parse and run test_case_elements.
         for test_case_element in test_case['test_case_elements']:
-            locator = construct_locator(test_case_element.get('locator_type', ''), test_case_element.get('parameters', ''))
             action_type = test_case_element['type']
             action_subtype = test_case_element['subtype']
-            # Lookup function in the action mapping.
-            # action_function = action_mapping.get(action_type, {}).get(action_subtype)
+            
+            parameters = {param['type']: param['value'] for param in test_case_element['parameters']}
+            
             action_function = action_mapping.get(action_subtype)
             
             if action_function:
-                # Invoke the function with the driver and the locator.
-                action_function(self.driver, locator)
+                if 'locator_type' in parameters:
+                    locator_value = parameters.get('locator_type')
+                    locator = construct_locator(locator_value, parameters.get('Name') or parameters.get('Class Name'))
+                    action_function(self.driver, locator_value, locator)
+                else:
+                    # For functions that don't need locators
+                    action_function(self.driver, **parameters)
 
-# 修改 run_tests 函数，添加一个参数：report_file
+
 def run_tests(environment, test_case_list, report_file):
     TestCases.environment = environment
     TestCases.test_case_list = test_case_list

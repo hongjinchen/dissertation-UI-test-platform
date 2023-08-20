@@ -17,7 +17,6 @@ import {
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
-
 import DroppableItem from "./DroppableItem";
 import { saveTestCase, runTestEvent, fetchTestCaseData } from "../api";
 
@@ -82,11 +81,11 @@ const DroppableArea = ({ id, testCaseId }) => {
         created_at: isoString,
         type: item.type,
         subtype: item.subtype,
-        parameters: item.inputValue,
+        parameters: item.params,
         test_case_elements: [
           ...item.children.map((child) => ({
             type: child.type,
-            parameters: child.inputValue,
+            parameters: child.params,
           })),
         ],
       };
@@ -103,11 +102,62 @@ const DroppableArea = ({ id, testCaseId }) => {
       },
       test_cases: test_cases
     }
-    console.log(data);
     submitTestCase(data);
     setOpenDialog(false);
   };
 
+  // const handleRun = async () => {
+  //   if (testCaseName === '' || !Object.values(environments).some(val => val)) {
+  //     setError("Please fill out all required fields");
+  //     alert("Please fill out all required fields");
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
+
+  //   const currentDate = new Date();
+  //   const isoString = currentDate.toISOString();
+
+  //   const test_cases = droppedItems.map((item, index) => {
+  //     return {
+  //       created_at: isoString,
+  //       type: item.type,
+  //       subtype: item.subtype,
+  //       parameters: item.params,
+  //       test_case_elements: [
+  //         ...item.children.map((child) => ({
+  //           type: child.type,
+  //           subtype: child.subType,
+  //           parameters: child.params,
+  //         })),
+  //       ],
+  //     };
+  //   });
+
+  //   const data = {
+  //     test_event: {
+  //       name: testCaseName,
+  //       created_at: isoString,
+  //       created_by: Cookies.get('userId'),
+  //       environment: selectedEnvironments,
+  //       label: label,
+  //       team_id: id
+  //     },
+  //     test_cases: test_cases
+  //   };
+
+  //   const result = await runTestEvent(data);
+  //   // 检查结果
+  //   if (result.status === 'success') {
+  //     setLoading(false);
+  //     navigate('/testReport/' + result.report_id);  // 使用 'report_id' 而不是 'reportId'
+  //     setOpenDialog(false);
+  //   } else {
+  //     console.error("Test not successfully completed: ", result.message);
+  //     setLoading(false);
+  //     alert(result.message);
+  //   }
+  // };
   const handleRun = async () => {
     if (testCaseName === '' || !Object.values(environments).some(val => val)) {
       setError("Please fill out all required fields");
@@ -115,8 +165,8 @@ const DroppableArea = ({ id, testCaseId }) => {
       return;
     }
     setLoading(true);
-    const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
 
+    const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
     const currentDate = new Date();
     const isoString = currentDate.toISOString();
 
@@ -125,12 +175,12 @@ const DroppableArea = ({ id, testCaseId }) => {
         created_at: isoString,
         type: item.type,
         subtype: item.subtype,
-        parameters: item.inputValue,
+        parameters: item.params,
         test_case_elements: [
           ...item.children.map((child) => ({
             type: child.type,
             subtype: child.subType,
-            parameters: child.inputValue,
+            parameters: child.params,
           })),
         ],
       };
@@ -149,17 +199,17 @@ const DroppableArea = ({ id, testCaseId }) => {
     };
 
     const result = await runTestEvent(data);
-    console.log(result);
-    // 检查结果
-    if (result.status === 'success') {
-      // 如果测试成功，我们将导航到报告页面
-      setLoading(false);
-      navigate('/testReport/' + result.report_id);  // 使用 'report_id' 而不是 'reportId'
+
+    setLoading(false);
+    console.log("result.status:", result);
+    if (result.status === 'completed') {
+      console.log("Navigating to testReport page");
+      // 如果测试已完成（不论成功与否），我们都将导航到报告页面
+      navigate('/testReport/' + result.report_id);
       setOpenDialog(false);
     } else {
-      // 如果测试失败，我们将在控制台打印一个错误消息，并停止加载动画
+      // 如果由于某种原因测试未完成（例如异常），我们将在控制台打印一个错误消息
       console.error("Test not successfully completed: ", result.message);
-      setLoading(false);
       // 这里你可以添加一个弹出窗口来显示错误消息
       alert(result.message);
     }
@@ -180,7 +230,7 @@ const DroppableArea = ({ id, testCaseId }) => {
         {
           type: item.type,
           subType: item.subType,
-          inputValue: item.inputValue,
+          params: item.params,
           isNew: false,
           isChild: true,
           parentId: parentId,
@@ -194,6 +244,7 @@ const DroppableArea = ({ id, testCaseId }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     accept: ["Given", "When", "Then"],
     drop: (item, monitor) => {
+      console.log("item:", item);
       if (item.isNew) {
         const parentId = monitor.getDropResult()?.parentId;
         if (item.type === "Given") {
@@ -204,7 +255,8 @@ const DroppableArea = ({ id, testCaseId }) => {
               type: item.type,
               subtype: item.subType,
               children: [],
-              inputValue: item.inputValue,
+              // inputValue: item.inputValue,
+              params: item.params,
               isNew: false,
               isChild: item.isChild || false,
               index: droppedItems.length, // 添加 childIndex 属性
@@ -269,7 +321,7 @@ const DroppableArea = ({ id, testCaseId }) => {
             id={item.id}
             type={item.type}
             subtype={item.subtype}
-            inputValue={item.inputValue}
+            params={item.params}  // 传递params
             index={index}
             parentId={item.id}
             isNew={item.isNew}
@@ -283,7 +335,7 @@ const DroppableArea = ({ id, testCaseId }) => {
                   key={idx}
                   type={child.type}
                   subtype={child.subType}
-                  inputValue={child.inputValue}
+                  params={child.params}  // 传递child的params
                   index={idx}
                   parentId={item.id}
                   isChild
@@ -296,6 +348,7 @@ const DroppableArea = ({ id, testCaseId }) => {
           )}
         </div>
       ))}
+
       <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
         <Button
           variant="contained"
