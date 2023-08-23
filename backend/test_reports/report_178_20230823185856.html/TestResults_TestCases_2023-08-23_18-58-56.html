@@ -11,8 +11,8 @@
         <div class="row">
             <div class="col-xs-12">
                 <h2 class="text-capitalize">Unittest Results</h2>
-                <p class='attribute'><strong>Start Time: </strong>2023-08-20 16:10:00</p>
-                <p class='attribute'><strong>Duration: </strong>5.64 s</p>
+                <p class='attribute'><strong>Start Time: </strong>2023-08-23 18:58:56</p>
+                <p class='attribute'><strong>Duration: </strong>14.58 s</p>
                 <p class='attribute'><strong>Summary: </strong>Total: 1, Pass: 0, Error: 1</p>
             </div>
         </div>
@@ -37,18 +37,20 @@
                             </td>
                         </tr>
                         <tr style="display:none;">
-                            <td class="col-xs-9" colspan="3"><p style="color:maroon;">TypeError: click_button() got an unexpected keyword argument 'ID'</p><p style="color:maroon;">Traceback (most recent call last):
-  File "D:\final project\dissertation-UI-test-platform\backend\app\test_cases.py", line 169, in test_method
+                            <td class="col-xs-9" colspan="3"><p style="color:maroon;">TypeError: 'str' object cannot be interpreted as an integer</p><p style="color:maroon;">Traceback (most recent call last):
+  File "D:\final project\dissertation-UI-test-platform\backend\app\test_cases.py", line 226, in test_method
     self.run_test_case(test_case)
-  File "D:\final project\dissertation-UI-test-platform\backend\app\test_cases.py", line 210, in run_test_case
-    action_function(self.driver, **parameters)
-TypeError: click_button() got an unexpected keyword argument 'ID'
+  File "D:\final project\dissertation-UI-test-platform\backend\app\test_cases.py", line 259, in run_test_case
+    action_function(self, self.driver, expected_url)
+  File "D:\final project\dissertation-UI-test-platform\backend\app\test_cases.py", line 85, in user_waits
+    time.sleep(seconds)
+TypeError: 'str' object cannot be interpreted as an integer
 </p>
                             </td>
                         </tr>
                         <tr>
                             <td colspan="3">
-                                Total: 1, Pass: 0, Error: 1 -- Duration: 5.64 s
+                                Total: 1, Pass: 0, Error: 1 -- Duration: 14.58 s
                             </td>
                         </tr>
                     </tbody>

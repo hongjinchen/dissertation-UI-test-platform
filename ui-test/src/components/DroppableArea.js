@@ -106,58 +106,6 @@ const DroppableArea = ({ id, testCaseId }) => {
     setOpenDialog(false);
   };
 
-  // const handleRun = async () => {
-  //   if (testCaseName === '' || !Object.values(environments).some(val => val)) {
-  //     setError("Please fill out all required fields");
-  //     alert("Please fill out all required fields");
-  //     return;
-  //   }
-  //   setLoading(true);
-  //   const selectedEnvironments = Object.keys(environments).filter((key) => environments[key]);
-
-  //   const currentDate = new Date();
-  //   const isoString = currentDate.toISOString();
-
-  //   const test_cases = droppedItems.map((item, index) => {
-  //     return {
-  //       created_at: isoString,
-  //       type: item.type,
-  //       subtype: item.subtype,
-  //       parameters: item.params,
-  //       test_case_elements: [
-  //         ...item.children.map((child) => ({
-  //           type: child.type,
-  //           subtype: child.subType,
-  //           parameters: child.params,
-  //         })),
-  //       ],
-  //     };
-  //   });
-
-  //   const data = {
-  //     test_event: {
-  //       name: testCaseName,
-  //       created_at: isoString,
-  //       created_by: Cookies.get('userId'),
-  //       environment: selectedEnvironments,
-  //       label: label,
-  //       team_id: id
-  //     },
-  //     test_cases: test_cases
-  //   };
-
-  //   const result = await runTestEvent(data);
-  //   // 检查结果
-  //   if (result.status === 'success') {
-  //     setLoading(false);
-  //     navigate('/testReport/' + result.report_id);  // 使用 'report_id' 而不是 'reportId'
-  //     setOpenDialog(false);
-  //   } else {
-  //     console.error("Test not successfully completed: ", result.message);
-  //     setLoading(false);
-  //     alert(result.message);
-  //   }
-  // };
   const handleRun = async () => {
     if (testCaseName === '' || !Object.values(environments).some(val => val)) {
       setError("Please fill out all required fields");

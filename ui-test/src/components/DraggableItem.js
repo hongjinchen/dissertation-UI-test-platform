@@ -43,6 +43,7 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
 
   const handleInputChange = (index, event) => {
     const newDragParams = [...dragParams];
+    console.log("event.target",event.target)
     newDragParams[index].value = event.target.value;
     setDragParams(newDragParams);
   };
@@ -54,16 +55,20 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
   };
 
   const InputComponents = () => (
-    dragParams.map((param, idx) => (
-      <InputComponent
-        key={idx}
-        onChange={(e) => handleInputChange(idx, e)}
-        value={param.value}
-        onSelectorChange={(e) => handleSelectorChange(idx, e)}
-        selectorValue={param.type}
-      />
-    ))
+    dragParams.map((param, idx) => {
+      console.log("param at index", idx, ":", param);  // 打印每个param的内容
+      return (
+        <InputComponent
+          key={idx}
+          onChange={(e) => handleInputChange(idx, e)}
+          value={param.value}
+          onSelectorChange={(e) => handleSelectorChange(idx, e)}
+          selectorValue={param.type}
+        />
+      );
+    })
   );
+  
 
   return (
     <Box

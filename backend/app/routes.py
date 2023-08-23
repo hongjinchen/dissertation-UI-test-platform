@@ -491,6 +491,7 @@ def run_test_event():
     data = request.get_json()
     try:
         test_event_data = data['test_event']
+        print(data['test_cases'])
         created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
         test_event = TestEvent(
             name=test_event_data['name'],
@@ -544,7 +545,7 @@ def run_test_event():
         db.session.add(test_report)
         db.session.commit()
 
-        print("test_report.id", test_report.id)
+        # print("test_report.id", test_report.id)
         return jsonify(status='completed', message='Test completed', report_id=test_report.id), 201        
 
     except KeyError as ke:
@@ -680,42 +681,39 @@ def get_test_report(report_id):
     report = TestReport.query.filter_by(id=report_id).first()
     
     if not report:
-        print("Report not found.")
+        # print("Report not found.")
         return jsonify({'error': 'Report not found'}), 404
 
     # 尝试解析 report.html_report 为一个Python列表
     try:
         report_files = json.loads(report.html_report)
     except json.JSONDecodeError:
-        print("Report contains invalid JSON.")
+        # print("Report contains invalid JSON.")
         return jsonify({'error': 'Report contains invalid JSON'}), 404
 
     test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
     if not test_event:
-        print("Associated Test Event not found.")
+        # print("Associated Test Event not found.")
         return jsonify({'error': 'Associated Test Event not found'}), 404
 
     encoded_html_reports = []
 
-    for report_file_path in report_files:
-        # 简单的路径验证：只处理指定文件夹中的报告
-        if "dissertation-UI-test-platform\\backend\\test_reports" not in report_file_path:
-            print(f"Invalid file path: {report_file_path}")
-            continue
+    for report_folder in report_files:
 
-        if not os.path.exists(report_file_path):
-            print(f"File not found: {report_file_path}")
-            continue
-
-        try:
-            with open(report_file_path, 'r', encoding='utf-8') as f:
-                html_content = f.read()
-                encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
-                encoded_html_reports.append(encoded_html_report)
-        except Exception as e:
-            # 这里可以记录错误，或者返回具体的错误信息给前端
-            print(f"Error reading file {report_file_path}: {e}")
-            continue
+       files_and_directories = os.listdir(report_folder)
+       
+       for item in files_and_directories:
+            full_path = os.path.join(report_folder, item)
+            if os.path.isfile(full_path):
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        html_content = f.read()
+                        encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+                        encoded_html_reports.append(encoded_html_report)
+                except Exception as e:
+                    # 这里可以记录错误，或者返回具体的错误信息给前端
+                    print(f"Error reading file {full_path}: {e}")
+                    continue
 
     # 获取与test_event.created_by关联的用户名
     created_by_username = test_event.creator.username
@@ -731,7 +729,7 @@ def get_test_report(report_id):
         'successRate': report.success_rate,
         'htmlReports': encoded_html_reports,  # 注意这里是列表，包含多个报告
     }
-    print("Report Data:", report_data)
+    # print("Report Data:", report_data)
     return jsonify(report_data), 200
 
 

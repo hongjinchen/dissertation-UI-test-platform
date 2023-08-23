@@ -10,7 +10,7 @@ const LeftSideBar = () => {
   return (
     <Box
       sx={{
-        width: 250,
+        width: 350,
         minHeight: '100vh',
         backgroundColor: 'grey.200',
         padding: 2,

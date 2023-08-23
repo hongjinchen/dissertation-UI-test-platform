@@ -1,6 +1,6 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { Box } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 import { darken } from "@mui/system";
 
 
@@ -58,14 +58,6 @@ const DroppableItem = ({
     }),
   }));
 
-  // const moveItem = (dragIndex, hoverIndex) => {
-  //   const draggedItem = droppedItems[dragIndex];
-  //   const newDroppedItems = [...droppedItems];
-  //   newDroppedItems.splice(dragIndex, 1);
-  //   newDroppedItems.splice(hoverIndex, 0, draggedItem);
-  //   setDroppedItems(newDroppedItems);
-  // };
-
   const getItemColor = (isOver) => {
     let color;
     switch (type) {
@@ -89,6 +81,7 @@ const DroppableItem = ({
     <Box
       ref={(node) => drag(drop(node))}
       sx={{
+        minWidth: 'fit-content',
         backgroundColor: getItemColor(isOver),
         borderRadius: 1,
         padding: 1,
@@ -113,7 +106,7 @@ const DroppableItem = ({
             marginBottom: '1rem'
           }}
         >
-           {subtype}
+          {subtype}
         </Box>
         <Box
           sx={{
@@ -121,12 +114,28 @@ const DroppableItem = ({
             borderRadius: '5px'
           }}
         >
-           {/* 显示params的值 */}
-           {params.map((param, idx) => (
+          {/* 显示params的值 */}
+          {/* {params.map((param, idx) => (
              <div key={idx}>
                {param.type}: {param.value}
              </div>
-           ))}
+           ))} */}
+          {params.map((param, idx) => (
+            <Box
+              key={idx}
+              sx={{
+                margin: '8px',
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              {param.type && <span>{param.type}</span>}
+              {param.type &&
+                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />  // 使用Divider作为分隔符
+              }
+              <span>{param.value}</span>
+            </Box>
+          ))}
         </Box>
       </Box>
       <Box sx={{ paddingLeft: 2 }}>{children}</Box>
