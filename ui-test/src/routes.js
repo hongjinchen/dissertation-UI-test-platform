@@ -16,7 +16,9 @@ import ForgotPasswordFlow from "./pages/ForgotPasswordFlow";
 import TestReport from "./pages/TestReport";
 import TestCase from "./pages/TestCase";
 import NotFound404 from './ErrorPages/NotFound404';
-
+import Tutorial1 from './tutorials/tutorial1';
+import Tutorial2 from './tutorials/tutorial2';
+import Tutorial3 from './tutorials/tutorial3';
 const AppRoutes = () => {
   return (
     <Router>
@@ -38,6 +40,10 @@ const AppRoutes = () => {
         <Route exact path="/testCase/:id/:testCaseId?" element={<TestCase />} />
         {/* 404错误页面 */}
         <Route path="*" element={<NotFound404 />} />
+        {/* tutorial页面 */}
+        <Route exact path="/tutorial1" element={<Tutorial1 />} />
+        <Route exact path="/tutorial2" element={<Tutorial2 />} />
+        <Route exact path="/tutorial3" element={<Tutorial3 />} />
       </Routes>
     </Router>
   );

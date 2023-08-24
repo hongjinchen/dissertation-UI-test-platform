@@ -43,11 +43,16 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
 
   const handleInputChange = (index, event) => {
     const newDragParams = [...dragParams];
-    console.log("event.target",event.target)
+    console.log("event.target",event.target.value)
     newDragParams[index].value = event.target.value;
     setDragParams(newDragParams);
   };
-
+  const handleSeInputChange = (index, event) => {
+    const newDragParams = [...dragParams];
+    console.log("event.target",event.target.value)
+    newDragParams[index].textValue = event.target.value;
+    setDragParams(newDragParams);
+  };
   const handleSelectorChange = (index, event) => {
     const newDragParams = [...dragParams];
     newDragParams[index].type = event.target.value;
@@ -61,7 +66,9 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
         <InputComponent
           key={idx}
           onChange={(e) => handleInputChange(idx, e)}
+          onSeChange={(e) => handleSeInputChange(idx, e)}
           value={param.value}
+          textValue={param.textValue}
           onSelectorChange={(e) => handleSelectorChange(idx, e)}
           selectorValue={param.type}
         />
@@ -88,6 +95,7 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
           <p>{subType}</p>
         </Box>
       )}
+      {/* {params} */}
       {InputComponent && <InputComponents />}
     </Box>
   );

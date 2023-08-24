@@ -110,16 +110,10 @@ const DroppableItem = ({
         </Box>
         <Box
           sx={{
-            border: '1px solid blue',
+            border: '1px solid gray',
             borderRadius: '5px'
           }}
         >
-          {/* 显示params的值 */}
-          {/* {params.map((param, idx) => (
-             <div key={idx}>
-               {param.type}: {param.value}
-             </div>
-           ))} */}
           {params.map((param, idx) => (
             <Box
               key={idx}
@@ -129,10 +123,15 @@ const DroppableItem = ({
                 alignItems: 'center'
               }}
             >
+              {param.textValue && <span>{param.textValue}</span>}
+              {param.textValue &&
+                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+              }
               {param.type && <span>{param.type}</span>}
               {param.type &&
-                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />  // 使用Divider作为分隔符
+                <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
               }
+
               <span>{param.value}</span>
             </Box>
           ))}

@@ -296,8 +296,18 @@ const DroppableArea = ({ id, testCaseId }) => {
           )}
         </div>
       ))}
+      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", position: "fixed", bottom: 50, right: 100 }}>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          onClick={handleRunClick}
+        >
+          Run OR Save
+        </Button>
+      </div>
 
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
+      {/* <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
         <Button
           variant="contained"
           color="primary"
@@ -311,24 +321,24 @@ const DroppableArea = ({ id, testCaseId }) => {
         >
           Run OR Save
         </Button>
-      </div>
+      </div> */}
       <Box
-
         ref={trashDrop}
         sx={{
           position: "absolute",
-          top: 10,
-          right: 10,
-          width: 40,
-          height: 40,
+          top: 30,
+          right: 30,
+          width: 60,
+          height: 60,
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          backgroundColor: isOverTrash ? "red" : "transparent",
+          backgroundColor: isOverTrash ? "#6C94C6" : "transparent",
           borderRadius: "50%",
+          border: '4px solid gray',
         }}
       >
-        <DeleteIcon />
+        <DeleteIcon sx={{ color: isOverTrash ? 'white' : 'gray', fontSize: 30 }} />
       </Box>
 
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>

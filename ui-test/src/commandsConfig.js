@@ -12,7 +12,7 @@ const InputWithSelector = React.forwardRef(({ onChange, value, onSelectorChange,
         size="small"
         fullWidth
         variant="outlined"
-        label="Button Name"
+        label="Locator Value"
         onChange={onChange}
         value={value}
       />
@@ -37,11 +37,7 @@ const InputWithSelector = React.forwardRef(({ onChange, value, onSelectorChange,
   </Grid>
 ));
 
-const TwoInputWithSelector = ({ onChange, params }) => {
-  if (!params || !Array.isArray(params) || params.length < 2) {
-    console.error("Invalid params provided to TwoInputWithSelector component");
-    return null; // or render a default/error state
-  }
+const TwoInputWithSelector = ({ onChange,onSeChange,onSelectorChange, textValue,value,selectorValue }) => {
 
   return (
     <Grid container spacing={1}>
@@ -51,8 +47,9 @@ const TwoInputWithSelector = ({ onChange, params }) => {
           fullWidth
           variant="outlined"
           label="User Input"
-          onChange={(e) => onChange(0, 'value', e.target.value)}
-          value={params[0].value}
+          onChange={onSeChange}
+          // value={params[0].textValue}
+          value={textValue}
         />
       </Grid>
       <Grid item xs={8}>
@@ -61,8 +58,9 @@ const TwoInputWithSelector = ({ onChange, params }) => {
           fullWidth
           variant="outlined"
           label="Element locator"
-          onChange={(e) => onChange(1, 'value', e.target.value)}
-          value={params[1].value}
+          onChange={onChange}
+          // value={params[0].value}
+          value={value}
         />
       </Grid>
       <Grid item xs={4}>
@@ -72,8 +70,10 @@ const TwoInputWithSelector = ({ onChange, params }) => {
           variant="outlined"
           label="Type"
           select
-          onChange={(e) => onChange(1, 'type', e.target.value)}
-          value={params[1].type}
+          onChange={onSelectorChange}
+          // onChange={(e) => onChange(e,'type', e.target.value)}
+          // value={params[0].type}
+          value={selectorValue}
         >
           {locatorOptions.map(option => (
             <MenuItem key={option} value={option}>
@@ -86,18 +86,20 @@ const TwoInputWithSelector = ({ onChange, params }) => {
   );
 };
 
+
 TwoInputWithSelector.propTypes = {
   onChange: PropTypes.func.isRequired,
   params: PropTypes.arrayOf(PropTypes.shape({
+    textValue: PropTypes.string,
     value: PropTypes.string,
     type: PropTypes.string,
   })).isRequired,
 };
 
+
 TwoInputWithSelector.defaultProps = {
   params: [
-    { value: 'value', type: 'text' },
-    { value: 'value', type: 'type' },
+    { textValue: '',value: '', type: '' },
   ],
 };
 
@@ -126,60 +128,17 @@ export const commandsConfig = [
   },
   {
     type: 'When',
-    subType: 'User click the button',
-    color: 'green',
-    label: 'When',
-    params: [{
-      value: '',
-      type: '',
-    },],
-    InputComponent: InputWithSelector,
-  },
-  {
-    type: 'When',
     subType: 'User input data',
     color: 'green',
     label: 'When',
-    params: [{
-      value: '',
-      type: '',
-    },{
-      value: '',
-      type: '',
-    },],
+    params: [
+      { textValue: '',value: '', type: '' },
+    ],
     InputComponent: TwoInputWithSelector,
   },
   {
     type: 'When',
-    subType: 'User refreshes the page',
-    color: 'green',
-    label: 'When',
-    params: [],
-  },
-  {
-    type: 'When',
-    subType: 'User waits',
-    color: 'green',
-    label: 'When',
-    params: [{
-      value: '',
-      type: '',
-    },],
-    InputComponent: React.forwardRef(({ onChange, value }, ref) => (
-      <TextField
-        ref={ref}
-        size="small"
-        fullWidth
-        variant="outlined"
-        label="Enter the number of seconds"
-        onChange={onChange}
-        value={value}
-      />
-    )),
-  },
-  {
-    type: 'When',
-    subType: 'User moves to element',
+    subType: 'User click the button',
     color: 'green',
     label: 'When',
     params: [{
@@ -210,6 +169,69 @@ export const commandsConfig = [
     },],
     InputComponent: InputWithSelector,
   },
+  {
+    type: 'When',
+    subType: 'User moves to element',
+    color: 'green',
+    label: 'When',
+    params: [{
+      value: '',
+      type: '',
+    },],
+    InputComponent: InputWithSelector,
+  },
+  {
+    type: 'When',
+    subType: 'User presses key',
+    color: 'green',
+    label: 'When',
+    params: [{
+      value: '',
+      type: '',
+    },],
+    InputComponent: React.forwardRef(({ onChange, value }, ref) => (
+      <TextField
+        ref={ref}
+        size="small"
+        fullWidth
+        variant="outlined"
+        label="Enter the name of key"
+        onChange={onChange}
+        value={value}
+      />
+    )),
+  },
+
+  {
+    type: 'When',
+    subType: 'User refreshes the page',
+    color: 'green',
+    label: 'When',
+    params: [],
+  },
+  {
+    type: 'When',
+    subType: 'User waits',
+    color: 'green',
+    label: 'When',
+    params: [{
+      value: '',
+      type: '',
+    },],
+    InputComponent: React.forwardRef(({ onChange, value }, ref) => (
+      <TextField
+        ref={ref}
+        size="small"
+        fullWidth
+        variant="outlined"
+        label="Enter the number of seconds"
+        onChange={onChange}
+        value={value}
+      />
+    )),
+  },
+
+
   {
     type: 'Then',
     subType: 'The user is now on this page',

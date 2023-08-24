@@ -7,6 +7,7 @@ import {
   Button,
 } from "../components/muiComponents";
 import { TextField } from '@mui/material';
+import { Link } from 'react-router-dom';  // 引入Link
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -66,56 +67,33 @@ export default function CenteredGrid() {
     {
       name: "Tutorial 1",
       area: "E-commerce",
-      url: "https://www.example.com/tutorial1",
+      path: "/tutorial1",
     },
     {
       name: "Tutorial 2",
       area: "E-commerce",
-      url: "https://www.example.com/tutorial2",
+      path: "/tutorial2",
     },
     {
       name: "Tutorial 3",
       area: "E-commerce",
-      url: "https://www.example.com/tutorial3",
+      path: "/tutorial3",
     },
   ];
+
   return (
     <div className={classes.root}>
       <Grid container spacing={3} className={classes.gridContainer}>
-        <Grid item xs={12} className={classes.header}>
-          <Typography variant="h5">Tutorials</Typography>
-          <form className={classes.formContainer} noValidate autoComplete="off">
-            <TextField
-              id="standard-basic"
-              label="Search"
-              placeholder="Enter the name of group"
-            />
-          </form>
-        </Grid>
+        {/* ... 其他代码 ... */}
         {tutorial.map((tutorial, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
             <Paper className={classes.paper}>
-              <div>
-                <Typography
-                  variant="h6"
-                  align="left"
-                  className={classes.tutorialName}
-                >
-                  {tutorial.name}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  align="left"
-                  className={classes.tutorialArea}
-                >
-                  {tutorial.area}
-                </Typography>
-              </div>
-              <a href={tutorial.url} className={classes.tutorialLink}>
+              {/* ...其他代码... */}
+              <Link to={tutorial.path} className={classes.tutorialLink}>
                 <Button variant="contained" color="primary">
                   View Tutorial
                 </Button>
-              </a>
+              </Link>
             </Paper>
           </Grid>
         ))}
