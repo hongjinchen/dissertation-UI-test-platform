@@ -306,22 +306,6 @@ const DroppableArea = ({ id, testCaseId }) => {
           Run OR Save
         </Button>
       </div>
-
-      {/* <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={handleRunClick}
-          sx={{
-            position: "absolute",
-            bottom: 50,
-            right: 100,
-          }}
-        >
-          Run OR Save
-        </Button>
-      </div> */}
       <Box
         ref={trashDrop}
         sx={{

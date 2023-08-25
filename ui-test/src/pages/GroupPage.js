@@ -87,7 +87,7 @@ function GroupPage() {
   useEffect(() => {
     const fetchMembersList = async () => {
       const response =await fetchMembers(id);
-      console.log("fetchMembers",response);
+      // console.log("fetchMembers",response);
       setMembers(response.data.members);
     };
     fetchMembersList();

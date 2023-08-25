@@ -36,37 +36,23 @@ def is_valid_url(url):
 
 
 def exception_handler_decorator(func):
-    def wrapper(self, driver, *args, **kwargs):  # 我们更改了参数名从 `self` 到 `driver`
+    def wrapper(self, driver, *args, **kwargs):
         try:
             return func(self, driver, *args, **kwargs)
-        # except NoSuchElementException as e:
-        #     screenshot_filename = f"{func.__name__}_screenshot.png"
-        #     driver.save_screenshot(screenshot_filename)
-        #     simple_message = f"Unable to locate element using selector: {e.selector}"
-        #     logging.error(f"Error occurred in function {func.__name__}. Screenshot saved as {screenshot_filename}: {simple_message}")
-        except Exception as e:  # 其他异常
+        except NoSuchElementException as e:
+            screenshot_filename = f"{func.__name__}_screenshot.png"
+            driver.save_screenshot(screenshot_filename)
+            simple_message = f"Unable to locate element using selector: {e.selector}"
+            logging.error(f"Error occurred in function {func.__name__}. Screenshot saved as {screenshot_filename}: {simple_message}")
+        except Exception as e: 
             screenshot_filename = f"{func.__name__}_screenshot.png"
             driver.save_screenshot(screenshot_filename)
             logging.error(
                 f"Error occurred in function {func.__name__}. Screenshot saved as {screenshot_filename}: {str(e)}")
-            raise  # 重新抛出异常
+            raise
     return wrapper
 
 # locator: not only driver.find_element(By.ID, element_id)
-# def construct_locator(parameters):
-#     """
-#     Constructs the locator based on the provided parameters.
-#     """
-#     if 'ID' in parameters:
-#         return ('id', parameters['ID'])
-#     elif 'Name' in parameters:
-#         return ('name', parameters['Name'])
-#     elif 'Class Name' in parameters:
-#         return ('class name', parameters['Class Name'])
-#     else:
-#         raise ValueError(f"Unsupported locator in parameters: {parameters}")
-
-
 def construct_locator(parameters):
     """
     Constructs the locator based on the provided parameters.
@@ -176,9 +162,6 @@ def check_url_change(self, driver, expected_url):
     # WebDriverWait(driver, 10).until(EC.url_changes(driver.current_url))
     WebDriverWait(driver, 10).until(EC.url_to_be(expected_url))
     self.assertEqual(driver.current_url, expected_url)
-
-# @exception_handler_decorator
-
 
 def check_element_text(self, driver,  expected_text):
     page_source = driver.page_source
@@ -291,7 +274,7 @@ class TestCases(unittest.TestCase):
         if self.driver is None:
             return
 
-        # Handling the "Given" step first
+        # Handling the "Given" step
         if test_case['type'] == 'Given' and test_case['subtype'] == 'Users open the page':
             parameters = {param['type']: param['value']
                           for param in test_case['parameters']}
@@ -305,21 +288,14 @@ class TestCases(unittest.TestCase):
             action_function = action_mapping.get(action_subtype)
             if action_function:
                 if action_subtype == "User input data":
-                    # 首先从列表中获取字典
                     param_dict = test_case_element['parameters'][0]
                     locator_type, locator_value = construct_locator(
                             parameters)
-                    # 从字典中提取所需的参数值
-                    # locator_type = param_dict.get('type')
-                    # locator_value = param_dict.get('value')
                     text_value = param_dict.get('textValue')
-                    print("locator_type, locator_value, text_value:",
-                          locator_type, locator_value, text_value)
                     action_function(self, self.driver,
                                     locator_type, locator_value, text_value)
 
                 elif action_subtype == "The user is now on this page" or "Check text exists" or "User waits":
-                    print("action_subtype", action_subtype)
                     expected_url = parameters.get('empty')
                     action_function(self, self.driver, expected_url)
 
@@ -327,7 +303,6 @@ class TestCases(unittest.TestCase):
                     if any(key in parameters for key in ['ID', 'Name', 'Class Name']):
                         locator_type, locator_value = construct_locator(
                             parameters)
-                        # print("locator_type, locator_value:",locator_type, locator_value)
 
                         # Remove the used keys from parameters
                         for key in ['ID', 'Name', 'Class Name']:
@@ -337,7 +312,6 @@ class TestCases(unittest.TestCase):
                         action_function(
                             self, self.driver, locator_type, locator_value, **parameters)
                     else:
-                        print("parameters", parameters)
                         action_function(self, self.driver, **parameters)
 
 

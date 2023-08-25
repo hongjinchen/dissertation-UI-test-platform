@@ -68,39 +68,5 @@ const LeftSideBar = () => {
   );
 };
 
-// const LeftSideBar = () => {
-//   const [givenId, setGivenId] = useState(null);
-  
-//   return (
-//     <Box
-//       sx={{
-//         width: 350,
-//         minHeight: '100vh',
-//         backgroundColor: 'grey.200',
-//         padding: 2,
-//       }}
-//     >
-//       {commandsConfig.map((command, index) => (
-//         <DraggableItem
-//           key={index}
-//           type={command.type}
-//           color={command.color}
-//           InputComponent={command.InputComponent}
-//           subType={command.subType} 
-//           params={command.params}
-//           onDragBegin={() => {
-//             if (command.type === 'Given') {
-//               const newGivenId = Date.now();
-//               setGivenId(newGivenId);
-//             }
-//           }}
-//           parentId={command.type === 'Given' ? null : givenId}
-//         >
-//           {command.label}
-//         </DraggableItem>
-//       ))}
-//     </Box>
-//   );
-// };
 
 export default LeftSideBar;
