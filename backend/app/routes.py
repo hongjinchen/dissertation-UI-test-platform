@@ -604,6 +604,7 @@ def get_test_report(report_id):
         'createdBy': created_by_username,
         'test_event_id': report.test_event_id,
         'environment': test_event.environment,
+        'team_id': test_event.team_id,
         'labels': test_event.label.split(','),
         'state': test_event.state,
         'successRate': report.success_rate,
