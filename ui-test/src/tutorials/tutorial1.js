@@ -73,10 +73,9 @@ function Tutorial1() {
             <p>The HTML page web element can have an attribute class. We can see an example in the above-shown HTML snippet. For instance, 'information' is one of the class names.</p>
             <p>We can use the ID attribute available with an element on a web page to locate it. For example, 'lname'.</p>
             <p>We can use the NAME attribute available with an element on a web page to locate it. For example, 'newsletter'.</p>
-            <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-                {/* <!-- SVG content goes here --> */}
+            {/* <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
-            </svg>
+            </svg> */}
             <p>Parts of the tutorial refer to the official selenium tutorial: https://www.selenium.dev/zh-cn/documentation/webdriver/elements/locators/.</p>
         </div>
     );
