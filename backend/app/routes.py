@@ -7,12 +7,14 @@ from app.models import User
 from app.models import Team
 from app.models import UserTeam
 from app.models import TestCase, TestCaseElement,TaskList,Task,TestEvent,TestReport
+from smtplib import SMTPRecipientsRefused
 from sqlalchemy.orm import joinedload
 from .mail_service import send_email
 from .test_cases  import run_tests
 import unittest
 import HtmlTestRunner
 import jwt
+from jinja2 import Environment, FileSystemLoader
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
 import logging
@@ -561,7 +563,6 @@ def get_test_report(report_id):
     report = TestReport.query.filter_by(id=report_id).first()
     
     if not report:
-        # print("Report not found.")
         return jsonify({'error': 'Report not found'}), 404
 
     # 尝试解析 report.html_report 为一个Python列表
@@ -610,7 +611,7 @@ def get_test_report(report_id):
         'successRate': report.success_rate,
         'htmlReports': encoded_html_reports,  # 注意这里是列表，包含多个报告
     }
-    # print("Report Data:", report_data)
+
     return jsonify(report_data), 200
 
 
@@ -726,15 +727,83 @@ def search_test_report():
             results.append(result)
     return jsonify(status='success', results=results), 200
 
+def generate_html_from_report_data(report_data):
+    # Get the directory of the current file
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+
+    # Set up the Jinja2 environment with the current directory
+    env = Environment(loader=FileSystemLoader(current_directory))
+
+    # Load the template by name
+    template = env.get_template('report_template.html')
+
+    # Render the template with the report data
+    html_output = template.render(report_data=report_data)
+
+    return html_output
+
 @app.route('/send-report', methods=['POST'])
 def send_report():
     email_addresses = request.json.get('email')
     user_ids = request.json.get('user_ids')
     test_event_id = request.json.get('test_event_id')
+    id=request.json.get('id')
 
-    # 从数据库中获取测试报告
-    test_event = db.session.query(TestEvent).options(joinedload(TestEvent.test_reports)).filter_by(id=test_event_id).first()
-    html_report = test_event.test_reports[0].html_report
+    report = TestReport.query.filter_by(id=id).first()
+    
+    if not report:
+        return jsonify({'error': 'Report not found'}), 404
+
+    # 尝试解析 report.html_report 为一个Python列表
+    try:
+        report_files = json.loads(report.html_report)
+    except json.JSONDecodeError:
+        # print("Report contains invalid JSON.")
+        return jsonify({'error': 'Report contains invalid JSON'}), 404
+
+    test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
+    if not test_event:
+        # print("Associated Test Event not found.")
+        return jsonify({'error': 'Associated Test Event not found'}), 404
+
+    encoded_html_reports = []
+
+    for report_folder in report_files:
+        files_and_directories = os.listdir(report_folder)
+
+        for item in files_and_directories:
+            full_path = os.path.join(report_folder, item)
+            if os.path.isfile(full_path):
+                try:
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        html_content = f.read()
+                        encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+                        encoded_html_reports.append(encoded_html_report)
+                except Exception as e:
+                    print(f"Error reading file {full_path}: {e}")
+                    continue
+
+    # 解码base64编码的HTML报告
+    decoded_html_reports = [base64.b64decode(report).decode('utf-8') for report in encoded_html_reports]
+
+
+    # 获取与test_event.created_by关联的用户名
+    created_by_username = test_event.creator.username
+
+    report_data = {
+        'name': test_event.name,
+        'createdAt': test_event.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'createdBy': created_by_username,
+        'test_event_id': report.test_event_id,
+        'environment': test_event.environment,
+        'team_id': test_event.team_id,
+        'labels': test_event.label.split(','),
+        'state': test_event.state,
+        'successRate': report.success_rate,
+        'htmlReports': decoded_html_reports,  # 注意这里是列表，包含多个报告
+    }
+    # 这里您可能需要将report_data转化成适合邮件发送的格式，例如HTML或者纯文本
+    html_report = generate_html_from_report_data(report_data)  # 这是一个虚构的函数，您需要根据需求实现它
 
     if not email_addresses and user_ids:
         # 获取用户电子邮件地址
@@ -742,6 +811,10 @@ def send_report():
         email_addresses = [user.email for user in users]
 
     for email_address in email_addresses:
-        send_email(email_address, html_report)
+        try:
+            send_email(email_address, html_report)
+        except SMTPRecipientsRefused as e:
+            # 返回遇到的具体错误消息到前端
+            return jsonify({"error": f"Failed to send report to {email_address}. Error: {str(e)}"}), 400
 
     return jsonify({"message": "Report sent successfully!"})

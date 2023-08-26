@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Button, Box, Grid, Alert, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, List, ListItem } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, Alert, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, List, ListItem, ListItemText, Checkbox, ListItemSecondaryAction } from '@mui/material';
 import { API_BASE_URL } from "../config";
 import { fetchMembers } from "../api";
 const BASE_HEIGHT = 300; // 基础高度，例如500px
 // const HEIGHT_PER_CHAR = 0.1; // 每个字符增加的高度，这只是一个估算
+
+const useStyles = makeStyles({
+    dialog: {
+        width: '500px', // 你可以根据需要调整
+        maxHeight: '600px',
+    },
+    dialogContent: {
+        overflowY: 'auto', // 如果内容超出，添加滚动条
+    },
+});
+
 const TestReportPage = () => {
     const { id } = useParams();
     const navigate = useNavigate(); // 使用useNavigate
@@ -14,6 +27,7 @@ const TestReportPage = () => {
     const [open, setOpen] = useState(false); // 控制Dialog的状态
     const [members, setMembers] = useState([]); // 保存团队成员的状态
     const [selectedMemberIds, setSelectedMemberIds] = useState([]);
+    const classes = useStyles();
 
     useEffect(() => {
         const fetchMembersList = async () => {
@@ -93,14 +107,14 @@ const TestReportPage = () => {
             setSelectedMemberIds(prevIds => prevIds.filter(id => id !== memberId));
         }
     };
-    
+
     const handleShareReport = async () => {
         try {
             // 获取email地址或user_ids来发送报告
             const emailAddresses = members
                 .filter(member => selectedMemberIds.includes(member.user_id))
                 .map(member => member.email);
-    
+
             const response = await fetch(`${API_BASE_URL}/send-report`, {
                 method: 'POST',
                 headers: {
@@ -109,23 +123,24 @@ const TestReportPage = () => {
                 body: JSON.stringify({
                     email: emailAddresses,
                     user_ids: selectedMemberIds,
-                    test_event_id: test_event_id // 从report中获取test_event_id
+                    test_event_id: test_event_id,
+                    id: id,
                 })
             });
-    
+
             const result = await response.json();
             if (response.ok) {
                 alert(result.message); // 或使用其他方式通知用户报告已发送
             } else {
                 alert("Error: " + result.message); // 或使用其他方式通知用户发生错误
             }
-    
+
         } catch (error) {
             console.error("Error sharing the report:", error);
             alert("Error sharing the report. Please try again later."); // 或使用其他方式通知用户
         }
     };
-    
+
     return (
         <Container>
             <Box sx={{ backgroundColor: '#f7f7f7', boxShadow: 1, p: 3, my: 3, borderRadius: '5px' }}>
@@ -166,27 +181,22 @@ const TestReportPage = () => {
                         Share
                     </Button>
                 </Box>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Share Report</DialogTitle>
+                {/* <Dialog open={open} onClose={handleClose}>
                     <DialogContent>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="share"
-                            label="Share Link"
-                            type="text"
-                            fullWidth
-                        />
-                        <Typography variant="h6" style={{ marginTop: '20px' }}>Team Members:</Typography>
+                        <Typography variant="h6" style={{ marginBottom: '16px' }}>Team Members</Typography>
+                        Please select the members you wish to share
+
                         <List>
                             {members.map((member, index) => (
-                                <ListItem key={index}>
-                                    <input
-                                        type="checkbox"
-                                        value={member.user_id}
-                                        onChange={(e) => handleMemberSelect(e, member.user_id)}
-                                    />
-                                    {member.username} ({member.email})
+                                <ListItem key={index} button onClick={() => handleMemberSelect(member.user_id)}>
+                                    <ListItemText primary={member.username} secondary={member.email} />
+                                    <ListItemSecondaryAction>
+                                        <Checkbox
+                                            edge="end"
+                                            onChange={(e) => handleMemberSelect(e, member.user_id)}
+                                            value={member.user_id}
+                                        />
+                                    </ListItemSecondaryAction>
                                 </ListItem>
                             ))}
                         </List>
@@ -195,7 +205,40 @@ const TestReportPage = () => {
                         <Button onClick={handleClose} color="primary">
                             Cancel
                         </Button>
-                        <Button onClick={handleShareReport} color="primary">
+                        <Button onClick={handleShareReport} color="primary" variant="contained">
+                            Share
+                        </Button>
+                    </DialogActions>
+                </Dialog> */}
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    classes={{ paper: classes.dialog }}
+                >
+                    <DialogContent className={classes.dialogContent}>
+                        <Typography variant="h6" style={{ marginBottom: '16px' }}>Team Members</Typography>
+                        Please select the members you wish to share
+
+                        <List>
+                            {members.map((member, index) => (
+                                <ListItem key={index} button onClick={() => handleMemberSelect(member.user_id)}>
+                                    <ListItemText primary={member.username} secondary={member.email} />
+                                    <ListItemSecondaryAction>
+                                        <Checkbox
+                                            edge="end"
+                                            onChange={(e) => handleMemberSelect(e, member.user_id)}
+                                            value={member.user_id}
+                                        />
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleShareReport} color="primary" variant="contained">
                             Share
                         </Button>
                     </DialogActions>

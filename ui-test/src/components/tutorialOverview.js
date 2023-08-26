@@ -65,13 +65,13 @@ export default function CenteredGrid() {
   const classes = useStyles();
   const tutorial = [
     {
-      name: "Tutorial 1",
-      area: "E-commerce",
+      name: "Locator Selection",
+      area: "Website instructions",
       path: "/tutorial1",
     },
     {
-      name: "Tutorial 2",
-      area: "E-commerce",
+      name: "User Behavior Guide",
+      area: "Website instructions",
       path: "/tutorial2",
     },
     {
@@ -83,21 +83,29 @@ export default function CenteredGrid() {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={3} className={classes.gridContainer}>
-        {/* ... 其他代码 ... */}
-        {tutorial.map((tutorial, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Paper className={classes.paper}>
-              {/* ...其他代码... */}
-              <Link to={tutorial.path} className={classes.tutorialLink}>
-                <Button variant="contained" color="primary">
-                  View Tutorial
-                </Button>
-              </Link>
-            </Paper>
-          </Grid>
-        ))}
-      </Grid>
-    </div>
+    <Grid container spacing={3} className={classes.gridContainer}>
+      {tutorial.map((tutorial, index) => (
+        <Grid item xs={12} sm={6} md={4} key={index}>
+          <Paper className={classes.paper}>
+            <Typography className={classes.tutorialName}>
+              {tutorial.name}
+            </Typography>
+            <Typography className={classes.tutorialArea}>
+              {tutorial.area}
+            </Typography>
+            <Link to={tutorial.path} className={classes.tutorialLink}>
+              <Button 
+                variant="contained" 
+                color="primary"
+                className={classes.tutorialButton}
+              >
+                View Tutorial
+              </Button>
+            </Link>
+          </Paper>
+        </Grid>
+      ))}
+    </Grid>
+  </div>
   );
 }
