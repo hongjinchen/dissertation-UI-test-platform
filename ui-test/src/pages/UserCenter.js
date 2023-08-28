@@ -254,7 +254,6 @@ function UserCenter() {
                     { date: "2022-01-01", count: 12 },
                     { date: "2022-01-02", count: 5 },
                     { date: "2022-01-03", count: 8 },
-                    // ...
                   ]}
                   classForValue={(value) => {
                     if (!value) {

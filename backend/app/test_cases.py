@@ -230,12 +230,12 @@ action_mapping = {
     "Check text exists": check_element_text,
     "The user is now on this page": check_url_change,
     "User waits": user_waits,
-    # 下面是原来的函数，如果你的前端没有对应的subtype，你可以保留这部分
-    "accept_alert": accept_alert,
-    "dismiss_alert": dismiss_alert,
-    "switch_to_window": switch_to_window,
-    "check_element_style": check_element_style,
-    "check_alert_present": check_alert_present,
+    # # 下面是原来的函数，如果你的前端没有对应的subtype，你可以保留这部分
+    # "accept_alert": accept_alert,
+    # "dismiss_alert": dismiss_alert,
+    # "switch_to_window": switch_to_window,
+    # "check_element_style": check_element_style,
+    # "check_alert_present": check_alert_present,
 }
 # webdriver
 
@@ -295,7 +295,7 @@ class TestCases(unittest.TestCase):
                     action_function(self, self.driver,
                                     locator_type, locator_value, text_value)
 
-                elif action_subtype == "The user is now on this page" or "Check text exists" or "User waits":
+                elif action_subtype == "The user is now on this page" or action_subtype == "Check text exists" or action_subtype == "User waits":
                     expected_url = parameters.get('empty')
                     action_function(self, self.driver, expected_url)
 
@@ -303,7 +303,6 @@ class TestCases(unittest.TestCase):
                     if any(key in parameters for key in ['ID', 'Name', 'Class Name']):
                         locator_type, locator_value = construct_locator(
                             parameters)
-
                         # Remove the used keys from parameters
                         for key in ['ID', 'Name', 'Class Name']:
                             if key in parameters:

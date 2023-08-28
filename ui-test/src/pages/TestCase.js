@@ -8,11 +8,10 @@ import LeftSideBar from '../components/LeftSideBar';
 import DroppableArea from '../components/DroppableArea';
 import { fetchName } from '../api';
 
-
 function TestCase() {
   const { id, testCaseId } = useParams();
   const [name, setName] = useState('');
-  console.log(id, testCaseId);
+
   useEffect(() => {
     async function getName() {
       const fetchedName = await fetchName(testCaseId);
@@ -23,7 +22,6 @@ function TestCase() {
     if (testCaseId) {
       getName();
     }
-    console.log('testCaseId:', testCaseId);
   }, [testCaseId, setName]);
 
   return (

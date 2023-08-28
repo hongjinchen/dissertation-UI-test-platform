@@ -483,8 +483,9 @@ def construct_locator(locator_type, parameters):
 def run_test_event():
     data = request.get_json()
     try:
+        # print("test_event_data",data)
         test_event_data = data['test_event']
-        print(data['test_cases'])
+        # print("Environment:", test_event_data['environment'])
         created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
         test_event = TestEvent(
             name=test_event_data['name'],
@@ -498,6 +499,25 @@ def run_test_event():
         db.session.add(test_event)
         db.session.flush()
 
+        for test_case_data in data['test_cases']:
+            test_case = TestCase(
+                created_at=created_at,
+                type=test_case_data['type'],
+                parameters=test_case_data['parameters'],
+                test_event_id=test_event.id
+            )
+            db.session.add(test_case)
+            db.session.flush()
+
+            for test_case_element_data in test_case_data['test_case_elements']:
+                test_case_element = TestCaseElement(
+                    story_id=test_case.id,
+                    type=test_case_element_data['type'],
+                    parameters=test_case_element_data['parameters']
+                )
+                db.session.add(test_case_element)
+
+        db.session.commit()
         report_directory = "test_reports"
         base_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         absolute_report_directory = os.path.join(base_directory, report_directory)
@@ -518,10 +538,12 @@ def run_test_event():
             report_files.append(absolute_report_filepath)  # 将报告路径添加到列表中
 
             test_result = run_tests(env, test_case_list, absolute_report_filepath)
+
             passed_tests = test_result.testsRun - (len(test_result.failures) + len(test_result.errors))
             total_success_rate += (passed_tests / test_result.testsRun) * 100
 
         # 将报告路径列表转换为JSON字符串
+        # print("Report report_files:", report_files)
         reports_json = json.dumps(report_files)
         
         # 计算平均成功率
@@ -538,7 +560,6 @@ def run_test_event():
         db.session.add(test_report)
         db.session.commit()
 
-        # print("test_report.id", test_report.id)
         return jsonify(status='completed', message='Test completed', report_id=test_report.id), 201        
 
     except KeyError as ke:
@@ -632,14 +653,14 @@ def get_testevent_name():
 @app.route('/getTestCases', methods=['GET'])
 def get_testcases():
     testevent_id = request.args.get('testeventID', type=int)
-
     if testevent_id is not None:
         testevent = TestEvent.query.get(testevent_id)
-
+        
         if testevent is not None:
+            
             test_cases = TestCase.query.filter_by(test_event_id=testevent_id).order_by(TestCase.created_at).all()
             result = []
-
+            print("test_cases",test_cases)
             for index, test_case in enumerate(test_cases):
                 children = []
                 elements = TestCaseElement.query.filter_by(story_id=test_case.id).order_by(TestCaseElement.id).all()
@@ -665,7 +686,7 @@ def get_testcases():
                     "index": index
                 }
                 result.append(tc)
-
+            print("result",result)
             return jsonify(result)
         else:
             return jsonify({'error': 'TestEvent not found'}), 404

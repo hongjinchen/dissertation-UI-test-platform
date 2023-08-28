@@ -73,7 +73,7 @@ class TestCase(db.Model):
     created_at = db.Column(db.DateTime, nullable=True)
     type = db.Column(db.String(255), nullable=True)
     subtype = db.Column(db.String(50), nullable=False)
-    parameters = db.Column(db.Text, nullable=True)
+    parameters = db.Column(db.JSON, nullable=True)
     test_event_id = db.Column(db.Integer, db.ForeignKey('testevent.id', ondelete='CASCADE'), nullable=True)  # 添加外键引用
 
     test_event = relationship("TestEvent", back_populates="test_cases")
@@ -84,7 +84,7 @@ class TestCaseElement(db.Model):
     story_id = db.Column(db.Integer, nullable=True)
     type = db.Column(db.String(255), nullable=True)
     subtype = db.Column(db.String(50), nullable=False)
-    parameters = db.Column(db.Text, nullable=True)
+    parameters = db.Column(db.JSON, nullable=True)
 
 class TestReport(db.Model):
     __tablename__ = 'TestReport'

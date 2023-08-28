@@ -2,13 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Button, Box, Grid, Alert, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, List, ListItem, ListItemText, Checkbox, ListItemSecondaryAction } from '@mui/material';
+import { Container, Typography, Button, Box, Grid, Alert, Chip, Dialog, DialogContent, DialogActions, List, ListItem, ListItemText, Checkbox, ListItemSecondaryAction } from '@mui/material';
 import { API_BASE_URL } from "../config";
 import { fetchMembers } from "../api";
-const BASE_HEIGHT = 300; // 基础高度，例如500px
-// const HEIGHT_PER_CHAR = 0.1; // 每个字符增加的高度，这只是一个估算
+const BASE_HEIGHT = 300; // 基础高度
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
+    testCaseButton: {
+        marginRight: theme.spacing(1),  // 添加间距
+        borderColor: theme.palette.primary.light,
+        color: theme.palette.primary.main,
+        backgroundColor: 'white',
+        '&:hover': {
+            backgroundColor: theme.palette.primary.lighter,
+        }
+    },
+    shareButton: {
+        backgroundColor: theme.palette.secondary.main,
+        '&:hover': {
+            backgroundColor: theme.palette.secondary.dark,
+        }
+    },
     dialog: {
         width: '500px', // 你可以根据需要调整
         maxHeight: '600px',
@@ -16,7 +30,7 @@ const useStyles = makeStyles({
     dialogContent: {
         overflowY: 'auto', // 如果内容超出，添加滚动条
     },
-});
+}));
 
 const TestReportPage = () => {
     const { id } = useParams();
@@ -173,43 +187,30 @@ const TestReportPage = () => {
                 </Grid>
             </Box>
             <Box sx={{ p: 2, my: 2 }}>
-                <Button variant="contained" color="primary" onClick={handleTestCaseRedirect}>
-                    Go to Test Case
-                </Button>
-                <Box sx={{ p: 2, my: 2 }}>
-                    <Button variant="contained" color="primary" onClick={handleOpen}>
-                        Share
-                    </Button>
-                </Box>
-                {/* <Dialog open={open} onClose={handleClose}>
-                    <DialogContent>
-                        <Typography variant="h6" style={{ marginBottom: '16px' }}>Team Members</Typography>
-                        Please select the members you wish to share
-
-                        <List>
-                            {members.map((member, index) => (
-                                <ListItem key={index} button onClick={() => handleMemberSelect(member.user_id)}>
-                                    <ListItemText primary={member.username} secondary={member.email} />
-                                    <ListItemSecondaryAction>
-                                        <Checkbox
-                                            edge="end"
-                                            onChange={(e) => handleMemberSelect(e, member.user_id)}
-                                            value={member.user_id}
-                                        />
-                                    </ListItemSecondaryAction>
-                                </ListItem>
-                            ))}
-                        </List>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose} color="primary">
-                            Cancel
+                <Grid container spacing={2}>  {/* 这里的spacing属性可以调整按钮之间的间隔 */}
+                    <Grid item xs={6}>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={handleTestCaseRedirect}
+                            className={classes.testCaseButton}
+                            fullWidth
+                        >
+                            Go to Test Case
                         </Button>
-                        <Button onClick={handleShareReport} color="primary" variant="contained">
-                            Share
+                    </Grid>
+                    <Grid item xs={6}>
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleOpen}
+                            className={classes.shareButton}
+                            fullWidth
+                        >
+                            Share the report
                         </Button>
-                    </DialogActions>
-                </Dialog> */}
+                    </Grid>
+                </Grid>
                 <Dialog
                     open={open}
                     onClose={handleClose}
