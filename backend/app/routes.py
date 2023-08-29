@@ -250,9 +250,6 @@ def create_team():
     if not team_name:
         return jsonify({"status": "failed", "error": "Team name is required"}), 400
 
-    if not team_members:
-        return jsonify({"status": "failed", "error": "Team must have at least one member"}), 400
-
     if not user_id:
         return jsonify({"status": "failed", "error": "Manager user_id is required"}), 400
 
@@ -275,6 +272,10 @@ def create_team():
         joined_at=datetime.utcnow()
     )
     new_team.members.append(manager_membership)
+
+    # If team_members list is empty, add the user_id as the only member.
+    if not team_members:
+        team_members = [user_id]
 
     for member_id in team_members:
         user = User.query.get(member_id)
@@ -558,6 +559,7 @@ def run_test_event():
             test_case = TestCase(
                 created_at=created_at,
                 type=test_case_data['type'],
+                subtype=test_case_data['subtype'],  # 注意这里添加了 subtype
                 parameters=test_case_data['parameters'],
                 test_event_id=test_event.id
             )
@@ -568,6 +570,7 @@ def run_test_event():
                 test_case_element = TestCaseElement(
                     story_id=test_case.id,
                     type=test_case_element_data['type'],
+                    subtype=test_case_element_data['subtype'],
                     parameters=test_case_element_data['parameters']
                 )
                 db.session.add(test_case_element)

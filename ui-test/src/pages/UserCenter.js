@@ -18,6 +18,7 @@ import {
   DialogContent,
   DialogActions,
   Paper,
+  DialogContentText
 } from "@material-ui/core";
 // 第三方React组件库
 import CalendarHeatmap from "react-calendar-heatmap";
@@ -101,6 +102,10 @@ function UserCenter() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isOwner, setIsOwner] = useState(true);
+  const [errorDialog, setErrorDialog] = useState({
+    open: false,
+    message: ''
+  });
 
   // user contribution
   const endDate = new Date();  // Today's date
@@ -156,12 +161,16 @@ function UserCenter() {
       return;
     }
     const response = await updateUserPassword(Cookies.get('userId'), oldPassword, newPassword);
-    console.log(response);
+
     if (response.status === "success") {
       alert("Password changed successfully");
       setShowChangePassword(false);
     } else {
-      alert(response.error);
+      // 打开错误信息Dialog
+      setErrorDialog({
+        open: true,
+        message: response.error || 'Unknown error occurred'
+      });
     }
   };
 
@@ -382,6 +391,26 @@ function UserCenter() {
                 color="secondary"
               >
                 Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={errorDialog.open}
+            onClose={() => setErrorDialog({ open: false, message: '' })}
+          >
+            <DialogTitle>Error</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                {errorDialog.message}
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => setErrorDialog({ open: false, message: '' })}
+                color="secondary"
+              >
+                Close
               </Button>
             </DialogActions>
           </Dialog>
