@@ -81,31 +81,30 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
     setTestID("");
     setNewEvent("");
   };
-
   const saveInput = () => {
     setOpen(false);
+
+    const newTask = {
+      id: uuidv4(), // Generate a unique ID for the new task
+      text: newEvent,
+      testcase: TestID,
+    };
+    
     const updatedData = taskLists.map((item) => {
       if (item.id === list.id) {
         return {
           ...item,
-          tasks: [
-            ...item.tasks,
-            {
-              id: item.tasks.length + 1,
-              text: newEvent,
-              testcase: TestID,
-            },
-          ],
+          tasks: [...item.tasks, newTask], // Add the new task to the tasks array
         };
       } else {
         return item;
       }
     });
-
     setTaskLists(updatedData);
+
     setNewEvent("");
     setTestID("");
-    saveData(); // 调用 saveData 函数
+    saveData(updatedData);
   };
   const [newEvent, setNewEvent] = useState("");
   const [TestID, setTestID] = useState("");
@@ -371,6 +370,7 @@ const KanbanBoard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // saveData();
   }, [taskLists]);
 
   useEffect(() => {
@@ -381,7 +381,7 @@ const KanbanBoard = () => {
         setTaskLists(response.data)
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching task lists:', error);
+        // console.error('Error fetching task lists:', error);
         setLoading(false);
       }
     };
@@ -401,13 +401,15 @@ const KanbanBoard = () => {
       if (response.status !== 200) {
         alert("Save failed!");
         throw new Error("Error saving task data");
-      } 
+      }
       setLoading(false);
     } catch (error) {
       console.error("Failed to save task data:", error);
       setLoading(false);
     }
   }, [taskLists, id]);
+
+  
   // 判定弹窗是否打开
   const [open, setOpen] = React.useState(false);
 
@@ -417,7 +419,7 @@ const KanbanBoard = () => {
       { id: uuidv4(), name: NewTask, tasks: [] },
     ];
     setTaskLists(newTaskList);
-    console.log("handleAddTaskList",taskLists);
+    console.log("handleAddTaskList", taskLists);
     setNewTask("");
     setOpen(false);
     saveData();

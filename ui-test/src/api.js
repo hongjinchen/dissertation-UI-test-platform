@@ -279,3 +279,15 @@ export const fetchScripts = async (id) => {
     throw error;
   }
 };
+
+//user contribution
+export const fetchUserContributions = async (userId) => {
+  try {
+    const response = await fetch(`/contributions/${userId}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching user contributions:", error);
+    return null;
+  }
+};

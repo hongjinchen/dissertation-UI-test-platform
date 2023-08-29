@@ -31,7 +31,7 @@ import clsx from "clsx";
 // Cookies库
 import Cookies from 'js-cookie';
 // API调用
-import { fetchUserData, updateUserInfo, updateUserPassword, updateEmail } from '../api';
+import { fetchUserData, updateUserInfo, updateUserPassword, updateEmail, fetchUserContributions } from '../api';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -87,7 +87,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 function UserCenter() {
   const { id } = useParams();
-
   // user information
   const [username, setNickname] = useState("");
   const [email, setEmail] = useState("");
@@ -103,8 +102,24 @@ function UserCenter() {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isOwner, setIsOwner] = useState(true);
 
+  // user contribution
+  const endDate = new Date();  // Today's date
+  const startDate = new Date();
+  startDate.setFullYear(startDate.getFullYear() - 1);  // One year before today's date
+  const [contributions, setContributions] = useState([]);
   useEffect(() => {
-    console.log(id);
+    const getUserContributions = async () => {
+      const contributionData = await fetchUserContributions(id);
+      console.log(contributionData);
+      if (contributionData) {
+        setContributions(contributionData);
+      }
+    };
+
+    getUserContributions();
+  }, [id]);
+  useEffect(() => {
+    // console.log(id);
     const getUserData = async () => {
       const userData = await fetchUserData(id);
 
@@ -210,8 +225,7 @@ function UserCenter() {
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
             {/* User information display */}
-
-            <Grid item xs={12}  sm={isOwner ? 6 : 12}>
+            <Grid item xs={12} sm={isOwner ? 6 : 12}>
               <Paper className={fixedHeightPaper}>
                 <Box className={classes.infoContainer}>
                   <Avatar src={avatar} className={classes.infoAvatar} />
@@ -248,13 +262,9 @@ function UserCenter() {
               <Paper className={classes.paper}>
                 <Typography variant="h6">Contribution Graph</Typography>
                 <CalendarHeatmap
-                  startDate={new Date("2022-01-01")}
-                  endDate={new Date("2022-12-31")}
-                  values={[
-                    { date: "2022-01-01", count: 12 },
-                    { date: "2022-01-02", count: 5 },
-                    { date: "2022-01-03", count: 8 },
-                  ]}
+                  startDate={startDate}
+                  endDate={endDate}
+                  values={contributions}
                   classForValue={(value) => {
                     if (!value) {
                       return "color-empty";

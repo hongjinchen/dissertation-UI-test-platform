@@ -24,6 +24,7 @@ class UserContribution(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id', ondelete='CASCADE'), nullable=True)
     activity_period = db.Column(db.String(7), nullable=True)
+    count = db.Column(db.Integer, default=1)  # 新增字段，表示该用户在该时间段内的贡献次数
 
     user = relationship("User", back_populates="contributions")
 

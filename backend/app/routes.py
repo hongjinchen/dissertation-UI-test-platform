@@ -1,16 +1,13 @@
-from flask import render_template, redirect, url_for, flash, request,jsonify,make_response
+from flask import render_template, redirect, url_for, flash, request, jsonify, make_response
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 from app import app, db
-from app.models import User
-from app.models import Team
-from app.models import UserTeam
-from app.models import TestCase, TestCaseElement,TaskList,Task,TestEvent,TestReport
+from app.models import TestCase, TestCaseElement, TaskList, Task, TestEvent, TestReport, UserContribution, UserTeam, Team, User
 from smtplib import SMTPRecipientsRefused
 from sqlalchemy.orm import joinedload
 from .mail_service import send_email
-from .test_cases  import run_tests
+from .test_cases import run_tests
 import unittest
 import HtmlTestRunner
 import jwt
@@ -29,10 +26,13 @@ def add_cors_headers(response):
     origin = request.headers.get('Origin')
     if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers',
+                         'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods',
+                         'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
+
 
 def token_required(f):
     @wraps(f)
@@ -57,6 +57,8 @@ def token_required(f):
     return decorated
 
 # user part
+
+
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
@@ -71,7 +73,8 @@ def register():
             return jsonify(message='Email already in use. Please use a different email.', status='error')
 
         hashed_password = generate_password_hash(password)
-        new_user = User(username=username, password=hashed_password,email=email)
+        new_user = User(username=username,
+                        password=hashed_password, email=email)
 
         db.session.add(new_user)
         db.session.commit()
@@ -82,10 +85,13 @@ def register():
             {"user_id": new_user_id, "exp": datetime.utcnow() + timedelta(hours=1)},
             app.config["SECRET_KEY"],
         )
-        resp = make_response(jsonify({"message": 'Registration successful, please log in.', "status": 'success',"user_id":new_user_id}))
-        resp.set_cookie("token", token, max_age=60 * 60, secure=True, httponly=False, samesite="Strict")
+        resp = make_response(jsonify(
+            {"message": 'Registration successful, please log in.', "status": 'success', "user_id": new_user_id}))
+        resp.set_cookie("token", token, max_age=60 * 60,
+                        secure=True, httponly=False, samesite="Strict")
 
         return resp
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -101,17 +107,21 @@ def login():
 
             # 生成令牌
             token = jwt.encode(
-                {"user_id": user.user_id, "exp": datetime.utcnow() + timedelta(hours=1)},
+                {"user_id": user.user_id, "exp": datetime.utcnow() +
+                 timedelta(hours=1)},
                 app.config["SECRET_KEY"],
             )
-            resp = make_response(jsonify(message='Login successful.', status='success', user_id=user.user_id))
+            resp = make_response(
+                jsonify(message='Login successful.', status='success', user_id=user.user_id))
 
             # 设置令牌 cookie
-            resp.set_cookie("token", token, max_age=60 * 60, secure=True, httponly=False, samesite="Strict")
+            resp.set_cookie("token", token, max_age=60 * 60,
+                            secure=True, httponly=False, samesite="Strict")
 
             return resp
 
         return jsonify(message='Login failed.', status='failed')
+
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
@@ -124,6 +134,7 @@ def get_user(user_id):
         "username": user.username,
         "email": user.email
     })
+
 
 @app.route('/infoEdit/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
@@ -151,6 +162,7 @@ def update_user(user_id):
 
     return jsonify({"status": "success"}), 200
 
+
 @app.route('/changePassword/<int:user_id>', methods=['PUT'])
 def change_password(user_id):
     if not request.is_json:
@@ -173,6 +185,7 @@ def change_password(user_id):
     db.session.commit()
 
     return jsonify({"status": "success", "message": "Password changed successfully"}), 200
+
 
 @app.route('/updateEmail/<int:user_id>', methods=['PUT'])
 def update_email(user_id):
@@ -198,6 +211,7 @@ def update_email(user_id):
 
     return jsonify({"status": "success", "message": "Email updated successfully"}), 200
 
+
 @app.route('/searchUsers', methods=['GET'])
 def search_users():
     userName = request.args.get('userName', '')
@@ -207,7 +221,8 @@ def search_users():
         return jsonify({"error": "Search term is required"}), 400
 
     # Exclude the user_id from search results
-    users = User.query.with_entities(User.user_id, User.username, User.email, User.description, User.avatar_link).filter(User.username.like(f'%{userName}%'), User.user_id != user_id).all()
+    users = User.query.with_entities(User.user_id, User.username, User.email, User.description, User.avatar_link).filter(
+        User.username.like(f'%{userName}%'), User.user_id != user_id).all()
 
     if not users:
         return jsonify({"error": "No users found"}), 404
@@ -283,6 +298,7 @@ def create_team():
 
     return jsonify({"status": "success", "team_id": new_team.team_id})
 
+
 @app.route('/getTeamMembers/<int:team_id>', methods=['GET'])
 def get_team_members(team_id):
     team = Team.query.get(team_id)
@@ -293,7 +309,8 @@ def get_team_members(team_id):
     member_data = []
 
     # Find manager membership in the members list
-    manager_membership = next((member for member in members if member.user_id == team.manager_id), None)
+    manager_membership = next(
+        (member for member in members if member.user_id == team.manager_id), None)
 
     if manager_membership:
         manager = manager_membership.user
@@ -322,6 +339,7 @@ def get_team_members(team_id):
 
     return jsonify({"status": "success", "members": member_data})
 
+
 @token_required
 @app.route('/getUserTeams/<int:user_id>', methods=['GET'])
 def get_user_teams(user_id):
@@ -342,16 +360,19 @@ def get_user_teams(user_id):
 
     return jsonify({"status": "success", "teams": team_data})
 
+
 @app.route('/getTeamScript/<int:team_id>', methods=['GET'])
 def get_team_script(team_id):
     test_events = TestEvent.query.filter_by(team_id=team_id).all()
 
     if test_events:
-        test_event_data = [{"id": event.id, "name": event.name, "created_at": event.created_at, "created_by": event.creator.username, "environment": event.environment, "label": event.label, "state": event.state} for event in test_events]
+        test_event_data = [{"id": event.id, "name": event.name, "created_at": event.created_at, "created_by": event.creator.username,
+                            "environment": event.environment, "label": event.label, "state": event.state} for event in test_events]
         return jsonify(test_event_data)
     else:
         return jsonify({"message": "No TestEvent found for the given team_id"}), 404
-    
+
+
 @app.route('/saveTask', methods=['POST'])
 def save_task():
     data = request.get_json()
@@ -359,41 +380,41 @@ def save_task():
     team_id = data['team_id']
 
     try:
-        # 删除现有任务列表和任务
-        Task.query.filter(Task.task_list_id.in_(
-            db.session.query(TaskList.id).filter(TaskList.team_id == team_id)
-        )).delete(synchronize_session=False)
-        TaskList.query.filter(TaskList.team_id == team_id).delete(synchronize_session=False)
-        db.session.commit()
+        with db.session.begin():
+            # 删除现有任务列表和任务
+            Task.query.filter(Task.task_list_id.in_(
+                db.session.query(TaskList.id).filter(TaskList.team_id == team_id)
+            )).delete(synchronize_session='fetch')
+            TaskList.query.filter(TaskList.team_id == team_id).delete(
+                synchronize_session='fetch')
 
-        # 保存新的任务列表和任务
-        for task_list_data in task_lists:
-            task_list = TaskList(
-                name=task_list_data['name'],
-                created_at=datetime.now(),  # 当前时间作为创建时间
-                team_id=team_id
-            )
-
-            db.session.add(task_list)
-            db.session.commit()
-
-            for task_data in task_list_data['tasks']:
-                task = Task(
-                    title=task_data['text'],
-                    description=None,  # 设置为 None，因为你的数据结构中没有描述字段
-                    status='not started',  # 将状态设置为 not started，因为你的数据结构中没有状态字段
-                    task_list_id=task_list.id,
-                    user_case_id=task_data['testcase']
+            # 保存新的任务列表和任务
+            for task_list_data in task_lists:
+                task_list = TaskList(
+                    name=task_list_data['name'],
+                    created_at=datetime.now(),
+                    team_id=team_id
                 )
+                db.session.add(task_list)
 
-                db.session.add(task)
-                db.session.commit()
+                for task_data in task_list_data['tasks']:
+                    task = Task(
+                        title=task_data['text'],
+                        description=None,
+                        status='not started',
+                        task_list_id=task_list.id,
+                        user_case_id=task_data['testcase']
+                    )
+                    db.session.add(task)
+
+        # 事务结束，所有更改都将被提交
 
     except Exception as e:
-        db.session.rollback()
+        db.session.rollback()  # 在异常情况下回滚事务
         return jsonify({"message": "Error: " + str(e)}), 500
 
     return jsonify({"message": "Task data saved successfully"})
+
 
 @app.route('/tasklists/<int:team_id>', methods=['GET'])
 def get_task_lists(team_id):
@@ -422,13 +443,16 @@ def get_task_lists(team_id):
         })
     return jsonify(output)
 
+
 @app.route('/saveTestEvents', methods=['POST'])
 def create_test_event():
     data = request.get_json()
 
     try:
         test_event_data = data['test_event']
-        created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
+        created_at = datetime.fromisoformat(
+            test_event_data['created_at'].replace('Z', '+00:00'))
+
         test_event = TestEvent(
             name=test_event_data['name'],
             created_at=created_at,
@@ -440,7 +464,20 @@ def create_test_event():
         )
         db.session.add(test_event)
         db.session.flush()
-        print(data['test_cases'])
+
+        # Update UserContribution
+        # Format the created_at date to "YYYY-MM"
+        activity_period = created_at.strftime("%Y-%m")
+        user_contribution = UserContribution.query.filter_by(
+            user_id=test_event.created_by, activity_period=activity_period).first()
+
+        if user_contribution:
+            user_contribution.count += 1
+        else:
+            new_contribution = UserContribution(
+                user_id=test_event.created_by, activity_period=activity_period, count=1)
+            db.session.add(new_contribution)
+
         for test_case_data in data['test_cases']:
             test_case = TestCase(
                 created_at=created_at,
@@ -456,7 +493,8 @@ def create_test_event():
                 test_case_element = TestCaseElement(
                     story_id=test_case.id,
                     type=test_case_element_data['type'],
-                    subtype=test_case_element_data['subtype'],  # 注意这里添加了 subtype
+                    # 注意这里添加了 subtype
+                    subtype=test_case_element_data['subtype'],
                     parameters=test_case_element_data['parameters']
                 )
                 db.session.add(test_case_element)
@@ -473,11 +511,13 @@ def create_test_event():
         print(e)
         return jsonify(status='failed', message=str(e)), 400
 
+
 def construct_locator(locator_type, parameters):
     if locator_type == 'XPATH':
         return f'//button[contains(text(), "{parameters}")]'
     # You can add additional cases for other locator types if needed.
     return parameters
+
 
 @app.route('/runTestEvents', methods=['POST'])
 def run_test_event():
@@ -485,8 +525,9 @@ def run_test_event():
     try:
         # print("test_event_data",data)
         test_event_data = data['test_event']
-        # print("Environment:", test_event_data['environment'])
-        created_at = datetime.fromisoformat(test_event_data['created_at'].replace('Z', '+00:00'))
+
+        created_at = datetime.fromisoformat(
+            test_event_data['created_at'].replace('Z', '+00:00'))
         test_event = TestEvent(
             name=test_event_data['name'],
             created_at=created_at,
@@ -498,6 +539,20 @@ def run_test_event():
         )
         db.session.add(test_event)
         db.session.flush()
+
+        # Update UserContribution
+        # Format the created_at date to "YYYY-MM"
+        activity_period = created_at.strftime("%Y-%m")
+        user_contribution = UserContribution.query.filter_by(
+            user_id=test_event.created_by, activity_period=activity_period).first()
+
+        if user_contribution:
+            user_contribution.count += 1
+        else:
+            # If there's no contribution for the user in that period, create a new one.
+            new_contribution = UserContribution(
+                user_id=test_event.created_by, activity_period=activity_period, count=1)
+            db.session.add(new_contribution)
 
         for test_case_data in data['test_cases']:
             test_case = TestCase(
@@ -519,8 +574,10 @@ def run_test_event():
 
         db.session.commit()
         report_directory = "test_reports"
-        base_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        absolute_report_directory = os.path.join(base_directory, report_directory)
+        base_directory = os.path.dirname(
+            os.path.dirname(os.path.abspath(__file__)))
+        absolute_report_directory = os.path.join(
+            base_directory, report_directory)
 
         os.makedirs(absolute_report_directory, exist_ok=True)
 
@@ -534,33 +591,36 @@ def run_test_event():
         for env in data['test_event']['environment']:
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             report_filename = f"report_{test_event.id}_{timestamp}.html"
-            absolute_report_filepath = os.path.join(absolute_report_directory, report_filename)
+            absolute_report_filepath = os.path.join(
+                absolute_report_directory, report_filename)
             report_files.append(absolute_report_filepath)  # 将报告路径添加到列表中
 
-            test_result = run_tests(env, test_case_list, absolute_report_filepath)
+            test_result = run_tests(
+                env, test_case_list, absolute_report_filepath)
 
-            passed_tests = test_result.testsRun - (len(test_result.failures) + len(test_result.errors))
+            passed_tests = test_result.testsRun - \
+                (len(test_result.failures) + len(test_result.errors))
             total_success_rate += (passed_tests / test_result.testsRun) * 100
 
         # 将报告路径列表转换为JSON字符串
         # print("Report report_files:", report_files)
         reports_json = json.dumps(report_files)
-        
+
         # 计算平均成功率
         average_success_rate = total_success_rate / env_count
-        
+
         # 创建一个新的测试报告对象
         test_report = TestReport(
             test_event_id=test_event.id,
             html_report=reports_json,
             success_rate=average_success_rate
         )
-        
+
         # 添加新的测试报告到数据库
         db.session.add(test_report)
         db.session.commit()
 
-        return jsonify(status='completed', message='Test completed', report_id=test_report.id), 201        
+        return jsonify(status='completed', message='Test completed', report_id=test_report.id), 201
 
     except KeyError as ke:
         db.session.rollback()
@@ -571,7 +631,7 @@ def run_test_event():
         print(e)
         return jsonify(status='failed', message=str(e)), 400
 
-    
+
 def merge_html_reports(report_paths):
     merged_content = ""
     for path in report_paths:
@@ -579,10 +639,11 @@ def merge_html_reports(report_paths):
             merged_content += f.read()
     return merged_content
 
+
 @app.route('/test-report/<int:report_id>', methods=['GET'])
 def get_test_report(report_id):
     report = TestReport.query.filter_by(id=report_id).first()
-    
+
     if not report:
         return jsonify({'error': 'Report not found'}), 404
 
@@ -602,15 +663,16 @@ def get_test_report(report_id):
 
     for report_folder in report_files:
 
-       files_and_directories = os.listdir(report_folder)
-       
-       for item in files_and_directories:
+        files_and_directories = os.listdir(report_folder)
+
+        for item in files_and_directories:
             full_path = os.path.join(report_folder, item)
             if os.path.isfile(full_path):
                 try:
                     with open(full_path, 'r', encoding='utf-8') as f:
                         html_content = f.read()
-                        encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+                        encoded_html_report = base64.b64encode(
+                            html_content.encode('utf-8')).decode('utf-8')
                         encoded_html_reports.append(encoded_html_report)
                 except Exception as e:
                     # 这里可以记录错误，或者返回具体的错误信息给前端
@@ -650,20 +712,23 @@ def get_testevent_name():
     else:
         return jsonify({'error': 'testeventID parameter is required'}), 400
 
+
 @app.route('/getTestCases', methods=['GET'])
 def get_testcases():
     testevent_id = request.args.get('testeventID', type=int)
     if testevent_id is not None:
         testevent = TestEvent.query.get(testevent_id)
-        
+
         if testevent is not None:
-            
-            test_cases = TestCase.query.filter_by(test_event_id=testevent_id).order_by(TestCase.created_at).all()
+
+            test_cases = TestCase.query.filter_by(
+                test_event_id=testevent_id).order_by(TestCase.created_at).all()
             result = []
-            print("test_cases",test_cases)
+            print("test_cases", test_cases)
             for index, test_case in enumerate(test_cases):
                 children = []
-                elements = TestCaseElement.query.filter_by(story_id=test_case.id).order_by(TestCaseElement.id).all()
+                elements = TestCaseElement.query.filter_by(
+                    story_id=test_case.id).order_by(TestCaseElement.id).all()
 
                 for element in elements:
                     child = {
@@ -686,12 +751,13 @@ def get_testcases():
                     "index": index
                 }
                 result.append(tc)
-            print("result",result)
+            print("result", result)
             return jsonify(result)
         else:
             return jsonify({'error': 'TestEvent not found'}), 404
     else:
         return jsonify({'error': 'testeventID parameter is required'}), 400
+
 
 @app.route('/searchTestCase', methods=['POST'])
 def search_test_case():
@@ -709,7 +775,8 @@ def search_test_case():
 
     results = []
     for test_report in test_reports:
-        test_event = TestEvent.query.filter_by(id=test_report.test_event_id).first()
+        test_event = TestEvent.query.filter_by(
+            id=test_report.test_event_id).first()
 
         if test_event:
             result = {
@@ -719,6 +786,7 @@ def search_test_case():
             }
             results.append(result)
     return jsonify(status='success', results=results), 200
+
 
 @app.route('/searchTestReport', methods=['POST'])
 def search_test_report():
@@ -737,7 +805,8 @@ def search_test_report():
 
     results = []
     for test_report in test_reports:
-        test_event = TestEvent.query.filter_by(id=test_report.test_event_id).first()
+        test_event = TestEvent.query.filter_by(
+            id=test_report.test_event_id).first()
 
         if test_event:
             result = {
@@ -747,6 +816,7 @@ def search_test_report():
             }
             results.append(result)
     return jsonify(status='success', results=results), 200
+
 
 def generate_html_from_report_data(report_data):
     # Get the directory of the current file
@@ -763,15 +833,16 @@ def generate_html_from_report_data(report_data):
 
     return html_output
 
+
 @app.route('/send-report', methods=['POST'])
 def send_report():
     email_addresses = request.json.get('email')
     user_ids = request.json.get('user_ids')
     test_event_id = request.json.get('test_event_id')
-    id=request.json.get('id')
+    id = request.json.get('id')
 
     report = TestReport.query.filter_by(id=id).first()
-    
+
     if not report:
         return jsonify({'error': 'Report not found'}), 404
 
@@ -798,15 +869,16 @@ def send_report():
                 try:
                     with open(full_path, 'r', encoding='utf-8') as f:
                         html_content = f.read()
-                        encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
+                        encoded_html_report = base64.b64encode(
+                            html_content.encode('utf-8')).decode('utf-8')
                         encoded_html_reports.append(encoded_html_report)
                 except Exception as e:
                     print(f"Error reading file {full_path}: {e}")
                     continue
 
     # 解码base64编码的HTML报告
-    decoded_html_reports = [base64.b64decode(report).decode('utf-8') for report in encoded_html_reports]
-
+    decoded_html_reports = [base64.b64decode(report).decode(
+        'utf-8') for report in encoded_html_reports]
 
     # 获取与test_event.created_by关联的用户名
     created_by_username = test_event.creator.username
@@ -824,7 +896,8 @@ def send_report():
         'htmlReports': decoded_html_reports,  # 注意这里是列表，包含多个报告
     }
     # 这里您可能需要将report_data转化成适合邮件发送的格式，例如HTML或者纯文本
-    html_report = generate_html_from_report_data(report_data)  # 这是一个虚构的函数，您需要根据需求实现它
+    html_report = generate_html_from_report_data(
+        report_data)  # 这是一个虚构的函数，您需要根据需求实现它
 
     if not email_addresses and user_ids:
         # 获取用户电子邮件地址
@@ -839,3 +912,31 @@ def send_report():
             return jsonify({"error": f"Failed to send report to {email_address}. Error: {str(e)}"}), 400
 
     return jsonify({"message": "Report sent successfully!"})
+
+
+@app.route("/contributions/<int:user_id>")
+def get_contributions(user_id):
+    try:
+        print("user_id",user_id)
+        today = datetime.today()
+        one_year_ago = today - timedelta(days=365)
+
+        contributions = UserContribution.query.filter(
+            UserContribution.user_id == user_id,
+            UserContribution.activity_date >= one_year_ago.strftime(
+                '%Y-%m-%d'),
+            UserContribution.activity_date <= today.strftime('%Y-%m-%d')
+        ).all()
+
+        # Transform data into desired format
+        data = [
+            {
+                "date": contribution.activity_date,
+                "count": contribution.contribution_count
+            }
+            for contribution in contributions
+        ]
+        print("data",data)
+        return jsonify(data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
