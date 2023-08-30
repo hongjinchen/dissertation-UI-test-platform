@@ -148,10 +148,10 @@ export const createTeam = async (teamName, teamDescription, teamMembers, user_id
   }
 };
 
-export const searchUsers = async (userName, user_id) => {
+export const searchUsers = async (queryValue) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/searchUsers`, {
-      params: { userName: userName, user_id: user_id }, // Pass user_id as a request parameter
+      params: { searchTerm: queryValue },
     });
 
     if (response.data.status === 'success') {
@@ -161,12 +161,12 @@ export const searchUsers = async (userName, user_id) => {
         avatar_link: user.avatar_link,
       }));
     } else {
-      console.error("Error searching users:", response.data.message);
-      return [];
+      console.error("Error searching users:", response.data.error);
+      throw new Error(response.data.error); // 抛出错误，以便我们可以在外部捕获它
     }
   } catch (error) {
     console.error("Error searching users:", error);
-    return [];
+    throw error; // 这样我们可以在handleSearch函数中捕获它
   }
 };
 

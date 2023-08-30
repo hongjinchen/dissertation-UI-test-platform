@@ -73,7 +73,7 @@ export default function CreateTeam() {
   const [searchResults, setSearchResults] = useState([]);
 
   const handleSearch = async (userName) => {
-    const newSearchResults = await searchUsers(userName, Cookies.get('userId'));
+    const newSearchResults = await searchUsers(userName);
     console.log(newSearchResults);
     setSearchResults(newSearchResults);
   };

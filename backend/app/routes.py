@@ -14,6 +14,7 @@ import jwt
 from jinja2 import Environment, FileSystemLoader
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
 import logging
 import base64
 import json
@@ -214,28 +215,36 @@ def update_email(user_id):
 
 @app.route('/searchUsers', methods=['GET'])
 def search_users():
-    userName = request.args.get('userName', '')
-    user_id = request.args.get('user_id', None)  # Get the passed user_id
+    searchTerm = request.args.get('searchTerm', '')
 
-    if not userName:
+    if not searchTerm:
         return jsonify({"error": "Search term is required"}), 400
 
-    # Exclude the user_id from search results
-    users = User.query.with_entities(User.user_id, User.username, User.email, User.description, User.avatar_link).filter(
-        User.username.like(f'%{userName}%'), User.user_id != user_id).all()
+    users_query = User.query.with_entities(User.user_id, User.username, User.email, User.description, User.avatar_link).filter(
+        or_(
+            User.username.like(f'%{searchTerm}%'),
+            User.email.like(f'%{searchTerm}%'),
+            User.user_id == searchTerm  # 注意这里使用的是“==”而不是“like”因为我们假设user_id是整数或特定格式
+        )
+    )
+
+    users = users_query.all()
 
     if not users:
         return jsonify({"error": "No users found"}), 404
 
-    return jsonify({"status": "success", "users": [
-        {
-            "user_id": user.user_id,
-            "username": user.username,
-            "email": user.email,
-            "description": user.description,
-            "avatar_link": user.avatar_link
-        } for user in users
-    ]})
+    return jsonify({
+        "status": "success", 
+        "users": [
+            {
+                "user_id": user.user_id,
+                "username": user.username,
+                "email": user.email,
+                "description": user.description,
+                "avatar_link": user.avatar_link
+            } for user in users
+        ]
+    })
 
 
 @app.route('/createTeam', methods=['POST'])
@@ -971,17 +980,36 @@ def remove_team(team_id):
 
 @app.route('/team/<int:team_id>/add_member', methods=['POST'])
 def add_team_member(team_id):
-    team = Team.query.get_or_404(team_id)
-    username = request.json.get('username')
     
-    user = User.query.filter_by(username=username).first()
+    team = Team.query.get_or_404(team_id)
+    
+    user_data = request.json.get('username')
+    if not user_data or not isinstance(user_data, list) or len(user_data) == 0:
+        return jsonify({"message": "Invalid user data!"}), 400
+
+    user_id = user_data[0].get('id')
+    print("user_id", user_id)
+    print("team_id", team_id)
+    
+    user = User.query.get(user_id)
     if not user:
         return jsonify({"message": "User not found!"}), 404
 
+    # 查询UserTeam表，看用户是否已是该团队成员
+    existing_member = UserTeam.query.filter_by(user_id=user_id, team_id=team_id).first()
+
+    # 如果用户已是该团队成员，返回错误提示
+    if existing_member:
+        return jsonify({"message": "User is already a member of this team!"}), 400
+
+    # 如果用户不是成员，继续添加流程...
     user_team = UserTeam(user_id=user.user_id, team_id=team_id)
     db.session.add(user_team)
     db.session.commit()
+    
     return jsonify({"message": "Member added successfully!"}), 200
+
+
 
 @app.route('/team/<int:team_id>/remove_member', methods=['POST'])
 def remove_team_member(team_id):
