@@ -9,9 +9,10 @@ import IssueManagement from "./pages/IssueManagement";
 import UserCenter from "./pages/UserCenter";
 import GroupPage from "./pages/GroupPage";
 import ScriptManagement from "./pages/ScriptManagement";
+import TeamManagement from './pages/TeamManagement';
+
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-// import ForgotPassword from "./pages/ForgotPassword";
 import ForgotPasswordFlow from "./pages/ForgotPasswordFlow";
 import TestReport from "./pages/TestReport";
 import TestCase from "./pages/TestCase";
@@ -26,7 +27,7 @@ const AppRoutes = () => {
         <Route exact path="/" element={<Dashboard />} />
         <Route exact path="/issue/:id" element={<IssueManagement />} />
         <Route exact path="/script/:id" element={<ScriptManagement />} />
-        {/* <Route exact path="/userCenter/:id" element={<UserCenter />}/> */}
+        <Route exact path="/team/:id" element={<TeamManagement />} />
         <Route exact path="/userCenter/:id" element={<UserCenter />} />
         <Route exact path="/group/:id" element={
           <GroupContext.Provider value={useParams().id}>

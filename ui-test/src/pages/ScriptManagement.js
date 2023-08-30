@@ -224,7 +224,7 @@ export default function ScriptManagement() {
                 </div>
               </Paper>
             </Grid>
-            {/* Add new part */}
+            {/* Create a new test case part */}
             <Grid item xs={12} className={classes.centeredGrid}>
               <Button
                 variant="contained" color="primary"

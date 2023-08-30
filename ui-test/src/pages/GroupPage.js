@@ -10,6 +10,10 @@ import {
   Grid,
   Paper,
 } from "../components/muiComponents";
+import {
+  Button,
+} from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
 // 自定义React组件
 import Navigation from "../components/SubNavigation";
 import KanbanPreview from "../components/overview";
@@ -77,6 +81,24 @@ const useStyles = makeStyles((theme) => ({
   noUnderline: {
     textDecoration: 'none',
   },
+  buttonLabel: {
+    marginLeft: theme.spacing(1),
+    fontSize: '1.25rem',
+  },
+  button: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: theme.spacing(1),
+    padding: theme.spacing(1, 3),
+    textTransform: 'none',
+  },
+  centeredGrid: {
+    marginTop: theme.spacing(8),
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 }));
 
 function GroupPage() {
@@ -86,7 +108,7 @@ function GroupPage() {
 
   useEffect(() => {
     const fetchMembersList = async () => {
-      const response =await fetchMembers(id);
+      const response = await fetchMembers(id);
       // console.log("fetchMembers",response);
       setMembers(response.data.members);
     };
@@ -116,13 +138,13 @@ function GroupPage() {
     },
     {
       id: 5,
-      type:  'Longer Event Type Name Example 2',
+      type: 'Longer Event Type Name Example 2',
       count: 8,
     },
-];
+  ];
   return (
     <div className={classes.root}>
-      <Navigation   title="My Group" id="id"/>
+      <Navigation title="My Group" id="id" />
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -130,25 +152,34 @@ function GroupPage() {
           {/* graph component */}
           <Grid container spacing={3}>
 
-            {/* <Grid item xs={12}>
-              <Paper className={fixedHeightPaper}>
-              </Paper>
-            </Grid> */}
-
             {/* kanban component */}
-            <Grid item xs={6}  component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
+            <Grid item xs={6} component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
               <Paper className={classes.kanban}>
                 <Title color="darkgrey">Kanban</Title>
-              <KanbanPreview data={KanbanData} id={id}/>
+                <KanbanPreview data={KanbanData} id={id} />
               </Paper>
             </Grid>
 
             <Grid item xs={6}>
               <Paper className={classes.member}>
-              <Title>Group Members</Title>
-              <MemberList data={members} />
+                <Title>Group Members</Title>
+                <MemberList data={members} />
               </Paper>
             </Grid>
+          </Grid>
+
+          <Grid item xs={12} className={classes.centeredGrid}>
+            {/* <Paper> */}
+              <Button
+                variant="contained" color="primary"
+                component={Link}
+                to={`/testCase/${id}`}
+                className={classes.button}
+                startIcon={<AddIcon />}
+              >
+                <span className={classes.buttonLabel}>Create a new test case</span>
+              </Button>
+            {/* </Paper> */}
           </Grid>
         </Container>
       </main>

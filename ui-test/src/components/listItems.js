@@ -73,6 +73,13 @@ export function SecondaryListItems({ id }) {
         </ListItemIcon>
         <ListItemText primary="Issue Management" />
       </ListItem>
+
+      <ListItem button component={Link} to={`/team/${id}`}>
+        <ListItemIcon>
+          <ErrorIcon />
+        </ListItemIcon>
+        <ListItemText primary="Team Management" />
+      </ListItem>
     </div>
   )
 

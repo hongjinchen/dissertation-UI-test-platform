@@ -943,3 +943,59 @@ def get_contributions(user_id):
         return jsonify(data), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# 团队管理
+@app.route('/team/<int:team_id>', methods=['GET'])
+def get_team(team_id):
+    team = Team.query.get_or_404(team_id)
+
+    members = [member.user.username for member in team.members]
+
+    return jsonify({
+        "id": team.team_id,
+        "name": team.name,
+        "description": team.description,
+        "created_at": team.created_at.strftime('%Y-%m-%d %H:%M:%S') if team.created_at else None,
+        "updated_at": team.updated_at.strftime('%Y-%m-%d %H:%M:%S') if team.updated_at else None,
+        "manager_id": team.manager_id,
+        "members": members
+    })
+
+@app.route('/team/<int:team_id>', methods=['DELETE'])
+def remove_team(team_id):
+    team = Team.query.get_or_404(team_id)
+    db.session.delete(team)
+    db.session.commit()
+    return jsonify({"message": "Team deleted successfully!"}), 200
+
+@app.route('/team/<int:team_id>/add_member', methods=['POST'])
+def add_team_member(team_id):
+    team = Team.query.get_or_404(team_id)
+    username = request.json.get('username')
+    
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"message": "User not found!"}), 404
+
+    user_team = UserTeam(user_id=user.user_id, team_id=team_id)
+    db.session.add(user_team)
+    db.session.commit()
+    return jsonify({"message": "Member added successfully!"}), 200
+
+@app.route('/team/<int:team_id>/remove_member', methods=['POST'])
+def remove_team_member(team_id):
+    team = Team.query.get_or_404(team_id)
+    username = request.json.get('username')
+    
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({"message": "User not found!"}), 404
+
+    user_team = UserTeam.query.filter_by(user_id=user.user_id, team_id=team_id).first()
+    if user_team:
+        db.session.delete(user_team)
+        db.session.commit()
+
+    return jsonify({"message": "Member removed successfully!"}), 200
+

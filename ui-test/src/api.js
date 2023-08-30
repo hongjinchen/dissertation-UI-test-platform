@@ -291,3 +291,48 @@ export const fetchUserContributions = async (userId) => {
     return null;
   }
 };
+
+
+export const fetchTeam = async (id) => {
+  try {
+      const response = await axios.get(`${API_BASE_URL}/team/${id}`);
+      return response.data;
+  } catch (error) {
+      console.error("Failed fetching team data:", error);
+      throw error;
+  }
+};
+
+export const deleteTeam = async (id) => {
+  try {
+      const response = await axios.delete(`${API_BASE_URL}/team/${id}`);
+      console.log(response.data.message);
+  } catch (error) {
+      console.error("Failed deleting team:", error);
+      throw error;
+  }
+};
+
+export const addTeamMember = async (id, username) => {
+  try {
+      const response = await axios.post(`${API_BASE_URL}/team/${id}/add_member`, {
+          username
+      });
+      console.log(response.data.message);
+  } catch (error) {
+      console.error("Failed adding member:", error);
+      throw error;
+  }
+};
+
+export const removeTeamMember = async (id, username) => {
+  try {
+      const response = await axios.post(`${API_BASE_URL}/team/${id}/remove_member`, {
+          username
+      });
+      console.log(response.data.message);
+  } catch (error) {
+      console.error("Failed removing member:", error);
+      throw error;
+  }
+};
