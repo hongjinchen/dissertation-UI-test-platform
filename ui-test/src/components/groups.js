@@ -11,6 +11,7 @@ import {
   Box,
   Dialog,
   Slide,
+  CircularProgress
 } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
@@ -99,6 +100,8 @@ export default function CenteredGrid() {
   const [teamMembers, setTeamMembers] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
+  const [loading, setLoading] = useState(true);
+
   const handleSearch = async (userName) => {
     const newSearchResults = await searchUsers(userName, Cookies.get('userId'));
     console.log(newSearchResults);
@@ -147,15 +150,28 @@ export default function CenteredGrid() {
   const [groups, setGroups] = useState([]);
   useEffect(() => {
     const getUserData = async () => {
-      const response = await fetchUserTeams(Cookies.get('userId'));
-      setGroups(response.data.teams);
+      try {
+        const response = await fetchUserTeams(Cookies.get('userId'));
+        setGroups(response.data.teams);
+      } catch (error) {
+        console.error("Error fetching user teams:", error);
+      } finally {
+        setLoading(false); // Set loading to false when data fetch is complete
+      }
     };
-
+  
     getUserData();
   }, [isAdding]);
 
-  return (
-    <div className={classes.root}>
+return (
+  <div className={classes.root}>
+    {loading ? (
+      // When loading data, show centered CircularProgress
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <CircularProgress />
+      </div>
+    ) : (
+      // Once data has loaded, display your component's content
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <Typography variant="h5">Group Space</Typography>
@@ -176,7 +192,6 @@ export default function CenteredGrid() {
               onClose={handleClose}
               aria-labelledby="alert-dialog-slide-title"
               aria-describedby="alert-dialog-slide-description"
-              // maxWidth="sm"
               fullWidth
             >
               <Grid container style={{ padding: "20px" }}>
@@ -287,6 +302,8 @@ export default function CenteredGrid() {
           </Grid>
         ))}
       </Grid>
-    </div>
-  );
+    )}
+  </div>
+);
+
 }

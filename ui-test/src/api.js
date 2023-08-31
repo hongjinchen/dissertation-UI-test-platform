@@ -283,7 +283,7 @@ export const fetchScripts = async (id) => {
 //user contribution
 export const fetchUserContributions = async (userId) => {
   try {
-    const response = await fetch(`/contributions/${userId}`);
+    const response = await axios.get(`${API_BASE_URL}/contributions/${userId}`);
     const data = await response.json();
     return data;
   } catch (error) {
@@ -318,9 +318,13 @@ export const addTeamMember = async (id, username) => {
       const response = await axios.post(`${API_BASE_URL}/team/${id}/add_member`, {
           username
       });
-      console.log(response.data.message);
+      return response.data.message;  // Return success message
   } catch (error) {
       console.error("Failed adding member:", error);
+      // Check if the error response contains a message
+      if (error.response && error.response.data && error.response.data.message) {
+          throw new Error(error.response.data.message);
+      }
       throw error;
   }
 };

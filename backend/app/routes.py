@@ -988,8 +988,6 @@ def add_team_member(team_id):
         return jsonify({"message": "Invalid user data!"}), 400
 
     user_id = user_data[0].get('id')
-    print("user_id", user_id)
-    print("team_id", team_id)
     
     user = User.query.get(user_id)
     if not user:

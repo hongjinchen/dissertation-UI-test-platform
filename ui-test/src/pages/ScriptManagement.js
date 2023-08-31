@@ -3,23 +3,11 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from 'react-router-dom';
 import clsx from "clsx";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Paper,
-  TextField,
-  Grid,
-  Container,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  LinearProgress,
-  TablePagination,
-  Button,
-} from "@material-ui/core";
+  Container, Grid, Paper, TextField, FormControl, InputLabel, Select, MenuItem, Button, Table,
+  TableHead, TableRow, TableCell, TableBody, TablePagination, LinearProgress, Tooltip, IconButton
+} from '@material-ui/core';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline'; // 导入帮助图标
+
 import { blue } from "@material-ui/core/colors";
 import { Link } from "react-router-dom";
 import AddIcon from '@material-ui/icons/Add';
@@ -178,7 +166,9 @@ export default function ScriptManagement() {
 
   return (
     <div className={classes.root}>
-      <Navigation title="Script management" />
+      <Navigation title="Script management">
+      </Navigation>
+
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
@@ -189,6 +179,7 @@ export default function ScriptManagement() {
                 <div
                   style={{
                     display: "flex",
+                    alignItems: "center", // 这会确保所有子元素都垂直居中
                     justifyContent: "space-around",
                     padding: "16px",
                   }}
@@ -211,16 +202,12 @@ export default function ScriptManagement() {
                     onChange={handleCreatorSearch}
                     style={{ minWidth: "100px" }}
                   />
-                  <FormControl style={{ minWidth: "100px" }}>
-                    <InputLabel>Status Filter</InputLabel>
-                    <Select value={stateFilter} onChange={handleStateFilter}>
-                      <MenuItem value="">
-                        <em>All</em>
-                      </MenuItem>
-                      <MenuItem value="finished">Finished</MenuItem>
-                      <MenuItem value="in progress">In Progress</MenuItem>
-                    </Select>
-                  </FormControl>
+                  {/* 帮助按钮，鼠标悬停时会显示提示 */}
+                  <Tooltip title="On this page you can search, filter and view scripts. You can also create new test cases and view related reports.">
+                    <IconButton aria-label="help">
+                      <HelpOutlineIcon />
+                    </IconButton>
+                  </Tooltip>
                 </div>
               </Paper>
             </Grid>
@@ -290,7 +277,7 @@ export default function ScriptManagement() {
                                   open={open}
                                   onClose={handleClose}
                                 />
-                                <Button variant="contained" color="primary" component={Link}  to={`/testCase/${id}/${script.id}`}>
+                                <Button variant="contained" color="primary" component={Link} to={`/testCase/${id}/${script.id}`}>
                                   View script
                                 </Button>
                               </div>

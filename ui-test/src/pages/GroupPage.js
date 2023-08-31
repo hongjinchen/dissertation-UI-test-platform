@@ -1,17 +1,19 @@
 // React相关
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-// 实用工具库
-import clsx from "clsx";
+import Copyright from '../components/Copyright';
+
 // Material UI组件库
 import {
   makeStyles,
-  Container,
-  Grid,
-  Paper,
 } from "../components/muiComponents";
 import {
   Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Paper,
+  Box
 } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 // 自定义React组件
@@ -104,17 +106,24 @@ const useStyles = makeStyles((theme) => ({
 function GroupPage() {
   const classes = useStyles();
   const [members, setMembers] = useState([]);
-  const { id } = useParams(); // 获取路由参数
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchMembersList = async () => {
-      const response = await fetchMembers(id);
-      // console.log("fetchMembers",response);
-      setMembers(response.data.members);
+      try {
+        const response = await fetchMembers(id);
+        setMembers(response.data.members);
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      } finally {
+        setLoading(false);  // 确保在数据加载完毕后，设置loading为false
+      }
     };
     fetchMembersList();
   }, [id]);
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+
+  // const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const KanbanData = [
     {
       id: 1,
@@ -149,40 +158,49 @@ function GroupPage() {
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
-          {/* graph component */}
-          <Grid container spacing={3}>
+          {loading ? (
+            // 显示加载指示器
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+              <CircularProgress />
+            </div>
+          ) : (
+            // 实际的内容（当数据加载完毕时显示）
+            <>
+              <Grid container spacing={3}>
+                <Grid item xs={6} component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
+                  <Paper className={classes.kanban}>
+                    <Title color="darkgrey">Kanban</Title>
+                    <KanbanPreview data={KanbanData} id={id} />
+                  </Paper>
+                </Grid>
 
-            {/* kanban component */}
-            <Grid item xs={6} component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
-              <Paper className={classes.kanban}>
-                <Title color="darkgrey">Kanban</Title>
-                <KanbanPreview data={KanbanData} id={id} />
-              </Paper>
-            </Grid>
+                <Grid item xs={6}>
+                  <Paper className={classes.member}>
+                    <Title>Group Members</Title>
+                    <MemberList data={members} />
+                  </Paper>
+                </Grid>
+              </Grid>
 
-            <Grid item xs={6}>
-              <Paper className={classes.member}>
-                <Title>Group Members</Title>
-                <MemberList data={members} />
-              </Paper>
-            </Grid>
-          </Grid>
-
-          <Grid item xs={12} className={classes.centeredGrid}>
-            {/* <Paper> */}
-              <Button
-                variant="contained" color="primary"
-                component={Link}
-                to={`/testCase/${id}`}
-                className={classes.button}
-                startIcon={<AddIcon />}
-              >
-                <span className={classes.buttonLabel}>Create a new test case</span>
-              </Button>
-            {/* </Paper> */}
-          </Grid>
+              <Grid item xs={12} className={classes.centeredGrid}>
+                <Button
+                  variant="contained" color="primary"
+                  component={Link}
+                  to={`/testCase/${id}`}
+                  className={classes.button}
+                  startIcon={<AddIcon />}
+                >
+                  <span className={classes.buttonLabel}>Create a new test case</span>
+                </Button>
+              </Grid>
+            </>
+          )}
         </Container>
+        <Box pt={4}>
+          <Copyright />
+        </Box>
       </main>
+
     </div>
   );
 }

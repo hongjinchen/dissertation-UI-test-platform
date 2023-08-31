@@ -1,10 +1,11 @@
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import KanbanBoard from "../components/KanbanBoard";
-import { Container } from "../components/muiComponents";
 import Navigation from "../components/SubNavigation";
 import { makeStyles } from "@material-ui/core/styles";
-
+import {
+  Container,
+} from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -55,6 +56,7 @@ function IssueManagement() {
             </DndProvider>
           </Container>
         </Container>
+
       </main>
     </div>
   );

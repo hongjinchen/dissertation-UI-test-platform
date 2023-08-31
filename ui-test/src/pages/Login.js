@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, TextField, Grid, Typography, Container } from '@material-ui/core';
+import { Button, TextField, Grid, Typography, Container, Snackbar } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';  // 确保您安装了@material-ui/lab
 import { makeStyles } from '@material-ui/core/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../api';
@@ -21,23 +22,20 @@ export default function Login() {
   const classes = useStyles();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    const result = await loginUser(
-      identifier,
-      password
-    );
+    const result = await loginUser(identifier, password);
     const status = result.status;
-    console.log(status);
     if (status === "success") {
       console.log("Login success");
-      // 将userId存储为cookie
       Cookies.set('userId', result.userId);
-      console.log(Cookies.get('token'));
       navigate('/');
     } else {
-      alert(status);
+      setSnackMessage("Please check if your email and password are correct");
+      setSnackOpen(true);
     }
   };
 
@@ -77,6 +75,16 @@ export default function Login() {
           </Button>
         </Grid>
       </form>
+
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackOpen(false)}
+      >
+        <Alert onClose={() => setSnackOpen(false)} severity="error">
+          {snackMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

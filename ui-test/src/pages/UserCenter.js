@@ -18,7 +18,8 @@ import {
   DialogContent,
   DialogActions,
   Paper,
-  DialogContentText
+  DialogContentText,
+  CircularProgress
 } from "@material-ui/core";
 // 第三方React组件库
 import CalendarHeatmap from "react-calendar-heatmap";
@@ -102,42 +103,47 @@ function UserCenter() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [isOwner, setIsOwner] = useState(true);
+
   const [errorDialog, setErrorDialog] = useState({
     open: false,
     message: ''
   });
 
+  const [isLoading, setIsLoading] = useState(true);
+
   // user contribution
-  const endDate = new Date();  // Today's date
+  const endDate = new Date();
   const startDate = new Date();
-  startDate.setFullYear(startDate.getFullYear() - 1);  // One year before today's date
+  startDate.setFullYear(startDate.getFullYear() - 1);
   const [contributions, setContributions] = useState([]);
   useEffect(() => {
     const getUserContributions = async () => {
+      setIsLoading(true);
       const contributionData = await fetchUserContributions(id);
-      console.log(contributionData);
       if (contributionData) {
         setContributions(contributionData);
       }
+      setIsLoading(false);
     };
 
     getUserContributions();
   }, [id]);
-  useEffect(() => {
-    // console.log(id);
-    const getUserData = async () => {
-      const userData = await fetchUserData(id);
 
+  useEffect(() => {
+    const getUserData = async () => {
+      setIsLoading(true);
+      const userData = await fetchUserData(id);
       if (userData) {
         setNickname(userData.username);
         setEmail(userData.email);
         setAvatar(userData.avatar);
       }
+      setIsLoading(false);
     };
 
     setIsOwner(id === Cookies.get('userId'));
     getUserData();
-  }, [showEditInfo, showUpdateEmail, id]); // 在依赖数组中添加 visitedUserId
+  }, [showEditInfo, showUpdateEmail, id]);
 
   // 在useState声明部分下方添加表单状态
   const [form, setForm] = useState({
@@ -224,7 +230,23 @@ function UserCenter() {
       </div>
     );
   }
+  // 检查isLoading状态，如果是true就返回加载指示器
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh"
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
+  // 数据加载完成后返回用户中心的主要内容
   return (
     <div className={classes.root}>
       <Navigation title="User Center" />

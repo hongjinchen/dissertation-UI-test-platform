@@ -7,6 +7,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddIcon from '@mui/icons-material/Add';
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
 import {
   Box,
@@ -18,6 +19,7 @@ import {
   List,
   ListItem,
   ListItemText,
+
 } from "@mui/material";
 
 import {
@@ -29,7 +31,7 @@ import {
   Slide,
   Button,
   Menu,
-  MenuItem,
+  MenuItem, Tooltip
 } from "@material-ui/core";
 
 import { Link } from "react-router-dom";
@@ -89,7 +91,7 @@ const TaskList = ({ list, moveTask, taskLists, setTaskLists, saveData }) => {
       text: newEvent,
       testcase: TestID,
     };
-    
+
     const updatedData = taskLists.map((item) => {
       if (item.id === list.id) {
         return {
@@ -409,7 +411,7 @@ const KanbanBoard = () => {
     }
   }, [taskLists, id]);
 
-  
+
   // 判定弹窗是否打开
   const [open, setOpen] = React.useState(false);
 
@@ -470,25 +472,33 @@ const KanbanBoard = () => {
           <CircularProgress />
         </div>
       )}
-      <Button
-        variant="contained"
-        color="primary"
-        startIcon={<AddIcon />}
-        sx={{
-          borderRadius: "20px",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
-          fontWeight: 600,
-          textTransform: "none",
-          ":active": {
-            boxShadow: "none",
-            transform: "translateY(1px)",
-          },
-        }}
-        onClick={handleClickOpen}
-        style={{ position: "fixed", top: "10vh", left: "40vh", width: "200px" }} // 设置样式
-      >
-        Add a task list
-      </Button>
+      <Box display="flex" justifyContent="space-between" alignItems="center" style={{ padding: "0 5vh" }}>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<AddIcon />}
+          sx={{
+            borderRadius: "20px",
+            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.2)",
+            fontWeight: 600,
+            textTransform: "none",
+            ":active": {
+              boxShadow: "none",
+              transform: "translateY(1px)",
+            },
+          }}
+          onClick={handleClickOpen}
+          style={{ width: "200px" }} // 删除了不再需要的position, top, 和left属性
+        >
+          Add a task list
+        </Button>
+
+        <Tooltip title="From this page, you can easily manage and track all types of issues. By dragging cards around, you can edit them visually. By clicking on the right side of each task, you can not only edit or delete, but also view a detailed report for that issue.">
+          <IconButton aria-label="help">
+            <HelpOutlineIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
       <Dialog
         open={open}
         TransitionComponent={Slide}
@@ -545,6 +555,8 @@ const KanbanBoard = () => {
           </Box>
         </div>
       )}
+
+
     </div>
   );
 };
