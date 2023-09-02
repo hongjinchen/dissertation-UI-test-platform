@@ -95,7 +95,7 @@ const Register = () => {
       }
   
       if (prop === "password") {
-        const passwordPattern = /^(?=.*[a-z])(?=.*\d)[a-z\d]{6,}$/;
+        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
         if (!passwordPattern.test(event.target.value)) {
           newErrors.password = "Password must contain at least one lowercase letter and one number";
         } else {
@@ -106,7 +106,7 @@ const Register = () => {
         if (values.confirmPassword && values.confirmPassword !== event.target.value) {
           newErrors.confirmPassword = "Password does not match";
         } else {
-          const passwordPattern = /^(?=.*[a-z])(?=.*\d)[a-z\d]{6,}$/;
+          const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
           if (!passwordPattern.test(values.confirmPassword)) {
             newErrors.confirmPassword = "Password must contain at least one lowercase letter and one number";
           } else {
@@ -119,7 +119,7 @@ const Register = () => {
         if (event.target.value !== values.password) {
           newErrors.confirmPassword = "Password does not match";
         } else {
-          const passwordPattern = /^(?=.*[a-z])(?=.*\d)[a-z\d]{6,}$/;
+          const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
           if (!passwordPattern.test(event.target.value)) {
             newErrors.confirmPassword = "Password must contain at least one lowercase letter and one number";
           } else {
