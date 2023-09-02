@@ -3,7 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useParams } from 'react-router-dom';
 import clsx from "clsx";
 import {
-  Container, Grid, Paper, TextField, FormControl, InputLabel, Select, MenuItem, Button, Table,
+  Container, Grid, Paper, TextField, Button, Table,
   TableHead, TableRow, TableCell, TableBody, TablePagination, LinearProgress, Tooltip, IconButton
 } from '@material-ui/core';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'; // 导入帮助图标
@@ -14,8 +14,6 @@ import AddIcon from '@material-ui/icons/Add';
 
 import Navigation from "../components/SubNavigation";
 import EmptyPlaceholder from "../components/EmptyPlaceholder";
-import axios from "axios";
-import { API_BASE_URL } from "../config";
 import ReportDialog from "../components/ReportDialog";
 import { fetchScripts } from '../api';
 // import
@@ -74,6 +72,16 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: blue[100],
     color: blue[600],
   },
+
+  searchContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
+    padding: "16px",
+    [theme.breakpoints.down('xs')]: {  // 当屏幕宽度为xs或更小时
+      flexDirection: "column",  // 将flexDirection设为column来使子元素垂直堆叠
+    }
+  }
 }));
 
 export default function ScriptManagement() {
@@ -124,10 +132,6 @@ export default function ScriptManagement() {
     setCreatorSearch(e.target.value);
   };
 
-  const handleStateFilter = (e) => {
-    setStateFilter(e.target.value);
-  };
-
   const filteredScriptList = scriptList.filter(
     (script) =>
       (idSearch ? script.id.toString().includes(idSearch) : true) &&
@@ -176,14 +180,7 @@ export default function ScriptManagement() {
             {/* Search Part */}
             <Grid item xs={12}>
               <Paper className={SearchfixedHeightPaper}>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center", // 这会确保所有子元素都垂直居中
-                    justifyContent: "space-around",
-                    padding: "16px",
-                  }}
-                >
+              <div className={classes.searchContainer}>
                   <TextField
                     label="Search ID"
                     value={idSearch}

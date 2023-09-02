@@ -17,6 +17,7 @@ import { SecondaryListItems } from "../components/listItems";
 
 
 const drawerWidth = 280;
+const drawerWidthMobile = 180; 
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
   },
   toolbar: {
     paddingRight: 24, // keep right padding when drawer closed
+    [theme.breakpoints.down('sm')]: {
+      height: '48px', 
+    },
   },
   toolbarIcon: {
     display: "flex",
@@ -46,6 +50,10 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: drawerWidthMobile,
+      width: `calc(100% - ${drawerWidthMobile}px)`,
+    },
   },
   menuButton: {
     marginRight: 36,
@@ -55,6 +63,12 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    overflow: 'hidden',        
+    textOverflow: 'ellipsis',  
+    [theme.breakpoints.down('sm')]: {
+      fontSize: '16px', 
+    },
+  
   },
   drawerPaper: {
     position: "relative",
@@ -64,6 +78,9 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+    [theme.breakpoints.down('sm')]: {
+      width: drawerWidthMobile,
+    },
   },
   drawerPaperClose: {
     overflowX: "hidden",

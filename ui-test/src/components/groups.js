@@ -159,151 +159,151 @@ export default function CenteredGrid() {
         setLoading(false); // Set loading to false when data fetch is complete
       }
     };
-  
+
     getUserData();
   }, [isAdding]);
 
-return (
-  <div className={classes.root}>
-    {loading ? (
-      // When loading data, show centered CircularProgress
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <CircularProgress />
-      </div>
-    ) : (
-      // Once data has loaded, display your component's content
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Typography variant="h5">Group Space</Typography>
-        </Grid>
-
-        <Grid item xs={3}>
-          <div>
-            <Paper className={`${classes.paperCreat} ${classes.fixedHeight}`} onClick={AddNewGroup}>
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <AddIcon className={classes.addButton} fontSize="large" />
-                <Typography>Create a new group</Typography>
-              </Box>
-            </Paper>
-            <Dialog
-              open={isAdding}
-              TransitionComponent={Slide}
-              keepMounted
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-slide-title"
-              aria-describedby="alert-dialog-slide-description"
-              fullWidth
-            >
-              <Grid container style={{ padding: "20px" }}>
-                <Grid item xs={12}>
-                  <Typography variant="h5">Create Team</Typography>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Team Name"
-                    value={teamName}
-                    onChange={(e) => setTeamName(e.target.value)}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    multiline
-                    minRows={2}
-                    label="Team Description"
-                    value={teamDescription}
-                    onChange={(e) => setTeamDescription(e.target.value)}
-                    inputProps={{ maxLength: 200 }}
-                  />
-                </Grid>
-
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Search Members"
-                    value={searchUserName}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <Button onClick={() => handleSearch(searchUserName)}>Search</Button>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <List>
-                    {searchResults.map((user) => (
-                      <ListItem
-                        className={classes.listItem}
-                        button
-                        key={user.id}
-                        onClick={() => addMember(user)}
-                      >
-                        {user.name}
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <List>
-                    {teamMembers.map((member, index) => (
-                      <ListItem className={classes.listItem} key={index}>
-                        {member.name}
-                        <Button onClick={() => removeMember(index)}>Remove</Button>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Button onClick={handleClose}>Back</Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={submitForm}
-                  >
-                    Create Team
-                  </Button>
-                </Grid>
-              </Grid>
-            </Dialog>
-          </div>
-        </Grid>
-
-        {groups.map((group, index) => (
-          <Grid item xs={3} key={index}>
-            <Paper className={`${classes.paper} ${classes.fixedHeight}`}>
-              <div>
-                <Typography
-                  variant="h6"
-                  align="left"
-                  className={classes.groupName}
-                >
-                  {group.name}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  align="left"
-                  className={classes.joined_at}
-                >
-                  {group.joined_at.replace("T", " ")}
-                </Typography>
-              </div>
-              <Button
-                variant="outlined"
-                color="primary"
-                component={Link}
-                to={`/group/${group.team_id}`}
-              >
-                View
-              </Button>
-            </Paper>
+  return (
+    <div className={classes.root}>
+      {loading ? (
+        // When loading data, show centered CircularProgress
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+          <CircularProgress />
+        </div>
+      ) : (
+        // Once data has loaded, display your component's content
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Typography variant="h5">Group Space</Typography>
           </Grid>
-        ))}
-      </Grid>
-    )}
-  </div>
-);
+
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <div>
+              <Paper className={`${classes.paperCreat} ${classes.fixedHeight}`} onClick={AddNewGroup}>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <AddIcon className={classes.addButton} fontSize="large" />
+                  <Typography>Create a new group</Typography>
+                </Box>
+              </Paper>
+              <Dialog
+                open={isAdding}
+                TransitionComponent={Slide}
+                keepMounted
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-slide-title"
+                aria-describedby="alert-dialog-slide-description"
+                fullWidth
+              >
+                <Grid container style={{ padding: "20px" }}>
+                  <Grid item xs={12}>
+                    <Typography variant="h5">Create Team</Typography>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Team Name"
+                      value={teamName}
+                      onChange={(e) => setTeamName(e.target.value)}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      multiline
+                      minRows={2}
+                      label="Team Description"
+                      value={teamDescription}
+                      onChange={(e) => setTeamDescription(e.target.value)}
+                      inputProps={{ maxLength: 200 }}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      label="Search Members"
+                      value={searchUserName}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Button onClick={() => handleSearch(searchUserName)}>Search</Button>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <List>
+                      {searchResults.map((user) => (
+                        <ListItem
+                          className={classes.listItem}
+                          button
+                          key={user.id}
+                          onClick={() => addMember(user)}
+                        >
+                          {user.name}
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <List>
+                      {teamMembers.map((member, index) => (
+                        <ListItem className={classes.listItem} key={index}>
+                          {member.name}
+                          <Button onClick={() => removeMember(index)}>Remove</Button>
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Button onClick={handleClose}>Back</Button>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={submitForm}
+                    >
+                      Create Team
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Dialog>
+            </div>
+          </Grid>
+
+          {groups.map((group, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+              <Paper className={`${classes.paper} ${classes.fixedHeight}`}>
+                <div>
+                  <Typography
+                    variant="h6"
+                    align="left"
+                    className={classes.groupName}
+                  >
+                    {group.name}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    align="left"
+                    className={classes.joined_at}
+                  >
+                    {group.joined_at.replace("T", " ")}
+                  </Typography>
+                </div>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  component={Link}
+                  to={`/group/${group.team_id}`}
+                >
+                  View
+                </Button>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+    </div>
+  );
 
 }

@@ -27,6 +27,7 @@ import { Link } from "react-router-dom";
 import { MainListItems } from "../components/listItems";
 
 const drawerWidth = 240;
+const drawerWidthNarrow = 180;  // 较窄的宽度
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -56,6 +57,10 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+    [theme.breakpoints.down('sm')]: {
+      marginLeft: drawerWidthNarrow,
+      width: `calc(100% - ${drawerWidthNarrow}px)`,
+    }
   },
   menuButton: {
     marginRight: 36,
@@ -74,6 +79,9 @@ const useStyles = makeStyles((theme) => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+    [theme.breakpoints.down('sm')]: {
+      width: drawerWidthNarrow,
+    }
   },
   drawerPaperClose: {
     overflowX: "hidden",

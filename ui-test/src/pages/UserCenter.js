@@ -148,11 +148,10 @@ function UserCenter() {
   // 在useState声明部分下方添加表单状态
   const [form, setForm] = useState({
     username: '',
-    personalIntroduction: '',
   });
   // 更新handleSave函数以调用updateUserInfo
   const handleSave = async () => {
-    const updatedData = await updateUserInfo(Cookies.get('userId'), form.username, form.personalIntroduction);
+    const updatedData = await updateUserInfo(Cookies.get('userId'), form.username);
 
     if (updatedData) {
       setNickname(updatedData.username);
@@ -256,7 +255,7 @@ function UserCenter() {
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
             {/* User information display */}
-            <Grid item xs={12} sm={isOwner ? 6 : 12}>
+            <Grid item xs={12} sm={12} md={isOwner ? 6 : 12}>
               <Paper className={fixedHeightPaper}>
                 <Box className={classes.infoContainer}>
                   <Avatar src={avatar} className={classes.infoAvatar} />
@@ -270,10 +269,10 @@ function UserCenter() {
 
             {/* Edit information */}
             {isOwner && (
-              <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={12} md={6}>
                 <List aria-label="main mailbox folders">
                   <ListItem button onClick={() => setShowEditInfo(true)}>
-                    <ListItemText primary="Edit personal information" />
+                    <ListItemText primary="Edit user name" />
                   </ListItem>
                   <ListItem button onClick={() => setShowChangePassword(true)}>
                     <ListItemText primary="Change password" />
@@ -289,7 +288,7 @@ function UserCenter() {
             )}
 
             {/* Contribution Graph */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={12} md={12}>
               <Paper className={classes.paper}>
                 <Typography variant="h6">Contribution Graph</Typography>
                 <CalendarHeatmap
@@ -315,7 +314,7 @@ function UserCenter() {
 
           {/* Corresponding modification pop-ups */}
           <Dialog open={showEditInfo} onClose={() => setShowEditInfo(false)}>
-            <DialogTitle>Edit personal information</DialogTitle>
+            <DialogTitle>Edit user name</DialogTitle>
             <DialogContent>
               <form>
                 {/* // 更新文本字段以使用表单状态 */}
@@ -325,14 +324,6 @@ function UserCenter() {
                   fullWidth
                   margin="normal"
                   onChange={(e) => setForm({ ...form, username: e.target.value })}
-                />
-                <TextField
-                  label="Personal introduction"
-                  placeholder="This is a simple personal introduction"
-                  fullWidth
-                  margin="normal"
-                  multiline
-                  onChange={(e) => setForm({ ...form, personalIntroduction: e.target.value })}
                 />
               </form>
             </DialogContent>

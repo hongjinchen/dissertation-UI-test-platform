@@ -1,0 +1,23 @@
+.responsive-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto; /* 使内容居中 */
+    max-width: 1000px; /* 您可以根据需要设置这个值 */
+}
+
+@media (max-width: 600px) {
+    .responsive-container {
+        padding: 0 15px; /* 在小屏幕上添加一些边距 */
+    }
+}
+
+pre {
+    overflow-x: auto;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
+
+img, table {
+    max-width: 100%;
+    height: auto;
+}

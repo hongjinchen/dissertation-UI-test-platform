@@ -1,4 +1,6 @@
 import React from 'react';
+import './Tutorial1.css'; // 导入CSS
+
 const htmlExample = `
 <html>
 <body>
@@ -33,7 +35,7 @@ const htmlExample = `
   `;
 function Tutorial1() {
     return (
-        <div style={{ margin: '40px' }}>
+        <div className="responsive-container">
             <h1>Locator Selection</h1>
             <p>In web automation testing, correctly locating page elements is crucial. This not only ensures that your scripts can interact with the correct elements but also ensures the stability and reliability of the test. Here are some suggestions and steps to help you efficiently locate elements using Selenium.</p>
             <h2>Use Browser's Developer Tools:</h2>

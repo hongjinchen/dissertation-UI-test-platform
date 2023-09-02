@@ -52,6 +52,10 @@ const useStyles = makeStyles((theme) => ({
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
+    [theme.breakpoints.down('xs')]: {
+      paddingTop: theme.spacing(2),
+      paddingBottom: theme.spacing(2),
+    },
   },
   paper: {
     padding: theme.spacing(2),
@@ -167,14 +171,14 @@ function GroupPage() {
             // 实际的内容（当数据加载完毕时显示）
             <>
               <Grid container spacing={3}>
-                <Grid item xs={6} component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
+              <Grid item xs={12} md={6} component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
                   <Paper className={classes.kanban}>
                     <Title color="darkgrey">Kanban</Title>
                     <KanbanPreview data={KanbanData} id={id} />
                   </Paper>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item xs={12} md={6}>
                   <Paper className={classes.member}>
                     <Title>Group Members</Title>
                     <MemberList data={members} />
@@ -205,4 +209,4 @@ function GroupPage() {
   );
 }
 
-export default withAuth(GroupPage); // 导出经过 withAuth 高阶组件包装的组件
+export default withAuth(GroupPage);

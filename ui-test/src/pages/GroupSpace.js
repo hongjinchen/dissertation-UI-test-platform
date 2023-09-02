@@ -67,16 +67,15 @@ const useStyles = makeStyles((theme) => ({
   tutorial: {
     padding: theme.spacing(2),
     display: "flex",
-    overflow: "visible", // 修改此行，以便容器高度可以根据内容自动调整
+    overflow: "visible",
     flexDirection: "column",
-    height: "auto", // 使高度自适应内容
-    // maxHeight: "50vh", // 设置最大高度
-    // overflowY: "auto", // 如果内容超出最大高度，则显示滚动条
+    height: "auto",
   },
+
   fixedHeight: {
-    height: "auto", // 使高度自适应内容
-    maxHeight: "55vh", // 设置最大高度
-    overflowY: "auto", // 如果内容超出最大高度，则显示滚动条
+    height: "auto",
+    maxHeight: "55vh",
+    overflowY: "auto",
   },
 }));
 
@@ -86,16 +85,14 @@ export default function Dashboard() {
 
   return (
     <div className={classes.root}>
-      {/* <CssBaseline /> */}
       <Navigation title="Dashboard" />
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
 
-          {/* Group component */}
           <Grid container spacing={3}>
             <Grid item xs={12}>
-              <Paper className={fixedHeightPaper}>
+              <Paper className={clsx(classes.paper, classes.fixedHeight)}>
                 {Cookies.get("token") ? (
                   <Groups />
                 ) : (
@@ -114,7 +111,6 @@ export default function Dashboard() {
               </Paper>
             </Grid>
 
-            {/* Tutorial component */}
             <Grid item xs={12} style={{ height: "fit-content" }}>
               <Paper className={classes.tutorial}>
                 <Tutorial />

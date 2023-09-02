@@ -25,6 +25,7 @@ import {
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Navigation from "../components/SubNavigation";
+import Cookies from 'js-cookie';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -91,10 +92,10 @@ function TeamManager() {
                 return { ...prev, members: [...prev.members, teamMembers] };
             });
             setSearchTerm('');
-    
+
             // Refresh the page after a successful submission
             window.location.reload();
-    
+
         } catch (error) {
             // If there's an error message, show it in an alert
             alert(error.message);
@@ -143,18 +144,18 @@ function TeamManager() {
 
     if (!team) {
         return (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh"
-            }}
-          >
-            <CircularProgress />
-          </div>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh"
+                }}
+            >
+                <CircularProgress />
+            </div>
         );
-      }
+    }
     return (
         <div className={classes.root}>
             <Navigation title="Team Management" id="id" />
@@ -342,9 +343,11 @@ function TeamManager() {
                             <Paper className={classes.paper} style={{ marginTop: 20 }}>
                                 <List>
                                     {/* Add Member button as ListItem */}
-                                    <ListItem button onClick={() => setAddMemberDialogOpen(true)}>
-                                        <ListItemText primary="Add a New Member" />
-                                    </ListItem>
+                                    {Cookies.get('userId') === team.manager_id && (
+                                        <ListItem button onClick={() => setAddMemberDialogOpen(true)}>
+                                            <ListItemText primary="Add a New Member" />
+                                        </ListItem>
+                                    )}
 
                                     {/* Transfer Manager Status button as ListItem */}
                                     <ListItem button onClick={handleOpenTransferManagerDialog}>

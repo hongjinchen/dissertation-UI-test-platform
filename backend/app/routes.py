@@ -23,14 +23,12 @@ import os
 
 @app.after_request
 def add_cors_headers(response):
-    allowed_origins = ['https://139.155.144.136', 'http://localhost:3000']
+    allowed_origins = ['https://139.155.144.136', 'https://perksummit.club', 'http://localhost:3000']
     origin = request.headers.get('Origin')
     if origin in allowed_origins:
         response.headers.add('Access-Control-Allow-Origin', origin)
-    response.headers.add('Access-Control-Allow-Headers',
-                         'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods',
-                         'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
     return response
 
@@ -155,8 +153,6 @@ def update_user(user_id):
     # 更新用户名和描述
     if "username" in data:
         user.username = data["username"]
-    if "description" in data:
-        user.description = data["description"]
 
     # 提交更改到数据库
     db.session.commit()

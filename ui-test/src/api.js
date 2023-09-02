@@ -80,11 +80,10 @@ export const fetchUserData = async (userId) => {
 };
 
 
-export const updateUserInfo = async (userId, username, personalIntroduction) => {
+export const updateUserInfo = async (userId, username) => {
   try {
     const response = await axios.put(`${API_BASE_URL}/infoEdit/${userId}`, {
       username: username,
-      description: personalIntroduction,
     });
 
     if (response.data.status === 'success') {
