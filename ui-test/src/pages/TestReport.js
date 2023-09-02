@@ -43,6 +43,7 @@ const TestReportPage = () => {
     const [selectedMemberIds, setSelectedMemberIds] = useState([]);
     const classes = useStyles();
 
+
     useEffect(() => {
         const fetchMembersList = async () => {
             if (report && report.team_id) {
@@ -54,6 +55,9 @@ const TestReportPage = () => {
         fetchMembersList();
     }, [report]);
 
+    const handleGoBack = () => {
+        navigate(-1);
+    };
 
     const handleOpen = () => {
         setOpen(true);
@@ -188,7 +192,7 @@ const TestReportPage = () => {
             </Box>
             <Box sx={{ p: 2, my: 2 }}>
                 <Grid container spacing={2}>  {/* 这里的spacing属性可以调整按钮之间的间隔 */}
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                         <Button
                             variant="outlined"
                             color="primary"
@@ -198,8 +202,19 @@ const TestReportPage = () => {
                         >
                             Go to Test Case
                         </Button>
+
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
+                        <Button
+                            variant="outlined"
+                            color="primary"
+                            onClick={handleGoBack}
+                            fullWidth
+                        >
+                            Go Back
+                        </Button>
+                    </Grid>
+                    <Grid item xs={4}>
                         <Button
                             variant="contained"
                             color="primary"

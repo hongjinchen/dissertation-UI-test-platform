@@ -136,14 +136,13 @@ export default function ScriptManagement() {
     (script) =>
       (idSearch ? script.id.toString().includes(idSearch) : true) &&
       (nameSearch
-        ? script.name.toLowerCase().includes(nameSearch.toLowerCase())
+        ? script.name && typeof script.name === 'string' && script.name.toLowerCase().includes(nameSearch.toLowerCase())
         : true) &&
       (creatorSearch
-        ? script.Creator.toLowerCase().includes(creatorSearch.toLowerCase())
+        ? script.created_by && typeof script.created_by === 'string' && script.created_by.toLowerCase().includes(creatorSearch.toLowerCase())
         : true) &&
       (stateFilter ? script.State === stateFilter : true)
   );
-
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 

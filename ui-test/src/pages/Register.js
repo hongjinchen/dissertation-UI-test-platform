@@ -12,8 +12,9 @@ import {
   InputAdornment,
   IconButton,
   FormHelperText,
+  Tooltip
 } from "@material-ui/core";
-import { Visibility, VisibilityOff } from "@material-ui/icons";
+import { Visibility, VisibilityOff, HelpOutline as HelpOutlineIcon } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { registerUser } from '../api';
 import Cookies from 'js-cookie';
@@ -57,7 +58,7 @@ const Register = () => {
     }
 
     // 验证密码组成
-    const passwordPattern = /^(?=.*[a-z])(?=.*\d)[a-z\d]{6,}$/;
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
     if (!passwordPattern.test(values.password)) {
       newErrors.password =
         "Password must contain at least one lowercase letter and one number";
@@ -70,20 +71,20 @@ const Register = () => {
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
-
+  
     // Reset errors[prop] when the input is empty
     if (event.target.value === "") {
       setErrors({ ...errors, [prop]: "" });
     } else {
       // Validate input values and update errors state
       const newErrors = { ...errors };
-
+  
       if (prop === "username" && event.target.value.length > 20) {
         newErrors.username = "User name length cannot exceed 20 characters";
       } else {
         newErrors.username = "";
       }
-
+  
       if (prop === "email") {
         const emailPattern = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(.\w{2,3})+$/;
         if (!emailPattern.test(event.target.value)) {
@@ -92,7 +93,7 @@ const Register = () => {
           newErrors.email = "";
         }
       }
-
+  
       if (prop === "password") {
         const passwordPattern = /^(?=.*[a-z])(?=.*\d)[a-z\d]{6,}$/;
         if (!passwordPattern.test(event.target.value)) {
@@ -100,13 +101,25 @@ const Register = () => {
         } else {
           newErrors.password = "";
         }
+  
+        // 检查 confirm password 是否与新的 password 值匹配
+        if (values.confirmPassword && values.confirmPassword !== event.target.value) {
+          newErrors.confirmPassword = "Password does not match";
+        } else {
+          const passwordPattern = /^(?=.*[a-z])(?=.*\d)[a-z\d]{6,}$/;
+          if (!passwordPattern.test(values.confirmPassword)) {
+            newErrors.confirmPassword = "Password must contain at least one lowercase letter and one number";
+          } else {
+            newErrors.confirmPassword = "";
+          }
+        }
       }
+  
       if (prop === "confirmPassword") {
         if (event.target.value !== values.password) {
           newErrors.confirmPassword = "Password does not match";
         } else {
           const passwordPattern = /^(?=.*[a-z])(?=.*\d)[a-z\d]{6,}$/;
-          newErrors.confirmPassword = "";
           if (!passwordPattern.test(event.target.value)) {
             newErrors.confirmPassword = "Password must contain at least one lowercase letter and one number";
           } else {
@@ -114,9 +127,11 @@ const Register = () => {
           }
         }
       }
+  
       setErrors(newErrors);
     }
   };
+  
 
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
@@ -199,6 +214,11 @@ const Register = () => {
               >
                 {values.showPassword ? <Visibility /> : <VisibilityOff />}
               </IconButton>
+              <Tooltip title="Password must contain at least one lowercase letter and one number, with a minimum length of 6 characters.">
+                <IconButton aria-label="password requirements">
+                  <HelpOutlineIcon />
+                </IconButton>
+              </Tooltip>
             </InputAdornment>
           }
           label="Password"
@@ -237,7 +257,7 @@ const Register = () => {
           }
           label="Confirm Password"
         />
-          <FormHelperText>{errors.confirmPassword}</FormHelperText>
+        <FormHelperText>{errors.confirmPassword}</FormHelperText>
       </FormControl>
       <Button
         variant="contained"

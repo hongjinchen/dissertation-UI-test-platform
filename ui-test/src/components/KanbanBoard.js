@@ -391,15 +391,15 @@ const KanbanBoard = () => {
     fetchTaskLists();
   }, [id]);
 
-  const saveData = useCallback(async () => {
+  const saveData = useCallback(async (data = taskLists) => {
     setLoading(true);
     try {
-      console.log(taskLists);
+      console.log(data);
       const response = await axios.post(API_BASE_URL + "/saveTask", {
-        taskLists: taskLists.map(({ id, name, tasks }) => ({ name, tasks })),
+        taskLists: data.map(({ id, name, tasks }) => ({ name, tasks })),
         team_id: id,
       });
-
+  
       if (response.status !== 200) {
         alert("Save failed!");
         throw new Error("Error saving task data");
@@ -410,6 +410,7 @@ const KanbanBoard = () => {
       setLoading(false);
     }
   }, [taskLists, id]);
+  
 
 
   // 判定弹窗是否打开

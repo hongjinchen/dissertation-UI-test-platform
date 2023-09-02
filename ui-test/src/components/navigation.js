@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';  // 引入 useNavigate
 
 import {
   makeStyles,
@@ -125,6 +126,8 @@ const useStyles = makeStyles((theme) => ({
 export default function Navigation({ title }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
+  const navigate = useNavigate();  // 使用 useNavigate
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -132,6 +135,14 @@ export default function Navigation({ title }) {
     setOpen(false);
   };
   const token = Cookies.get('token');
+  const userId = Cookies.get('userId');
+
+  const handleLogout = () => {
+    Cookies.remove('token');
+    Cookies.remove('userId');
+    window.location.href = "/"; // 这将导航至主页并刷新页面
+
+  };
 
   return (
     <div>
@@ -161,7 +172,8 @@ export default function Navigation({ title }) {
           >
             {title}
           </Typography>
-          {!token && (
+          
+          {!token && !userId && (
             <Button color="inherit" component={Link} to="/login">
               <Badge component={Link} to="/login">
                 <LoginIcon sx={{ color: 'white' }} />
@@ -169,7 +181,7 @@ export default function Navigation({ title }) {
               Sign in
             </Button>
           )}
-          {!token && (
+          {!token && !userId && (
             <Button color="inherit" component={Link} to="/register">
               <Badge component={Link} to="/register">
                 <SignUpIcon sx={{ color: 'white' }} />
@@ -177,7 +189,12 @@ export default function Navigation({ title }) {
               Sign up
             </Button>
           )}
-
+          {token && userId && (
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          )}
+          
         </Toolbar>
       </AppBar>
       <Drawer
@@ -196,7 +213,6 @@ export default function Navigation({ title }) {
         <List><MainListItems id={Cookies.get('userId')}/></List>
         <Divider />
       </Drawer>
-
     </div>
   );
 }

@@ -402,6 +402,7 @@ def save_task():
                     team_id=team_id
                 )
                 db.session.add(task_list)
+                db.session.flush()  # 生成task_list.id，但不会提交整个事务
 
                 for task_data in task_list_data['tasks']:
                     task = Task(
@@ -413,14 +414,12 @@ def save_task():
                     )
                     db.session.add(task)
 
-        # 事务结束，所有更改都将被提交
+            db.session.commit()  # 确保事务被提交
 
+        return jsonify({"message": "Task data saved successfully"})
     except Exception as e:
         db.session.rollback()  # 在异常情况下回滚事务
         return jsonify({"message": "Error: " + str(e)}), 500
-
-    return jsonify({"message": "Task data saved successfully"})
-
 
 @app.route('/tasklists/<int:team_id>', methods=['GET'])
 def get_task_lists(team_id):
