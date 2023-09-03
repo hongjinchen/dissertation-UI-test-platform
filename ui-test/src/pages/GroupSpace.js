@@ -18,7 +18,7 @@ import Cookies from 'js-cookie';
 import Groups from "../components/groups";
 import Tutorial from "../components/tutorialOverview";
 import Navigation from "../components/navigation";
-
+import { useNavigate } from 'react-router-dom';
 
 function Copyright() {
   return (
@@ -82,6 +82,11 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard() {
   const classes = useStyles();
   const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const navigate = useNavigate();
+
+  const handleBoxClick = () => {
+      navigate('/login');
+  };
 
   return (
     <div className={classes.root}>
@@ -102,6 +107,8 @@ export default function Dashboard() {
                     justifyContent="center"
                     alignItems="center"
                     height="100%"
+                    onClick={handleBoxClick}
+                    style={{ cursor: 'pointer' }}  // Optional: Change cursor on hover for better UX
                   >
                     <Typography variant="h5" align="center" style={{ marginBottom: '10px' }}>
                       Please login to view groups

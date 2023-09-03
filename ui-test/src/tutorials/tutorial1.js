@@ -4,35 +4,52 @@ import './Tutorial1.css'; // 导入CSS
 const htmlExample = `
 <html>
 <body>
+
+<!-- Inline CSS for styling the input fields -->
 <style>
+/* Styling class for the text input fields */
 .information {
-  background-color: white;
-  color: black;
-  padding: 10px;
+  background-color: white;  /* Setting background color to white */
+  color: black;             /* Setting text color to black */
+  padding: 10px;            /* Adding padding around the input for spacing */
 }
 </style>
+
+<!-- Heading for the contact section -->
 <h2>Contact Selenium</h2>
 
+<!-- Form that sends data to the /action_page.php when submitted -->
 <form action="/action_page.php">
-  <input type="radio" name="gender" value="m" />Male &nbsp;
-  <input type="radio" name="gender" value="f" />Female <br>
+
+  <!-- Radio buttons for selecting gender -->
+  <input type="radio" name="gender" value="m" />Male &nbsp;  <!-- Male option -->
+  <input type="radio" name="gender" value="f" />Female <br>   <!-- Female option -->
   <br>
+
+  <!-- Input field for first name with a label -->
   <label for="fname">First name:</label><br>
   <input class="information" type="text" id="fname" name="fname" value="Jane"><br><br>
+
+  <!-- Input field for last name with a label -->
   <label for="lname">Last name:</label><br>
   <input class="information" type="text" id="lname" name="lname" value="Doe"><br><br>
+
+  <!-- Checkbox for subscribing to a newsletter -->
   <label for="newsletter">Newsletter:</label>
   <input type="checkbox" name="newsletter" value="1" /><br><br>
+
+  <!-- Submit button for the form -->
   <input type="submit" value="Submit">
 </form> 
 
+<!-- Paragraph with a link to the official Selenium page -->
 <p>To know more about Selenium, visit the official page 
 <a href ="www.selenium.dev">Selenium Official Page</a> 
 </p>
 
 </body>
 </html>
-  `;
+`;
 function Tutorial1() {
     return (
         <div className="responsive-container">
@@ -75,9 +92,6 @@ function Tutorial1() {
             <p>The HTML page web element can have an attribute class. We can see an example in the above-shown HTML snippet. For instance, 'information' is one of the class names.</p>
             <p>We can use the ID attribute available with an element on a web page to locate it. For example, 'lname'.</p>
             <p>We can use the NAME attribute available with an element on a web page to locate it. For example, 'newsletter'.</p>
-            {/* <svg width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
-            </svg> */}
             <p>Parts of the tutorial refer to the official selenium tutorial: https://www.selenium.dev/zh-cn/documentation/webdriver/elements/locators/.</p>
         </div>
     );

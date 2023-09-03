@@ -117,7 +117,14 @@ export default function CenteredGrid() {
   };
 
   const addMember = (user) => {
-    setTeamMembers([...teamMembers, user]);
+    const isUserInTeam = teamMembers.some(member => member.id === user.id);
+    if (user.id === parseInt(Cookies.get('userId'))) {
+      alert('Can not choose yourself as a member!');
+    } else if (isUserInTeam) {
+      alert('This user has been added!');
+    } else {
+      setTeamMembers([...teamMembers, user]);
+    }
   };
 
   const removeMember = (index) => {
@@ -129,12 +136,14 @@ export default function CenteredGrid() {
     console.log(response);
     if (response.status === 'success') {
       alert('Team created successfully');
+      resetForm();  // 这里重置表单
       setIsAdding(false);
     } else {
       console.log(response.error);
       alert(response.error);
     }
   };
+  
 
   const [isAdding, setIsAdding] = useState(false);
 

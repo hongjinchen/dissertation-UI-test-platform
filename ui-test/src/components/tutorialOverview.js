@@ -65,6 +65,11 @@ export default function CenteredGrid() {
   const classes = useStyles();
   const tutorial = [
     {
+      name: "HTML Basics",
+      area: "Basics instructions",
+      path: "/tutorial3",
+    },
+    {
       name: "Locator Selection",
       area: "Website instructions",
       path: "/tutorial1",
@@ -73,11 +78,6 @@ export default function CenteredGrid() {
       name: "User Behavior Guide",
       area: "Website instructions",
       path: "/tutorial2",
-    },
-    {
-      name: "Tutorial 3",
-      area: "E-commerce",
-      path: "/tutorial3",
     },
   ];
 
