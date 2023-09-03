@@ -1,20 +1,20 @@
-# 使用一个已有的 Python 镜像作为基础
+# Use an existing Python mirror as a base
 FROM python:3.8
 
-# 设置工作目录
+# Set the working directory
 WORKDIR /app
 
-# 将依赖文件复制到容器内
+# Copy the dependency files into the container
 COPY requirements.txt .
 
-# 安装依赖
+# Install the dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 复制其余的源代码到工作目录
+# Copy the rest of the source code to the working directory
 COPY . .
 
-# 使端口可用于外界
+# Make the port available to the outside world
 EXPOSE 5000
 
-# 运行命令
+# Run the command
 CMD ["flask", "run", "--host=0.0.0.0"]
