@@ -1,6 +1,8 @@
 
 import React from 'react';
 import './Tutorial1.css'; // 导入CSS
+import { Button } from '@mui/material';
+
 const htmlExample = `<html>
 <body>
 <style>
@@ -31,9 +33,15 @@ const htmlExample = `<html>
 
 </body>
 </html>`;
+function goBack() {
+    window.history.back();
+}
 function Tutorial3() {
     return (
         <div  className="responsive-container">
+                        <Button variant="contained" onClick={goBack} color="primary">
+                Come back
+            </Button>
             <h1>Discover the Mysteries of HTML!</h1>
 
             <p>

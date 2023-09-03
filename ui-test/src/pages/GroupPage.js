@@ -1,7 +1,7 @@
 // React相关
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Copyright from '../components/Copyright';
+// import Copyright from '../components/Copyright';
 
 // Material UI组件库
 import {
@@ -200,9 +200,9 @@ function GroupPage() {
             </>
           )}
         </Container>
-        <Box pt={4}>
+        {/* <Box pt={4}>
           <Copyright />
-        </Box>
+        </Box> */}
       </main>
 
     </div>

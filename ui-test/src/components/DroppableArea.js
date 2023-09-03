@@ -83,11 +83,12 @@ const DroppableArea = ({ id, testCaseId }) => {
         subtype: item.subtype,
         parameters: item.params,
         test_case_elements: [
-          ...item.children.map((child) => ({
-            type: child.type,
-            parameters: child.params,
-          })),
-        ],
+          ...(item.children?.map((child) => ({
+              type: child.type,
+              subtype: child.subType,
+              parameters: child.params,
+          })) || []),
+      ],
       };
     });
 
@@ -203,11 +204,10 @@ const DroppableArea = ({ id, testCaseId }) => {
               type: item.type,
               subtype: item.subType,
               children: [],
-              // inputValue: item.inputValue,
               params: item.params,
               isNew: false,
               isChild: item.isChild || false,
-              index: droppedItems.length, // 添加 childIndex 属性
+              index: droppedItems.length,
               selectorValue: item.selectorValue,
             },
           ]);

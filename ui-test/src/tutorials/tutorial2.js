@@ -1,10 +1,18 @@
 // tutorial2.js
 
 import React from 'react';
+import './Tutorial1.css'; // 导入CSS
+import { Button } from '@mui/material';
+function goBack() {
+  window.history.back();
+}
 
 const Tutorial2 = () => {
   return (
-    <div style={{ margin: '40px' }}>
+    <div  className="responsive-container">
+      <Button variant="contained" onClick={goBack} color="primary">
+        Come back
+      </Button>
       <h1>UI Testing Design Module: User Behavior Guide</h1>
 
       <h2>Given</h2>

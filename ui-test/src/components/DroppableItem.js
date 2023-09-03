@@ -17,7 +17,6 @@ const DroppableItem = ({
   setDroppedItems,
   droppedItems,
 }) => {
-  // react-dnd
   const [{ isDragging }, drag] = useDrag(() => ({
     type: type,
     item: {

@@ -740,7 +740,7 @@ def get_testcases():
                 for element in elements:
                     child = {
                         "type": element.type,
-                        "inputValue": element.parameters,
+                        "params": element.parameters,
                         "isNew": False,
                         "isChild": True,
                         "parentId": test_case.id,
@@ -752,7 +752,7 @@ def get_testcases():
                     "id": test_case.id,
                     "type": test_case.type,
                     "children": children,
-                    "inputValue": test_case.parameters,
+                    "params": test_case.parameters,
                     "isNew": False,
                     "isChild": False,
                     "index": index
