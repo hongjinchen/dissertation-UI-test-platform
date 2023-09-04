@@ -8,7 +8,7 @@ function Copyright() {
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
       <MuiLink color="inherit" href="https://mui.com/">
-        My Website
+        GWT UI Testing Platform
       </MuiLink>{" "}
       {new Date().getFullYear()}
       {"."}

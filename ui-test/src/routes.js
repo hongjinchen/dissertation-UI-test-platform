@@ -20,6 +20,8 @@ import NotFound404 from './ErrorPages/NotFound404';
 import Tutorial1 from './tutorials/tutorial1';
 import Tutorial2 from './tutorials/tutorial2';
 import Tutorial3 from './tutorials/tutorial3';
+import Tutorial4 from './tutorials/tutorial4';
+
 const AppRoutes = () => {
   return (
     <Router>
@@ -45,6 +47,7 @@ const AppRoutes = () => {
         <Route exact path="/tutorial1" element={<Tutorial1 />} />
         <Route exact path="/tutorial2" element={<Tutorial2 />} />
         <Route exact path="/tutorial3" element={<Tutorial3 />} />
+        <Route exact path="/tutorial4" element={<Tutorial4 />} />
       </Routes>
     </Router>
   );

@@ -70,6 +70,11 @@ export default function CenteredGrid() {
       path: "/tutorial3",
     },
     {
+      name: "GWT UI Testing Platform Introduction",
+      area: "Website instructions",
+      path: "/tutorial4",
+    },
+    {
       name: "Locator Selection",
       area: "Website instructions",
       path: "/tutorial1",

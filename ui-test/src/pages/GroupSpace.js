@@ -24,9 +24,7 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {"Copyright © "}
-      <MuiLink color="inherit" href="https://mui.com/">
-        My Website
-      </MuiLink>{" "}
+        GWT UI Testing Platform
       {new Date().getFullYear()}
       {"."}
     </Typography>
@@ -85,7 +83,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const handleBoxClick = () => {
-      navigate('/login');
+    navigate('/login');
   };
 
   return (

@@ -16,6 +16,7 @@ import {
 import { Link } from "react-router-dom";
 import AddIcon from "@material-ui/icons/Add";
 import { createTeam, searchUsers, fetchUserTeams } from "../api";
+import UserGuideDialog from "../components/UserGuideDialog";
 import Cookies from 'js-cookie';
 
 const useStyles = makeStyles((theme) => ({
@@ -310,7 +311,10 @@ export default function CenteredGrid() {
               </Paper>
             </Grid>
           ))}
+              <UserGuideDialog />
+
         </Grid>
+        
       )}
     </div>
   );
