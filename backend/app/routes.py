@@ -8,14 +8,11 @@ from smtplib import SMTPRecipientsRefused
 from sqlalchemy.orm import joinedload
 from .mail_service import send_email
 from .test_cases import run_tests
-import unittest
-import HtmlTestRunner
 import jwt
 from jinja2 import Environment, FileSystemLoader
 from datetime import datetime, timedelta
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
-import logging
 import base64
 import json
 import os
