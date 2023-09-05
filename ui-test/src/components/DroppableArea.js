@@ -59,7 +59,7 @@ const DroppableArea = ({ id, testCaseId }) => {
     const response = await saveTestCase(data);
     console.log(response);
   };
-  // 提交内容时的逻辑
+
   const handleRunClick = () => {
     setOpenDialog(true);
   };
@@ -153,13 +153,12 @@ const DroppableArea = ({ id, testCaseId }) => {
     console.log("result.status:", result);
     if (result.status === 'completed') {
       console.log("Navigating to testReport page");
-      // 如果测试已完成（不论成功与否），我们都将导航到报告页面
+      // 如果测试已完成（不论成功与否），都将导航到报告页面
       navigate('/testReport/' + result.report_id);
       setOpenDialog(false);
     } else {
-      // 如果由于某种原因测试未完成（例如异常），我们将在控制台打印一个错误消息
+      // 如果由于某种原因测试未完成（例如异常），将在控制台打印一个错误消息
       console.error("Test not successfully completed: ", result.message);
-      // 这里你可以添加一个弹出窗口来显示错误消息
       alert(result.message);
     }
   };
@@ -269,7 +268,7 @@ const DroppableArea = ({ id, testCaseId }) => {
             id={item.id}
             type={item.type}
             subtype={item.subtype}
-            params={item.params}  // 传递params
+            params={item.params} 
             index={index}
             parentId={item.id}
             isNew={item.isNew}
@@ -283,7 +282,7 @@ const DroppableArea = ({ id, testCaseId }) => {
                   key={idx}
                   type={child.type}
                   subtype={child.subType}
-                  params={child.params}  // 传递child的params
+                  params={child.params}
                   index={idx}
                   parentId={item.id}
                   isChild

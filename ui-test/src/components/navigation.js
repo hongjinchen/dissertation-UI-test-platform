@@ -28,14 +28,14 @@ import { Link } from "react-router-dom";
 import { MainListItems } from "../components/listItems";
 
 const drawerWidth = 240;
-const drawerWidthNarrow = 180;  // 较窄的宽度
+const drawerWidthNarrow = 180;
 
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24, 
   },
   toolbarIcon: {
     display: "flex",
@@ -126,7 +126,6 @@ const useStyles = makeStyles((theme) => ({
 export default function Navigation({ title }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const navigate = useNavigate();  // 使用 useNavigate
 
   const handleDrawerOpen = () => {
     setOpen(true);

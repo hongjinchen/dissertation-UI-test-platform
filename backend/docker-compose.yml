@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:chen526@db/UI_test
+
+  db:
+    image: mysql:8.0.32
+    environment:
+      MYSQL_DATABASE: UI_test
+      MYSQL_USER: root
+      MYSQL_PASSWORD: chen526
+      MYSQL_ROOT_PASSWORD: chen526
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  mysql-data:

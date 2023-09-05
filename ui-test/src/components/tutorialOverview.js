@@ -6,8 +6,7 @@ import {
   Typography,
   Button,
 } from "../components/muiComponents";
-import { TextField } from '@mui/material';
-import { Link } from 'react-router-dom';  // 引入Link
+import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,11 +52,11 @@ const useStyles = makeStyles((theme) => ({
   header: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center", // 垂直居中对齐
+    alignItems: "center",
     width: "100%",
   },
   formContainer: {
-    minWidth: 0, // 为了防止表单元素挤压其他内容
+    minWidth: 0,
   },
 }));
 

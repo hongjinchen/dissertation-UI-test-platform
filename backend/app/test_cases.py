@@ -31,9 +31,7 @@ def is_valid_url(url):
     )
     return bool(url_pattern.match(url))
 
-# 捕获并处理所有函数或方法的异常和包含异常截图功能
-
-
+# Catch and handle exceptions for all functions or methods and include exception screenshot functionality
 def exception_handler_decorator(func):
     def wrapper(self, driver, *args, **kwargs):
         try:
@@ -74,13 +72,12 @@ def open_website(driver, url):
 
 
 def user_waits(self, driver, seconds):
-    time_to_wait = float(seconds)  # 尝试将字符串转换为浮点数
+    time_to_wait = float(seconds) 
 
     time.sleep(time_to_wait)
 
+
 # When
-
-
 @exception_handler_decorator
 def click_button(self, driver, locator_type, locator_value):
     element = driver.find_element(
@@ -128,15 +125,11 @@ def drag_and_drop(self, driver, source_locator_type, source_locator_value, targe
         source_element, target_element).perform()
 
 # refreshes
-
-
 @exception_handler_decorator
 def refresh_page(self, driver, locator_type=None, locator_value=None, **parameters):
     driver.refresh()
 
 # Handling Warning Dialog
-
-
 @exception_handler_decorator
 def accept_alert(self, driver):
     alert = driver.switch_to.alert
@@ -155,19 +148,13 @@ def switch_to_window(self, driver, window_handle):
     driver.switch_to.window(window_handle)
 
 # Then
-
-
 def check_url_change(self, driver, expected_url):
-    # WebDriverWait(driver, 10).until(EC.url_changes(driver.current_url))
     WebDriverWait(driver, 10).until(EC.url_to_be(expected_url))
     self.assertEqual(driver.current_url, expected_url)
 
 def check_element_text(self, driver,  expected_text):
     page_source = driver.page_source
     self.assertIn(expected_text, page_source)
-
-# Element Presence Assertion: This assertion is used to verify that an element exists on the page.
-
 
 @exception_handler_decorator
 def check_element_exists(self, driver, locator_type, locator_value):
@@ -176,8 +163,6 @@ def check_element_exists(self, driver, locator_type, locator_value):
     except NoSuchElementException:
         self.fail("Expected element does not exist.")
 
-# Element visibility assertion: This assertion is used to verify that an element is visible
-
 
 @exception_handler_decorator
 def check_element_visible(self, driver, locator_type, locator_value):
@@ -185,26 +170,17 @@ def check_element_visible(self, driver, locator_type, locator_value):
         getattr(By, locator_type.upper()), locator_value)
     self.assertTrue(element.is_displayed())
 
-# Element state assertion: This assertion is used to verify the state of an element, for example whether the element is selected or not.
-
-
 @exception_handler_decorator
 def check_element_selected(self, driver, locator_type, locator_value):
     element = driver.find_element(
         getattr(By, locator_type.upper()), locator_value)
     self.assertTrue(element.is_selected())
 
-# Element style assertion: This assertion is used to verify that an element's style is as expected
-
-
 @exception_handler_decorator
 def check_element_style(self, driver, locator_type, locator_value, style_name, expected_value):
     element = driver.find_element(
         getattr(By, locator_type.upper()), locator_value)
     self.assertEqual(element.value_of_css_property(style_name), expected_value)
-
-# Alert Presence Assertion: This assertion is used to verify that a pop-up window is present.
-
 
 @exception_handler_decorator
 def check_alert_present(self, driver):
@@ -230,9 +206,8 @@ action_mapping = {
     "The user is now on this page": check_url_change,
     "User waits": user_waits,
 }
+
 # webdriver
-
-
 def get_webdriver(env):
     if env == "chrome":
         return webdriver.Chrome(ChromeDriverManager().install())

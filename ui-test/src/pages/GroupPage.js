@@ -1,7 +1,6 @@
 // React相关
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-// import Copyright from '../components/Copyright';
 
 // Material UI组件库
 import {
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24,
   },
   toolbarIcon: {
     display: "flex",
@@ -127,34 +126,7 @@ function GroupPage() {
     fetchMembersList();
   }, [id]);
 
-  // const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
-  const KanbanData = [
-    {
-      id: 1,
-      type: "To Do",
-      count: 5,
-    },
-    {
-      id: 2,
-      type: "In Progress",
-      count: 3,
-    },
-    {
-      id: 3,
-      type: "Completed",
-      count: 8,
-    },
-    {
-      id: 4,
-      type: 'Long Event Type Name Example 1',
-      count: 8,
-    },
-    {
-      id: 5,
-      type: 'Longer Event Type Name Example 2',
-      count: 8,
-    },
-  ];
+  const KanbanData = [];
   return (
     <div className={classes.root}>
       <Navigation title="My Group" id="id" />
@@ -168,10 +140,9 @@ function GroupPage() {
               <CircularProgress />
             </div>
           ) : (
-            // 实际的内容（当数据加载完毕时显示）
             <>
               <Grid container spacing={3}>
-              <Grid item xs={12} md={6} component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
+                <Grid item xs={12} md={6} component={Link} to={`/issue/${id}`} className={classes.noUnderline}>
                   <Paper className={classes.kanban}>
                     <Title color="darkgrey">Kanban</Title>
                     <KanbanPreview data={KanbanData} id={id} />
@@ -200,9 +171,6 @@ function GroupPage() {
             </>
           )}
         </Container>
-        {/* <Box pt={4}>
-          <Copyright />
-        </Box> */}
       </main>
 
     </div>

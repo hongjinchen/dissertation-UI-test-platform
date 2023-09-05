@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const api = axios.create({
-  baseURL: API_BASE_URL, // 设置您的 API 基本 URL
+  baseURL: API_BASE_URL,
 });
 
 // 请求拦截器
@@ -23,7 +23,7 @@ api.interceptors.request.use(
   }
 );
 
-// user 部分 接口
+// user 部分接口
 
 // 注册
 export const registerUser = async (username, email, password) => {
@@ -40,7 +40,6 @@ export const registerUser = async (username, email, password) => {
       return response.data.message;
     }
   } catch (error) {
-    // 处理错误响应
     console.error(error);
   }
 };
@@ -62,7 +61,6 @@ export const loginUser = async (email, password) => {
       return response.data.message;
     }
   } catch (error) {
-    // 处理错误响应
     console.error(error);
   }
 };
@@ -130,7 +128,41 @@ export const updateEmail = async (userId, newEmail) => {
   }
 };
 
-// team 部分 接口
+export const checkEmailExistence = async (email) => {
+  try {
+    const response = await axios.post(API_BASE_URL + `/check-email`, {
+      email
+    });
+
+    if (response.data.status === 'success') {
+      return response.data;
+    } else {
+      return response.data.message;
+    }
+  } catch (error) {
+    console.error('Error checking email existence:', error);
+  }
+};
+
+export const updatePassword = async (email, newPassword) => {
+  try {
+      const response = await axios.put(API_BASE_URL + `/update-password`, {
+          email: email,
+          password: newPassword
+      });
+
+      if (response.data.status === 'success') {
+          return response.data;
+      } else {
+          return response.data.message;
+      }
+  } catch (error) {
+      console.error('Error updating password:', error);
+      return "Failed to update password!";
+  }
+};
+
+// team 部分接口
 export const createTeam = async (teamName, teamDescription, teamMembers, user_id) => {
   try {
     const response = await axios.post(API_BASE_URL + '/createTeam', {
@@ -161,11 +193,11 @@ export const searchUsers = async (queryValue) => {
       }));
     } else {
       console.error("Error searching users:", response.data.error);
-      throw new Error(response.data.error); // 抛出错误，以便我们可以在外部捕获它
+      throw new Error(response.data.error);
     }
   } catch (error) {
     console.error("Error searching users:", error);
-    throw error; // 这样我们可以在handleSearch函数中捕获它
+    throw error;
   }
 };
 
@@ -207,7 +239,6 @@ export const saveTestCase = async (data) => {
       return response.data.message;
     }
   } catch (error) {
-    // 处理错误响应
     console.error(error);
   }
 };
@@ -215,7 +246,7 @@ export const saveTestCase = async (data) => {
 export const runTestEvent = async (data) => {
   try {
     const response = await axiosInstance.post(API_BASE_URL + '/runTestEvents', data, { withCredentials: true });
-    return response.data;  // 直接返回服务器响应的数据
+    return response.data; 
   } catch (error) {
     console.error(error);
     return { status: 'failed', message: error.message };
@@ -253,7 +284,6 @@ export const searchTestCase = async (data) => {
     return response.data;
 
   } catch (error) {
-    // 处理错误响应
     console.error(error);
   }
 };
@@ -264,7 +294,6 @@ export const searchTestReport = async (data) => {
     return response.data;
 
   } catch (error) {
-    // 处理错误响应
     console.error(error);
   }
 };
@@ -317,10 +346,9 @@ export const addTeamMember = async (id, username) => {
       const response = await axios.post(`${API_BASE_URL}/team/${id}/add_member`, {
           username
       });
-      return response.data.message;  // Return success message
+      return response.data.message;
   } catch (error) {
       console.error("Failed adding member:", error);
-      // Check if the error response contains a message
       if (error.response && error.response.data && error.response.data.message) {
           throw new Error(error.response.data.message);
       }

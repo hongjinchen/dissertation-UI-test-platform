@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24,
     [theme.breakpoints.down('sm')]: {
       height: '48px', 
     },
@@ -99,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Navigation({ title }) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(true);
-  const { id } = useParams(); // 获取路由参数
+  const { id } = useParams();
   const handleDrawerOpen = () => {
     setOpen(true);
   };

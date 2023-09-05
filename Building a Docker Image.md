@@ -1,4 +1,4 @@
-## Building a Docker Image
+## Building a Docker Image of front end project
 
 From the root directory of your project, execute the following command to build a Docker image:
 
@@ -21,3 +21,10 @@ This initiates a new Docker container instance based on the `UI_test` image. The
 ### Accessing the Application
 
 Visit [http://localhost:3000](http://localhost:3000/) in your browser, and you should see your application running.
+
+
+
+## Building a Docker Image of back end project
+
+
+

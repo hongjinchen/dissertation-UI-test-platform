@@ -76,7 +76,6 @@ const Register = () => {
     if (event.target.value === "") {
       setErrors({ ...errors, [prop]: "" });
     } else {
-      // Validate input values and update errors state
       const newErrors = { ...errors };
   
       if (prop === "username" && event.target.value.length > 20) {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, TextField, Grid, Typography, Container, Snackbar } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';  // 确保您安装了@material-ui/lab
+import { Alert } from '@material-ui/lab';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../api';

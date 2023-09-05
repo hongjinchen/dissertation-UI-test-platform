@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.text.secondary,
     width: 200,
     flexGrow: 1,
-    // backgroundColor: randomColor(),
     padding: theme.spacing(1),
     margin: theme.spacing(1),
   },

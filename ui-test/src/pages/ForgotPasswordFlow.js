@@ -1,33 +1,32 @@
 import React, { useState } from "react";
 import { TextField, Button, Container } from "@mui/material";
+import { checkEmailExistence,updatePassword } from "../api";
 
 const ForgotPassword = () => {
   const [step, setStep] = useState(0);
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [message, setMessage] = useState(""); 
 
-  const handleSubmitEmail = (e) => {
-    e.preventDefault();
-    setStep(1);
-    // 在这里发送邮件并等待两秒钟
-    setTimeout(() => {
-      console.log("邮件已发送");
-    }, 2000);
+  const handleSubmitEmail = async (e) => {
+    const result = await checkEmailExistence(email);
+    if (result && result.status === 'success') {
+      setStep(1); // Directly go to reset password step if email exists
+    } else {
+      setMessage(result || "Mailbox input error, can't change password");
+    }
   };
 
-  const handleCodeSubmit = (e) => {
-    e.preventDefault();
-    setStep(2);
-    // 在这里验证验证码是否正确
-  };
-
-  const handleNewPasswordSubmit = (e) => {
-    e.preventDefault();
-    // 在这里处理新密码的逻辑
-    console.log("新密码已设置");
-  };
+  const handleNewPasswordSubmit = async (e) => {
+    const updateResult = await updatePassword(email, newPassword);
+    if (updateResult && updateResult.status === 'success') {
+        setMessage("Password updated successfully!");
+        // You can also reset the form or navigate the user to another page if needed.
+    } else {
+        setMessage(updateResult || "Error updating password");
+    }
+};
 
   return (
     <div>
@@ -47,31 +46,12 @@ const ForgotPassword = () => {
             onClick={handleSubmitEmail}
             fullWidth
           >
-            Send Code
+            Check Email Address
           </Button>
+          {message && <div>{message}</div>}
         </Container>
       )}
       {step === 1 && (
-        <Container maxWidth="sm">
-          <h2>Enter Code</h2>
-          <TextField
-            label="Code"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            fullWidth
-            style={{ marginBottom: "1rem" }}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCodeSubmit}
-            fullWidth
-          >
-            Verify Code
-          </Button>
-        </Container>
-      )}
-      {step === 2 && (
         <Container maxWidth="sm">
           <h2>Reset Password</h2>
           <TextField

@@ -8,7 +8,7 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
   const dragParamsRef = useRef(dragParams);  // 使用 useRef 来存储 dragParams 的值
 
   useEffect(() => {
-    dragParamsRef.current = dragParams;  // 更新 useRef 的当前值
+    dragParamsRef.current = dragParams;
   }, [dragParams]);
 
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -17,7 +17,7 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
       return {
         type,
         subType,
-        params: dragParamsRef.current, // 使用 useRef 的当前值
+        params: dragParamsRef.current,
         parentId,
         isNew: true,
         selectorValue: dragParamsRef.current.reduce((acc, cur) => cur.type || "", ""),
@@ -61,7 +61,7 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
 
   const InputComponents = () => (
     dragParams.map((param, idx) => {
-      console.log("param at index", idx, ":", param);  // 打印每个param的内容
+      console.log("param at index", idx, ":", param);
       return (
         <InputComponent
           key={idx}

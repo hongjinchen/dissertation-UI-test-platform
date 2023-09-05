@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, List, ListItem } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
-const useStyles = makeStyles((theme) => ({
-    // 您可以在此处添加其他样式，如果需要的话
-}));
 
 function UserGuideDialog() {
-    const classes = useStyles();
 
     const [open, setOpen] = useState(true);
 

@@ -35,7 +35,7 @@ const LeftSideBar = () => {
           <Button
             fullWidth
             style={{
-              backgroundColor: getItemColor(type), // 使用getItemColor设置颜色
+              backgroundColor: getItemColor(type),
               marginBottom: 10,
               color: 'white'
             }}

@@ -87,14 +87,13 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: theme.shape.borderRadius,
   },
   fixedHeight: {
-    height: "14vh", // 设置一个固定高度，可以根据实际需求进行调整
+    height: "14vh",
   },
 }));
 
 export default function CenteredGrid() {
   const classes = useStyles();
 
-  // 新建team部分的逻辑
   const [teamName, setTeamName] = useState("");
   const [teamDescription, setTeamDescription] = useState("");
   const [searchUserName, setSearchTerm] = useState("");
@@ -137,7 +136,7 @@ export default function CenteredGrid() {
     console.log(response);
     if (response.status === 'success') {
       alert('Team created successfully');
-      resetForm();  // 这里重置表单
+      resetForm();
       setIsAdding(false);
     } else {
       console.log(response.error);

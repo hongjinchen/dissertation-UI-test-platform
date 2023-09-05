@@ -19,8 +19,6 @@ export const MainListItems = ({ id }) => {
   const token = Cookies.get('token');
   console.log("MainListItems", id);
   useEffect(() => {
-    //需要监控 token 是否为空
-    // console.log("Token changed:", token);
   }, [token]);
 
   return (

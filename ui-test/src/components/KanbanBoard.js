@@ -372,7 +372,6 @@ const KanbanBoard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // saveData();
   }, [taskLists]);
 
   useEffect(() => {
@@ -383,7 +382,6 @@ const KanbanBoard = () => {
         setTaskLists(response.data)
         setLoading(false);
       } catch (error) {
-        // console.error('Error fetching task lists:', error);
         setLoading(false);
       }
     };
@@ -489,7 +487,7 @@ const KanbanBoard = () => {
             },
           }}
           onClick={handleClickOpen}
-          style={{ width: "200px" }} // 删除了不再需要的position, top, 和left属性
+          style={{ width: "200px" }}
         >
           Add a task list
         </Button>

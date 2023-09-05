@@ -53,8 +53,6 @@ def token_required(f):
     return decorated
 
 # user part
-
-
 @app.route('/register', methods=['POST'])
 def register():
     if request.method == 'POST':
@@ -76,7 +74,7 @@ def register():
         db.session.commit()
         new_user_id = new_user.user_id
 
-        # 生成令牌
+        # Generating tokens
         token = jwt.encode(
             {"user_id": new_user_id, "exp": datetime.utcnow() + timedelta(hours=1)},
             app.config["SECRET_KEY"],
@@ -101,7 +99,7 @@ def login():
         if user is not None and check_password_hash(user.password, password):
             login_user(user)
 
-            # 生成令牌
+            # Generating tokens
             token = jwt.encode(
                 {"user_id": user.user_id, "exp": datetime.utcnow() +
                  timedelta(hours=1)},
@@ -110,7 +108,7 @@ def login():
             resp = make_response(
                 jsonify(message='Login successful.', status='success', user_id=user.user_id))
 
-            # 设置令牌 cookie
+            # Setting a token cookie
             resp.set_cookie("token", token, max_age=60 * 60,
                             secure=True, httponly=False, samesite="Strict")
 
@@ -118,6 +116,38 @@ def login():
 
         return jsonify(message='Login failed.', status='failed')
 
+@app.route('/check-email', methods=['POST'])
+def check_email_existence():
+    email = request.json.get('email')
+    if not email:
+        return jsonify({"status": "fail", "message": "Email is required!"}), 400
+
+    user = User.query.filter_by(email=email).first()
+
+    if user:
+        return jsonify({"status": "success", "message": "Email exists!"}), 200
+
+    else:
+        return jsonify({"status": "fail", "message": "Email not found!"}), 404
+
+@app.route('/update-password', methods=['PUT'])
+def update_password():
+    email = request.json.get('email')
+    new_password = request.json.get('password')
+
+    # Fetch the user
+    user = User.query.filter_by(email=email).first()
+
+    if not user:
+        return jsonify({"status": "fail", "message": "Email not found!"}), 404
+
+    # Hash the new password
+    hashed_password = generate_password_hash(new_password)
+    # Update the password
+    user.password = hashed_password
+    db.session.commit()
+
+    return jsonify({"status": "success", "message": "Password updated successfully!"}), 200
 
 @app.route('/user/<int:user_id>', methods=['GET'])
 def get_user(user_id):
@@ -134,24 +164,19 @@ def get_user(user_id):
 
 @app.route('/infoEdit/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
-    # 检查请求中是否包含JSON数据
     if not request.is_json:
         return jsonify({"error": "Missing JSON in request"}), 400
 
-    # 获取请求中的数据
     data = request.get_json()
 
-    # 根据user_id查找用户
     user = User.query.get(user_id)
 
     if user is None:
         return jsonify({"error": "User not found"}), 404
 
-    # 更新用户名和描述
     if "username" in data:
         user.username = data["username"]
 
-    # 提交更改到数据库
     db.session.commit()
 
     return jsonify({"status": "success"}), 200
@@ -217,7 +242,7 @@ def search_users():
         or_(
             User.username.like(f'%{searchTerm}%'),
             User.email.like(f'%{searchTerm}%'),
-            User.user_id == searchTerm  # 注意这里使用的是“==”而不是“like”因为我们假设user_id是整数或特定格式
+            User.user_id == searchTerm
         )
     )
 
@@ -279,7 +304,7 @@ def create_team():
 
     for member_id in team_members:
         if member_id == user_id:
-            continue  # Skip adding manager again
+            continue
         user = User.query.get(member_id)
         if user:
             new_member = UserTeam(
@@ -295,7 +320,7 @@ def create_team():
         db.session.add(new_team)
         db.session.commit()
     except SQLAlchemyError as e:
-        print(e)  # Print the error message
+        print(e)
         db.session.rollback()  # Rollback any changes
         return jsonify({"status": "failed", "error": "An error occurred while adding the team"}), 500
 
@@ -384,14 +409,14 @@ def save_task():
 
     try:
         with db.session.begin():
-            # 删除现有任务列表和任务
+            # Delete existing task lists and tasks
             Task.query.filter(Task.task_list_id.in_(
                 db.session.query(TaskList.id).filter(TaskList.team_id == team_id)
             )).delete(synchronize_session='fetch')
             TaskList.query.filter(TaskList.team_id == team_id).delete(
                 synchronize_session='fetch')
 
-            # 保存新的任务列表和任务
+            # Save new task lists and tasks
             for task_list_data in task_lists:
                 task_list = TaskList(
                     name=task_list_data['name'],
@@ -399,7 +424,7 @@ def save_task():
                     team_id=team_id
                 )
                 db.session.add(task_list)
-                db.session.flush()  # 生成task_list.id，但不会提交整个事务
+                db.session.flush()  # Generate task_list.id, but do not commit the entire transaction
 
                 for task_data in task_list_data['tasks']:
                     task = Task(
@@ -411,11 +436,11 @@ def save_task():
                     )
                     db.session.add(task)
 
-            db.session.commit()  # 确保事务被提交
+            db.session.commit() 
 
         return jsonify({"message": "Task data saved successfully"})
     except Exception as e:
-        db.session.rollback()  # 在异常情况下回滚事务
+        db.session.rollback()
         return jsonify({"message": "Error: " + str(e)}), 500
 
 @app.route('/tasklists/<int:team_id>', methods=['GET'])
@@ -484,7 +509,7 @@ def create_test_event():
             test_case = TestCase(
                 created_at=created_at,
                 type=test_case_data['type'],
-                subtype=test_case_data['subtype'],  # 注意这里添加了 subtype
+                subtype=test_case_data['subtype'],
                 parameters=test_case_data['parameters'],
                 test_event_id=test_event.id
             )
@@ -495,7 +520,6 @@ def create_test_event():
                 test_case_element = TestCaseElement(
                     story_id=test_case.id,
                     type=test_case_element_data['type'],
-                    # 注意这里添加了 subtype
                     subtype=test_case_element_data['subtype'],
                     parameters=test_case_element_data['parameters']
                 )
@@ -517,7 +541,6 @@ def create_test_event():
 def construct_locator(locator_type, parameters):
     if locator_type == 'XPATH':
         return f'//button[contains(text(), "{parameters}")]'
-    # You can add additional cases for other locator types if needed.
     return parameters
 
 
@@ -525,7 +548,6 @@ def construct_locator(locator_type, parameters):
 def run_test_event():
     data = request.get_json()
     try:
-        # print("test_event_data",data)
         test_event_data = data['test_event']
 
         created_at = datetime.fromisoformat(
@@ -560,7 +582,7 @@ def run_test_event():
             test_case = TestCase(
                 created_at=created_at,
                 type=test_case_data['type'],
-                subtype=test_case_data['subtype'],  # 注意这里添加了 subtype
+                subtype=test_case_data['subtype'],
                 parameters=test_case_data['parameters'],
                 test_event_id=test_event.id
             )
@@ -587,9 +609,9 @@ def run_test_event():
 
         test_case_list = data['test_cases']
 
-        # 创建一个存储各个环境报告路径的列表
+       # Create a list storing the paths of individual environment reports
         report_files = []
-        total_success_rate = 0  # 计算所有环境的平均成功率
+        total_success_rate = 0
         env_count = len(data['test_event']['environment'])
 
         for env in data['test_event']['environment']:
@@ -597,8 +619,7 @@ def run_test_event():
             report_filename = f"report_{test_event.id}_{timestamp}.html"
             absolute_report_filepath = os.path.join(
                 absolute_report_directory, report_filename)
-            report_files.append(absolute_report_filepath)  # 将报告路径添加到列表中
-
+            report_files.append(absolute_report_filepath)
             test_result = run_tests(
                 env, test_case_list, absolute_report_filepath)
 
@@ -606,21 +627,19 @@ def run_test_event():
                 (len(test_result.failures) + len(test_result.errors))
             total_success_rate += (passed_tests / test_result.testsRun) * 100
 
-        # 将报告路径列表转换为JSON字符串
-        # print("Report report_files:", report_files)
+        # Convert a list of report paths to JSON strings
         reports_json = json.dumps(report_files)
 
-        # 计算平均成功率
+        # Calculate the average success rate
         average_success_rate = total_success_rate / env_count
 
-        # 创建一个新的测试报告对象
+        # Create a new test report object
         test_report = TestReport(
             test_event_id=test_event.id,
             html_report=reports_json,
             success_rate=average_success_rate
         )
 
-        # 添加新的测试报告到数据库
         db.session.add(test_report)
         db.session.commit()
 
@@ -651,16 +670,14 @@ def get_test_report(report_id):
     if not report:
         return jsonify({'error': 'Report not found'}), 404
 
-    # 尝试解析 report.html_report 为一个Python列表
+   # Trying to parse report.html_report as a Python list
     try:
         report_files = json.loads(report.html_report)
     except json.JSONDecodeError:
-        # print("Report contains invalid JSON.")
         return jsonify({'error': 'Report contains invalid JSON'}), 404
 
     test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
     if not test_event:
-        # print("Associated Test Event not found.")
         return jsonify({'error': 'Associated Test Event not found'}), 404
 
     encoded_html_reports = []
@@ -679,11 +696,10 @@ def get_test_report(report_id):
                             html_content.encode('utf-8')).decode('utf-8')
                         encoded_html_reports.append(encoded_html_report)
                 except Exception as e:
-                    # 这里可以记录错误，或者返回具体的错误信息给前端
                     print(f"Error reading file {full_path}: {e}")
                     continue
 
-    # 获取与test_event.created_by关联的用户名
+    # Get the username associated with test_event.created_by
     created_by_username = test_event.creator.username
 
     report_data = {
@@ -696,7 +712,7 @@ def get_test_report(report_id):
         'labels': test_event.label.split(','),
         'state': test_event.state,
         'successRate': report.success_rate,
-        'htmlReports': encoded_html_reports,  # 注意这里是列表，包含多个报告
+        'htmlReports': encoded_html_reports,
     }
 
     return jsonify(report_data), 200
@@ -771,7 +787,7 @@ def search_test_case():
     if not test_id:
         return jsonify({"error": "TestReportid is required"}), 400
 
-    # 在 TestReport 表中搜索包含 test_id 的 test_event_id
+    # Search for test_event_id containing test_id in TestReport table
     test_reports = TestReport.query.filter_by(id=test_id).all()
 
     if not test_reports:
@@ -801,7 +817,6 @@ def search_test_report():
     if not test_id:
         return jsonify({"error": "TestReportid is required"}), 400
 
-    # 在 TestReport 表中搜索包含 test_id 的 test_event_id
     test_reports = TestReport.query.filter_by(test_event_id=test_id).all()
 
     if not test_reports:
@@ -850,16 +865,14 @@ def send_report():
     if not report:
         return jsonify({'error': 'Report not found'}), 404
 
-    # 尝试解析 report.html_report 为一个Python列表
+    # Trying to parse report.html_report as a Python list
     try:
         report_files = json.loads(report.html_report)
     except json.JSONDecodeError:
-        # print("Report contains invalid JSON.")
         return jsonify({'error': 'Report contains invalid JSON'}), 404
 
     test_event = TestEvent.query.filter_by(id=report.test_event_id).first()
     if not test_event:
-        # print("Associated Test Event not found.")
         return jsonify({'error': 'Associated Test Event not found'}), 404
 
     encoded_html_reports = []
@@ -880,11 +893,10 @@ def send_report():
                     print(f"Error reading file {full_path}: {e}")
                     continue
 
-    # 解码base64编码的HTML报告
+   # Decoding base64-encoded HTML reports
     decoded_html_reports = [base64.b64decode(report).decode(
         'utf-8') for report in encoded_html_reports]
 
-    # 获取与test_event.created_by关联的用户名
     created_by_username = test_event.creator.username
 
     report_data = {
@@ -897,14 +909,13 @@ def send_report():
         'labels': test_event.label.split(','),
         'state': test_event.state,
         'successRate': report.success_rate,
-        'htmlReports': decoded_html_reports,  # 注意这里是列表，包含多个报告
+        'htmlReports': decoded_html_reports,
     }
-    # 这里您可能需要将report_data转化成适合邮件发送的格式，例如HTML或者纯文本
     html_report = generate_html_from_report_data(
-        report_data)  # 这是一个虚构的函数，您需要根据需求实现它
+        report_data)
 
     if not email_addresses and user_ids:
-        # 获取用户电子邮件地址
+        # Get user email address
         users = db.session.query(User).filter(User.user_id.in_(user_ids)).all()
         email_addresses = [user.email for user in users]
 
@@ -912,7 +923,6 @@ def send_report():
         try:
             send_email(email_address, html_report)
         except SMTPRecipientsRefused as e:
-            # 返回遇到的具体错误消息到前端
             return jsonify({"error": f"Failed to send report to {email_address}. Error: {str(e)}"}), 400
 
     return jsonify({"message": "Report sent successfully!"})
@@ -946,7 +956,7 @@ def get_contributions(user_id):
         return jsonify({"error": str(e)}), 500
 
 
-# 团队管理
+# Team management
 @app.route('/team/<int:team_id>', methods=['GET'])
 def get_team(team_id):
     team = Team.query.get_or_404(team_id)
@@ -985,14 +995,14 @@ def add_team_member(team_id):
     if not user:
         return jsonify({"message": "User not found!"}), 404
 
-    # 查询UserTeam表，看用户是否已是该团队成员
+    # Query the UserTeam table to see if the user is already a member of the team
     existing_member = UserTeam.query.filter_by(user_id=user_id, team_id=team_id).first()
 
-    # 如果用户已是该团队成员，返回错误提示
+    # If the user is already a member of the team, return an error message
     if existing_member:
         return jsonify({"message": "User is already a member of this team!"}), 400
 
-    # 如果用户不是成员，继续添加流程...
+    # If the user is not a member, continue the add process
     user_team = UserTeam(user_id=user.user_id, team_id=team_id)
     db.session.add(user_team)
     db.session.commit()

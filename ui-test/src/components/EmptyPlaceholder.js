@@ -19,10 +19,10 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     fontSize: theme.spacing(20),
     marginBottom: theme.spacing(2),
-    color: 'lightgrey', // 设置图标颜色为浅灰色
+    color: 'lightgrey',
   },
   text: {
-    color: 'lightgrey', // 设置文字颜色为浅灰色
+    color: 'lightgrey',
   },
 }));
 
