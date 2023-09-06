@@ -65,7 +65,6 @@ const DroppableArea = ({ id, testCaseId }) => {
   };
   const handleSave = () => {
     if (testCaseName === '' || !Object.values(environments).some(val => val)) {
-      // 可以设置一个状态变量来显示错误信息
       setError("Please fill out all required fields");
       alert("Please fill out all required fields");
       return;

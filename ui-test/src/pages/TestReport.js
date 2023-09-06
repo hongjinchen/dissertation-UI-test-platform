@@ -75,14 +75,14 @@ const TestReportPage = () => {
                     reportData.htmlReports = reportData.htmlReports.map(report => atob(report));
                     setReport(reportData);
                 } else if (response.status === 404) {
-                    setError('报告不存在');
+                    setError('Report does not exist');
                 } else {
                     console.error('Error fetching report data:', response.status, response.statusText);
-                    setError('无法加载报告，请稍后再试');
+                    setError('Unable to load report, please try again later');
                 }
             } catch (error) {
                 console.error('Error fetching report data:', error);
-                setError('无法加载报告，请稍后再试');
+                setError('Unable to load report, please try again later');
             } finally {
                 setLoading(false);
             }
@@ -113,7 +113,7 @@ const TestReportPage = () => {
     } = report;
 
     const handleTestCaseRedirect = () => {
-        navigate(`/testCase/${test_event_id}`);
+        navigate(`/testCase/${team_id}/${test_event_id}`);
     };
     const handleMemberSelect = (event, memberId) => {
         // 如果复选框被选中

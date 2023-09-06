@@ -38,9 +38,6 @@ def exception_handler_decorator(func):
             return func(self, driver, *args, **kwargs)
         except NoSuchElementException as e:
             screenshot_filename = f"{func.__name__}_screenshot.png"
-            driver.save_screenshot(screenshot_filename)
-            simple_message = f"Unable to locate element using selector: {e.selector}"
-            logging.error(f"Error occurred in function {func.__name__}. Screenshot saved as {screenshot_filename}: {simple_message}")
         except Exception as e: 
             screenshot_filename = f"{func.__name__}_screenshot.png"
             driver.save_screenshot(screenshot_filename)
@@ -214,7 +211,7 @@ def get_webdriver(env):
     elif env == "firefox":
         return webdriver.Firefox(GeckoDriverManager().install())
     elif env == "safari":
-        return webdriver.Safari()  # 注意：Safari驱动可能不需要这样的管理器
+        return webdriver.Safari() 
     elif env == "edge":
         return webdriver.Edge(EdgeChromiumDriverManager().install())
     else:
@@ -275,7 +272,7 @@ class TestCases(unittest.TestCase):
                         for key in ['ID', 'Name', 'Class Name']:
                             if key in parameters:
                                 del parameters[key]
-
+                        print("action_subtype",action_subtype)
                         action_function(
                             self, self.driver, locator_type, locator_value, **parameters)
                     else:

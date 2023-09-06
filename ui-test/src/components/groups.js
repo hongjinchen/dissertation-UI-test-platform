@@ -99,9 +99,31 @@ export default function CenteredGrid() {
   const [searchUserName, setSearchTerm] = useState("");
   const [teamMembers, setTeamMembers] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-
+  const [showGuideDialog, setShowGuideDialog] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  useEffect(() => {
+    const hasSeenGuide = localStorage.getItem('hasSeenGuide');
+  
+    if (!hasSeenGuide) {
+      setShowGuideDialog(true);
+    }
+
+    const getUserData = async () => {
+      // ... (existing useEffect code)
+    };
+
+    getUserData();
+  }, [isAdding]);
+
+    // 新增的函数来关闭UserGuideDialog，并将其标记为已查看
+    const handleCloseGuideDialog = () => {
+      localStorage.setItem('hasSeenGuide', 'true');
+      setShowGuideDialog(false);
+    };
+
+    
   const handleSearch = async (userName) => {
     const newSearchResults = await searchUsers(userName, Cookies.get('userId'));
     console.log(newSearchResults);
@@ -145,7 +167,7 @@ export default function CenteredGrid() {
   };
   
 
-  const [isAdding, setIsAdding] = useState(false);
+
 
   const AddNewGroup = () => {
     setIsAdding(true);
@@ -310,7 +332,7 @@ export default function CenteredGrid() {
               </Paper>
             </Grid>
           ))}
-              <UserGuideDialog />
+                <UserGuideDialog open={showGuideDialog} onClose={handleCloseGuideDialog} />
 
         </Grid>
         

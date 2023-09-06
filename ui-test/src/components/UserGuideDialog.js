@@ -1,16 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, List, ListItem } from '@material-ui/core';
 
-function UserGuideDialog() {
-
-    const [open, setOpen] = useState(true);
-
-    const handleClose = () => {
-        setOpen(false);
-    };
-
+function UserGuideDialog({ open, onClose }) {
     return (
-        <Dialog open={open} onClose={handleClose}>
+        <Dialog open={open} onClose={onClose}>
             <DialogTitle>
                 <Typography variant="h5" color="primary">
                     Welcome to GWT UI Testing Platform!
@@ -53,7 +46,7 @@ function UserGuideDialog() {
                 </Typography>
             </DialogContent>
             <DialogActions>
-                <Button variant="contained" color="primary" onClick={handleClose}>
+                <Button variant="contained" color="primary" onClick={onClose}>
                     Got it!
                 </Button>
             </DialogActions>

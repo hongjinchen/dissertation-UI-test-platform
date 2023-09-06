@@ -14,7 +14,6 @@ import AddIcon from '@material-ui/icons/Add';
 
 import Navigation from "../components/SubNavigation";
 import EmptyPlaceholder from "../components/EmptyPlaceholder";
-import ReportDialog from "../components/ReportDialog";
 import { fetchScripts } from '../api';
 // import
 const useStyles = makeStyles((theme) => ({
@@ -79,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     padding: "16px",
     [theme.breakpoints.down('xs')]: {
-      flexDirection: "column", 
+      flexDirection: "column",
     }
   }
 }));
@@ -263,16 +262,12 @@ export default function ScriptManagement() {
                                 <Button
                                   variant="contained"
                                   style={{ marginRight: "10px" }}
-                                  onClick={handleClickOpen}
+                                  component={Link}
+                                  to={`/SearchTestReport/${script.id}`}
                                 >
                                   View report
                                 </Button>
-                                <ReportDialog
-                                  selectedValue={selectedReport}
-                                  id={script.id}
-                                  open={open}
-                                  onClose={handleClose}
-                                />
+
                                 <Button variant="contained" color="primary" component={Link} to={`/testCase/${id}/${script.id}`}>
                                   View script
                                 </Button>

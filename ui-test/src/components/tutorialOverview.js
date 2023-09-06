@@ -11,6 +11,8 @@ import { Link } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
+    overflowX: 'auto',
+    maxHeight: '160px',
   },
   paper: {
     padding: theme.spacing(2),
@@ -46,8 +48,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   gridContainer: {
-    height: "auto", // 使高度自适应内容
-    overflowY: "auto", // 如果内容超出最大高度，则显示滚动条
+    height: "auto", 
+    overflowY: "auto",
   },
   header: {
     display: "flex",

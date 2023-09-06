@@ -337,29 +337,28 @@ function TeamManager() {
                         </Grid>
 
                         <Grid item xs={12} sm={6}>
+                            {parseInt(Cookies.get('userId')) === team.manager_id && (
+                                <Paper className={classes.paper} style={{ marginTop: 20 }}>
+                                    <List>
+                                        {/* Add Member button as ListItem */}
 
-                            <Paper className={classes.paper} style={{ marginTop: 20 }}>
-                                <List>
-                                    {/* Add Member button as ListItem */}
-                                    {Cookies.get('userId') === team.manager_id && (
                                         <ListItem button onClick={() => setAddMemberDialogOpen(true)}>
                                             <ListItemText primary="Add a New Member" />
                                         </ListItem>
-                                    )}
 
-                                    {/* Transfer Manager Status button as ListItem */}
-                                    <ListItem button onClick={handleOpenTransferManagerDialog}>
-                                        <ListItemText primary="Transfer Manager Status" />
-                                    </ListItem>
+                                        {/* Transfer Manager Status button as ListItem */}
+                                        <ListItem button onClick={handleOpenTransferManagerDialog}>
+                                            <ListItemText primary="Transfer Manager Status" />
+                                        </ListItem>
 
-                                    {/* Delete Team button as ListItem */}
-                                    <ListItem button onClick={() => setDeleteTeamDialogOpen(true)}>
-                                        <ListItemText primary="Delete Team" />
-                                    </ListItem>
-                                </List>
+                                        {/* Delete Team button as ListItem */}
+                                        <ListItem button onClick={() => setDeleteTeamDialogOpen(true)}>
+                                            <ListItemText primary="Delete Team" />
+                                        </ListItem>
+                                    </List>
 
-                            </Paper>
-
+                                </Paper>
+                            )}
                             <Paper className={classes.paper} style={{ marginTop: 20 }}>
                                 <Typography variant="h6" gutterBottom>
                                     Members List
