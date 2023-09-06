@@ -38,8 +38,8 @@ function goBack() {
 }
 function Tutorial3() {
     return (
-        <div  className="responsive-container">
-                        <Button variant="contained" onClick={goBack} color="primary">
+        <div className="responsive-container">
+            <Button variant="contained" onClick={goBack} color="primary">
                 Come back
             </Button>
             <h1>Discover the Mysteries of HTML!</h1>

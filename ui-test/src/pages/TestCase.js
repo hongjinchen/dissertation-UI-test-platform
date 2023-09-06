@@ -23,7 +23,12 @@ function TestCase() {
   const navigateToTutorial2 = () => {
     navigate('/tutorial2'); // Navigate to the tutorial page
   };
-
+ const navigateToTutorial3 = () => {
+    navigate('/tutorial3'); // Navigate to the tutorial page
+  };
+  const navigateToTutorial4 = () => {
+    navigate('/tutorial4'); // Navigate to the tutorial page
+  };
   useEffect(() => {
     async function getName() {
       const fetchedName = await fetchName(testCaseId);
@@ -53,6 +58,12 @@ function TestCase() {
           </Button>
           <Button color="inherit" onClick={navigateToTutorial2}>
             User Behavior Guide
+          </Button>
+          <Button color="inherit" onClick={navigateToTutorial3}>
+          HTML Basics
+          </Button>
+          <Button color="inherit" onClick={navigateToTutorial4}>
+          Platform Introduction
           </Button>
         </Toolbar>
       </AppBar>
