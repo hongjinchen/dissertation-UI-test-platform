@@ -1,37 +1,30 @@
-# Use a Python image with Selenium dependencies
-FROM python:3.8-slim-buster
+# Use an Alpine-based Python image
+FROM python:3.8-alpine
 
-# Set environment variables for non-interactive frontend
-ENV DEBIAN_FRONTEND=noninteractive
-
-# Change the Debian sources
-RUN echo "deb http://ftp.us.debian.org/debian buster main" > /etc/apt/sources.list && \
-    echo "deb http://ftp.us.debian.org/debian-security buster/updates main" >> /etc/apt/sources.list
-
-# Install necessary packages for Selenium, headless Chrome, and mysqlclient
-RUN apt-get update && apt-get install -y --fix-missing --no-install-recommends \
-    curl unzip wget \
-    libxi6 libgconf-2-4 \
+# Installing dependencies for Selenium, headless Chrome, and other utilities
+RUN apk update && apk add --no-cache \
+    curl \
+    unzip \
+    wget \
     xvfb \
-    libmariadb-dev \
-    libmariadbclient-dev && \
-    rm -rf /var/lib/apt/lists/*
-
-# Install Chrome
-RUN wget -N https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -P ~/ && \
-    dpkg -i ~/google-chrome-stable_current_amd64.deb || apt-get -fy install && \
-    rm ~/google-chrome-stable_current_amd64.deb
-
-# Set up ChromeDriver environment variables
-ENV CHROMEDRIVER_VERSION 89.0.4389.23
-ENV CHROMEDRIVER_DIR /chromedriver
-RUN mkdir -p $CHROMEDRIVER_DIR
-
-# Download and install ChromeDriver
-RUN wget -N https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip -P ~/
-RUN unzip -o ~/chromedriver_linux64.zip -d ~/ && rm ~/chromedriver_linux64.zip
-RUN mv ~/chromedriver $CHROMEDRIVER_DIR
-ENV PATH $CHROMEDRIVER_DIR:$PATH
+    chromium \
+    chromium-chromedriver \
+    libx11-dev \
+    libxrender-dev \
+    libxrandr-dev \
+    mariadb-dev \
+    # Additional packages for BLAS and build tools
+    g++ \
+    gcc \
+    build-base \
+    libstdc++ \
+    openblas-dev \
+    python3-dev\
+    libffi-dev \
+    openssl-dev
+# Set environment variables for Chromium to run headlessly
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV CHROME_PATH=/usr/lib/chromium/
 
 # Set up the working environment
 WORKDIR /app

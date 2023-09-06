@@ -1,13 +1,13 @@
 .responsive-container {
     display: flex;
     flex-direction: column;
-    margin: 0 auto; /* 使内容居中 */
-    max-width: 1000px; /* 您可以根据需要设置这个值 */
+    margin: 0 auto;
+    max-width: 1000px;
 }
 
 @media (max-width: 600px) {
     .responsive-container {
-        padding: 0 15px; /* 在小屏幕上添加一些边距 */
+        padding: 0 15px;
     }
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import './Tutorial1.css'; // 导入CSS
+import './Tutorial1.css';
 import { Button } from '@mui/material';
 
 const htmlExample = `

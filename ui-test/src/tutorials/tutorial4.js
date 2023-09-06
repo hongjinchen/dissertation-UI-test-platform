@@ -100,7 +100,7 @@ I.see("Peter");
       <Typography paragraph>
         Yes. ReactJS, AngularJS, VueJS, Polymer, VanillaJS, you name it!
       </Typography>
-      
+
       <Typography paragraph>
         <Link href="https://uilicious.com" target="_blank" rel="noopener noreferrer">
           Learn more about UI-licious

@@ -58,15 +58,13 @@ function TeamManager() {
     const { id } = useParams();
     const classes = useStyles();
     const [team, setTeam] = useState(null);
-    // const [newMemberName, setNewMemberName] = useState('');
     const [deleteTeamDialogOpen, setDeleteTeamDialogOpen] = useState(false);
     const [deleteMemberDialogOpen, setDeleteMemberDialogOpen] = useState(false);
     const [memberToDelete, setMemberToDelete] = useState(null);
     const [transferManagerDialogOpen, setTransferManagerDialogOpen] = useState(false);
     const [newManager, setNewManager] = useState('');
     const [addMemberDialogOpen, setAddMemberDialogOpen] = useState(false);
-    const [searchResults, setSearchResults] = useState([]); // 用户搜索结果
-    // const [selectedUser, setSelectedUser] = useState(null); // 用户选择的用户
+    const [searchResults, setSearchResults] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [searchUserName, setSearchTerm] = useState("");

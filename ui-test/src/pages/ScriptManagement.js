@@ -6,7 +6,7 @@ import {
   Container, Grid, Paper, TextField, Button, Table,
   TableHead, TableRow, TableCell, TableBody, TablePagination, LinearProgress, Tooltip, IconButton
 } from '@material-ui/core';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline'; // 导入帮助图标
+import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 
 import { blue } from "@material-ui/core/colors";
 import { Link } from "react-router-dom";
@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   toolbar: {
-    paddingRight: 24, // keep right padding when drawer closed
+    paddingRight: 24,
   },
   toolbarIcon: {
     display: "flex",
@@ -78,8 +78,8 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     justifyContent: "space-around",
     padding: "16px",
-    [theme.breakpoints.down('xs')]: {  // 当屏幕宽度为xs或更小时
-      flexDirection: "column",  // 将flexDirection设为column来使子元素垂直堆叠
+    [theme.breakpoints.down('xs')]: {
+      flexDirection: "column", 
     }
   }
 }));
@@ -100,7 +100,7 @@ export default function ScriptManagement() {
   const [nameSearch, setNameSearch] = useState("");
   const [creatorSearch, setCreatorSearch] = useState("");
   const [stateFilter, setStateFilter] = useState("");
-  const { id } = useParams(); // 获取路由参数
+  const { id } = useParams();
 
   const [scriptList, setScriptList] = useState([]);
 
@@ -155,7 +155,7 @@ export default function ScriptManagement() {
     setPage(0);
   };
 
-  // 选择报告
+
   const [open, setOpen] = React.useState(false);
   const [selectedReport, setSelectedReport] = React.useState("");
   const handleClickOpen = () => {
@@ -179,7 +179,7 @@ export default function ScriptManagement() {
             {/* Search Part */}
             <Grid item xs={12}>
               <Paper className={SearchfixedHeightPaper}>
-              <div className={classes.searchContainer}>
+                <div className={classes.searchContainer}>
                   <TextField
                     label="Search ID"
                     value={idSearch}

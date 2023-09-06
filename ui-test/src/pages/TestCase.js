@@ -4,10 +4,6 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Box, Typography, AppBar, Toolbar, Button } from '@mui/material';
 
-// import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-// import HelpIcon from '@mui/icons-material/Help';
-// import SelectAllIcon from '@mui/icons-material/SelectAll';
-
 import LeftSideBar from '../components/LeftSideBar';
 import DroppableArea from '../components/DroppableArea';
 import { fetchName } from '../api';

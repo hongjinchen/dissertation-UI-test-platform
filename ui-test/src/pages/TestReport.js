@@ -148,14 +148,14 @@ const TestReportPage = () => {
 
             const result = await response.json();
             if (response.ok) {
-                alert(result.message); // 或使用其他方式通知用户报告已发送
+                alert(result.message);
             } else {
-                alert("Error: " + result.message); // 或使用其他方式通知用户发生错误
+                alert("Error: " + result.message);
             }
 
         } catch (error) {
             console.error("Error sharing the report:", error);
-            alert("Error sharing the report. Please try again later."); // 或使用其他方式通知用户
+            alert("Error sharing the report. Please try again later."); 
         }
     };
 
@@ -191,7 +191,7 @@ const TestReportPage = () => {
                 </Grid>
             </Box>
             <Box sx={{ p: 2, my: 2 }}>
-                <Grid container spacing={2}>  {/* 这里的spacing属性可以调整按钮之间的间隔 */}
+                <Grid container spacing={2}>
                     <Grid item xs={4}>
                         <Button
                             variant="outlined"

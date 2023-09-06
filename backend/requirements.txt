@@ -51,3 +51,4 @@ urllib3==1.26.15
 virtualenv==20.22.0
 Werkzeug==2.2.3
 wsproto==1.2.0
+webdriver-manager==4.0.0
