@@ -236,16 +236,11 @@ action_mapping = {
 
 def get_webdriver(env):
     if env == "chrome":
-        options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
-        options.add_argument('--disable-dev-shm-usage')
-        return webdriver.Chrome(ChromeDriverManager().install(), options=options)
-        
+        return webdriver.Chrome(ChromeDriverManager().install())
     elif env == "firefox":
         return webdriver.Firefox(GeckoDriverManager().install())
     elif env == "safari":
-        return webdriver.Safari()
+        return webdriver.Safari()  # 注意：Safari驱动可能不需要这样的管理器
     elif env == "edge":
         return webdriver.Edge(EdgeChromiumDriverManager().install())
     else:

@@ -270,19 +270,19 @@ def create_team():
         manager_id=user_id
     )
 
-    # Only add manager as a member if team_members is empty
+    # Add manager as a member with role 'manager'
+    manager_membership = UserTeam(
+        user_id=user_id,
+        role='manager',
+        joined_at=datetime.utcnow()
+    )
+    new_team.members.append(manager_membership)
+
+    # If team_members list is empty, add the user_id as the only member.
     if not team_members:
-        manager_membership = UserTeam(
-            user_id=user_id,
-            role='manager',
-            joined_at=datetime.utcnow()
-        )
-        new_team.members.append(manager_membership)
         team_members = [user_id]
 
     for member_id in team_members:
-        if member_id == user_id:
-            continue  # Skip adding manager again
         user = User.query.get(member_id)
         if user:
             new_member = UserTeam(
