@@ -312,8 +312,7 @@ export const fetchScripts = async (id) => {
 export const fetchUserContributions = async (userId) => {
   try {
     const response = await axios.get(`${API_BASE_URL}/contributions/${userId}`);
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     console.error("Error fetching user contributions:", error);
     return null;
@@ -364,6 +363,20 @@ export const removeTeamMember = async (id, username) => {
       console.log(response.data.message);
   } catch (error) {
       console.error("Failed removing member:", error);
+      throw error;
+  }
+};
+
+export const transferManager = async (teamId, newManagerId) => {
+  try {
+      const response = await axios.put(`${API_BASE_URL}/team/transferManager`, {
+          teamId: teamId,
+          newManagerId: newManagerId
+      });
+      return response.data;
+
+  } catch (error) {
+      console.error("There was an error transferring the manager:", error);
       throw error;
   }
 };

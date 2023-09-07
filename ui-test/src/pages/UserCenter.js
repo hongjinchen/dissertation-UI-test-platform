@@ -87,6 +87,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
   },
 }));
+
 function UserCenter() {
   const { id } = useParams();
   // user information
@@ -120,6 +121,7 @@ function UserCenter() {
     const getUserContributions = async () => {
       setIsLoading(true);
       const contributionData = await fetchUserContributions(id);
+      console.log("contributionData",contributionData)
       if (contributionData) {
         setContributions(contributionData);
       }
@@ -149,6 +151,7 @@ function UserCenter() {
   const [form, setForm] = useState({
     username: '',
   });
+  
   // 更新handleSave函数以调用updateUserInfo
   const handleSave = async () => {
     const updatedData = await updateUserInfo(Cookies.get('userId'), form.username);
@@ -317,7 +320,6 @@ function UserCenter() {
             <DialogTitle>Edit user name</DialogTitle>
             <DialogContent>
               <form>
-                {/* // 更新文本字段以使用表单状态 */}
                 <TextField
                   label="username"
                   placeholder="New username"

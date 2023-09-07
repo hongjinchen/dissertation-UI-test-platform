@@ -79,7 +79,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   const navigate = useNavigate();
 
   const handleBoxClick = () => {

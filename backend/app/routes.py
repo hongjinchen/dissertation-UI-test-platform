@@ -268,7 +268,7 @@ def search_users():
 @app.route('/createTeam', methods=['POST'])
 def create_team():
     data = request.get_json()
-
+    print("data", data)
     team_name = data.get('team_name', '')
     team_description = data.get('team_description', '')
     team_members = data.get('team_members', [])
@@ -291,16 +291,14 @@ def create_team():
         updated_at=datetime.utcnow(),
         manager_id=user_id
     )
-
-    # Only add manager as a member if team_members is empty
-    if not team_members:
-        manager_membership = UserTeam(
+  # Always add the manager as a team member with role 'manager'
+    manager_membership = UserTeam(
             user_id=user_id,
             role='manager',
             joined_at=datetime.utcnow()
         )
-        new_team.members.append(manager_membership)
-        team_members = [user_id]
+    new_team.members.append(manager_membership)
+    team_members = [user_id]
 
     for member_id in team_members:
         if member_id == user_id:
@@ -493,8 +491,7 @@ def create_test_event():
         db.session.flush()
 
         # Update UserContribution
-        # Format the created_at date to "YYYY-MM"
-        activity_period = created_at.strftime("%Y-%m")
+        activity_period = created_at.strftime("%Y-%m-%d")
         user_contribution = UserContribution.query.filter_by(
             user_id=test_event.created_by, activity_period=activity_period).first()
 
@@ -565,15 +562,13 @@ def run_test_event():
         db.session.flush()
 
         # Update UserContribution
-        # Format the created_at date to "YYYY-MM"
-        activity_period = created_at.strftime("%Y-%m")
+        activity_period = created_at.strftime("%Y-%m-%d")
         user_contribution = UserContribution.query.filter_by(
             user_id=test_event.created_by, activity_period=activity_period).first()
 
         if user_contribution:
             user_contribution.count += 1
         else:
-            # If there's no contribution for the user in that period, create a new one.
             new_contribution = UserContribution(
                 user_id=test_event.created_by, activity_period=activity_period, count=1)
             db.session.add(new_contribution)
@@ -937,16 +932,15 @@ def get_contributions(user_id):
 
         contributions = UserContribution.query.filter(
             UserContribution.user_id == user_id,
-            UserContribution.activity_date >= one_year_ago.strftime(
-                '%Y-%m-%d'),
-            UserContribution.activity_date <= today.strftime('%Y-%m-%d')
+            UserContribution.activity_period >= one_year_ago.strftime('%Y-%m-%d'),
+            UserContribution.activity_period <= today.strftime('%Y-%m-%d')
         ).all()
 
         # Transform data into desired format
         data = [
             {
-                "date": contribution.activity_date,
-                "count": contribution.contribution_count
+                "date": contribution.activity_period,
+                "count": contribution.count
             }
             for contribution in contributions
         ]
@@ -961,7 +955,13 @@ def get_contributions(user_id):
 def get_team(team_id):
     team = Team.query.get_or_404(team_id)
 
-    members = [member.user.username for member in team.members]
+    members = [
+        {
+            "id": member.user.user_id,
+            "username": member.user.username
+        }
+        for member in team.members
+    ]
 
     return jsonify({
         "id": team.team_id,
@@ -972,6 +972,7 @@ def get_team(team_id):
         "manager_id": team.manager_id,
         "members": members
     })
+
 
 @app.route('/team/<int:team_id>', methods=['DELETE'])
 def remove_team(team_id):
@@ -1027,3 +1028,16 @@ def remove_team_member(team_id):
 
     return jsonify({"message": "Member removed successfully!"}), 200
 
+@app.route('/team/transferManager', methods=['PUT'])
+def transfer_manager():
+    data = request.get_json()
+    team_id = data.get('teamId')
+    new_manager_id = data.get('newManagerId')
+
+    team = Team.query.get_or_404(team_id)
+
+    # 更新团队的管理者
+    team.manager_id = new_manager_id
+    db.session.commit()
+
+    return jsonify({"message": "Manager transferred successfully!"}), 200

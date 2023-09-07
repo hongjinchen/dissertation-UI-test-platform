@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchTeam, deleteTeam, addTeamMember, removeTeamMember, searchUsers } from '../api';
+import { fetchTeam, deleteTeam, addTeamMember, removeTeamMember, searchUsers, transferManager } from '../api';
 import {
     makeStyles,
     Button,
@@ -101,7 +101,6 @@ function TeamManager() {
     };
 
     const handleOpenDeleteMemberDialog = (member) => {
-        if (member === 'manager') return;
         setDeleteMemberDialogOpen(true);
         setMemberToDelete(member);
     };
@@ -116,10 +115,16 @@ function TeamManager() {
         setTransferManagerDialogOpen(true);
     };
 
-    const handleConfirmTransferManager = () => {
-        // Logic to transfer the manager status. This will require API/backend support.
-        setTransferManagerDialogOpen(false);
+    const handleConfirmTransferManager = async () => {
+        try {
+            await transferManager(id, newManager);
+            setTransferManagerDialogOpen(false);
+            window.location.reload();
+        } catch (error) {
+            alert("There was an error transferring the manager:", error)
+        }
     };
+
     const handleSearch = async (userName) => {
         setIsSearching(true);
         try {
@@ -224,8 +229,8 @@ function TeamManager() {
                         fullWidth
                     >
                         {team.members.map(member => (
-                            member !== 'manager' && <MenuItem key={member} value={member}>
-                                {member}
+                            member !== 'manager' && <MenuItem key={member.id} value={member.id}>
+                                {member.username}
                             </MenuItem>
                         ))}
                     </TextField>
@@ -366,8 +371,8 @@ function TeamManager() {
                                 <List>
                                     {team && Array.isArray(team.members) ?
                                         team.members.map(member => (
-                                            <ListItem key={member}>
-                                                <ListItemText primary={member} />
+                                            <ListItem key={member.id}>
+                                                <ListItemText primary={member.username} />
                                                 <ListItemSecondaryAction>
                                                     <Button
                                                         edge="end"
@@ -380,6 +385,7 @@ function TeamManager() {
                                             </ListItem>
                                         ))
                                         : null}
+
                                 </List>
                             </Paper>
                         </Grid>

@@ -105,25 +105,25 @@ export default function CenteredGrid() {
 
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem('hasSeenGuide');
-  
+
     if (!hasSeenGuide) {
       setShowGuideDialog(true);
     }
 
     const getUserData = async () => {
-      // ... (existing useEffect code)
+
     };
 
     getUserData();
   }, [isAdding]);
 
-    // 新增的函数来关闭UserGuideDialog，并将其标记为已查看
-    const handleCloseGuideDialog = () => {
-      localStorage.setItem('hasSeenGuide', 'true');
-      setShowGuideDialog(false);
-    };
+  // 新增的函数来关闭UserGuideDialog，并将其标记为已查看
+  const handleCloseGuideDialog = () => {
+    localStorage.setItem('hasSeenGuide', 'true');
+    setShowGuideDialog(false);
+  };
 
-    
+
   const handleSearch = async (userName) => {
     const newSearchResults = await searchUsers(userName, Cookies.get('userId'));
     console.log(newSearchResults);
@@ -160,12 +160,14 @@ export default function CenteredGrid() {
       alert('Team created successfully');
       resetForm();
       setIsAdding(false);
+      // 刷新页面
+      window.location.reload();
     } else {
       console.log(response.error);
       alert(response.error);
     }
   };
-  
+
 
 
 
@@ -332,10 +334,10 @@ export default function CenteredGrid() {
               </Paper>
             </Grid>
           ))}
-                <UserGuideDialog open={showGuideDialog} onClose={handleCloseGuideDialog} />
+          <UserGuideDialog open={showGuideDialog} onClose={handleCloseGuideDialog} />
 
         </Grid>
-        
+
       )}
     </div>
   );
