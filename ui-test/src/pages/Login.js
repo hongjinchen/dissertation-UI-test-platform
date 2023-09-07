@@ -32,12 +32,14 @@ export default function Login() {
     if (status === "success") {
       console.log("Login success");
       Cookies.set('userId', result.userId);
+      Cookies.set('token', result.token);  // 保存token到cookie中
       navigate('/');
     } else {
       setSnackMessage("Please check if your email and password are correct");
       setSnackOpen(true);
     }
-  };
+};
+
 
   return (
     <Container maxWidth="xs">

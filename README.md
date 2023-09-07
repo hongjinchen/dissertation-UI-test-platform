@@ -293,7 +293,7 @@ In this guide, we will walk you through deploying a Python Flask application usi
 From the root directory of the project, execute the following command to build a Docker image:
 
 ```
-docker build -t UI_test .
+docker build -t ui_test .
 ```
 
 This will construct a Docker image named `UI_test` based on your `Dockerfile`.
@@ -303,7 +303,7 @@ This will construct a Docker image named `UI_test` based on your `Dockerfile`.
 To run your application, use the command below:
 
 ```
-docker run -p 3000:3000 UI_test
+docker run -p 3000:3000 ui_test
 ```
 
 This initiates a new Docker container instance based on the `UI_test` image. The `-p 3000:3000` flag maps the container's port 3000 to port 3000 on the host machine.
@@ -312,3 +312,4 @@ This initiates a new Docker container instance based on the `UI_test` image. The
 
 Visit [http://localhost:3000](http://localhost:3000/) in your browser, and you should see your application running.
 
+![image-20230907121918138](C:\Users\hongj\AppData\Roaming\Typora\typora-user-images\image-20230907121918138.png)

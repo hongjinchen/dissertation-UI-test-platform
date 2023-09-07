@@ -106,7 +106,7 @@ def login():
                 app.config["SECRET_KEY"],
             )
             resp = make_response(
-                jsonify(message='Login successful.', status='success', user_id=user.user_id))
+                jsonify(message='Login successful.', status='success', user_id=user.user_id, token=token))
 
             # Setting a token cookie
             resp.set_cookie("token", token, max_age=60 * 60,
