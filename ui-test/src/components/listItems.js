@@ -14,6 +14,8 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import ErrorIcon from '@mui/icons-material/Error';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import PeopleIcon from '@material-ui/icons/People';
+import SupervisorAccountIcon from '@material-ui/icons/SupervisorAccount';
 
 export const MainListItems = ({ id }) => {
   const token = Cookies.get('token');
@@ -74,7 +76,7 @@ export function SecondaryListItems({ id }) {
 
       <ListItem button component={Link} to={`/team/${id}`}>
         <ListItemIcon>
-          <ErrorIcon />
+        <SupervisorAccountIcon />
         </ListItemIcon>
         <ListItemText primary="Team Management" />
       </ListItem>
