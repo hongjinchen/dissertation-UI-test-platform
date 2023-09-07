@@ -52,6 +52,62 @@ npm run start
 
 
 
+## Running the project with docker
+
+### **Deploying a Python Flask Application Using Docker and Docker Compose**
+
+In this guide, we will walk you through deploying a Python Flask application using Docker and Docker Compose.
+
+#### **1. Install Docker:**
+
+- If you haven't installed Docker yet, visit the [Docker Official Website](https://www.docker.com/) and follow the installation guide suitable for your operating system.
+
+#### **2. Install Docker Compose:**
+
+- Docker Compose lets you define and run multi-container applications using a `docker-compose.yml` file. Head over to the [Official Installation Guide for Docker Compose](https://docs.docker.com/compose/install/) and follow the steps.
+
+#### **3. Build and Launch Containers:**
+
+- Open your terminal or command prompt and navigate to the project directory that has the `Dockerfile` and `docker-compose.yml`.
+- Execute the command `docker-compose build` to build your web service.
+- Follow it up with `docker-compose up` to start your web and db services.
+
+#### **4. Access the Application:**
+
+- Launch your web browser and navigate to [http://localhost:5000](http://localhost:5000/). You should now see your Python Flask application up and running.
+
+#### **5. Shutdown Services:**
+
+- When you're done and wish to shut down the services, use the command `docker-compose down` to stop all associated services.
+
+### Building a Docker Image of front end project
+
+From the root directory of the project, execute the following command to build a Docker image:
+
+```
+docker build -t ui_test .
+```
+
+This will construct a Docker image named `UI_test` based on your `Dockerfile`.
+
+#### Running the Docker Container
+
+To run your application, use the command below:
+
+```
+docker run -p 3000:3000 ui_test
+```
+
+This initiates a new Docker container instance based on the `UI_test` image. The `-p 3000:3000` flag maps the container's port 3000 to port 3000 on the host machine.
+
+#### Accessing the Application
+
+Visit [http://localhost:3000](http://localhost:3000/) in your browser, and you should see your application running.
+
+![image-20230907121918138](C:\Users\hongj\AppData\Roaming\Typora\typora-user-images\image-20230907121918138.png)
+
+
+
 ## Running the project without docker (Both front-end and back-end, both offline)
 
 ### 1. Install Node.js and npm
@@ -260,56 +316,3 @@ If necessary, make modifications in the `config.py` file of the Python project.
 
 
 
-## Running the project with docker
-
-### **Deploying a Python Flask Application Using Docker and Docker Compose**
-
-In this guide, we will walk you through deploying a Python Flask application using Docker and Docker Compose.
-
-#### **1. Install Docker:**
-
-- If you haven't installed Docker yet, visit the [Docker Official Website](https://www.docker.com/) and follow the installation guide suitable for your operating system.
-
-#### **2. Install Docker Compose:**
-
-- Docker Compose lets you define and run multi-container applications using a `docker-compose.yml` file. Head over to the [Official Installation Guide for Docker Compose](https://docs.docker.com/compose/install/) and follow the steps.
-
-#### **3. Build and Launch Containers:**
-
-- Open your terminal or command prompt and navigate to the project directory that has the `Dockerfile` and `docker-compose.yml`.
-- Execute the command `docker-compose build` to build your web service.
-- Follow it up with `docker-compose up` to start your web and db services.
-
-#### **4. Access the Application:**
-
-- Launch your web browser and navigate to [http://localhost:5000](http://localhost:5000/). You should now see your Python Flask application up and running.
-
-#### **5. Shutdown Services:**
-
-- When you're done and wish to shut down the services, use the command `docker-compose down` to stop all associated services.
-
-### Building a Docker Image of front end project
-
-From the root directory of the project, execute the following command to build a Docker image:
-
-```
-docker build -t ui_test .
-```
-
-This will construct a Docker image named `UI_test` based on your `Dockerfile`.
-
-#### Running the Docker Container
-
-To run your application, use the command below:
-
-```
-docker run -p 3000:3000 ui_test
-```
-
-This initiates a new Docker container instance based on the `UI_test` image. The `-p 3000:3000` flag maps the container's port 3000 to port 3000 on the host machine.
-
-#### Accessing the Application
-
-Visit [http://localhost:3000](http://localhost:3000/) in your browser, and you should see your application running.
-
-![image-20230907121918138](C:\Users\hongj\AppData\Roaming\Typora\typora-user-images\image-20230907121918138.png)
