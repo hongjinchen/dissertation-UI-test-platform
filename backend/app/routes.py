@@ -298,8 +298,7 @@ def create_team():
             joined_at=datetime.utcnow()
         )
     new_team.members.append(manager_membership)
-    team_members = [user_id]
-
+    
     for member_id in team_members:
         if member_id == user_id:
             continue

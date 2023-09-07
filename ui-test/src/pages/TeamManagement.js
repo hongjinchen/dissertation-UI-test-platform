@@ -279,7 +279,9 @@ function TeamManager() {
                                             button
                                             key={user.id}
                                             onClick={() => addMember(user)}
+                                            disabled={teamMembers.some(member => member.id === user.id)}
                                         >
+
                                             <ListItemAvatar>
                                                 <Avatar>{user.name.charAt(0)}</Avatar>
                                             </ListItemAvatar>
