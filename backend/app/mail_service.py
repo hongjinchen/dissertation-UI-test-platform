@@ -30,3 +30,6 @@ def send_email(email_address, email_content, attachments=[]):
     smtp.login(sender_qq, pwd)
     smtp.sendmail(sender_qq, [email_address], msg.as_string())
     smtp.quit()
+    
+    
+    

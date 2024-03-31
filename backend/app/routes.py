@@ -374,7 +374,7 @@ def get_user_teams(user_id):
 
     user_teams = user.teams
     team_data = []
-
+    print(user_teams)
     for user_team in user_teams:
         team = user_team.team
         team_data.append({
