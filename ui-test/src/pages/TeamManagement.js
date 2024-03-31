@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { fetchTeam, deleteTeam, addTeamMember, removeTeamMember, searchUsers, transferManager } from '../api';
 import {
     makeStyles,
+    Snackbar,
     Button,
     List,
     ListItem,
@@ -22,10 +23,13 @@ import {
     ListItemAvatar,
     Grid,
     Avatar,
+    IconButton 
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Navigation from "../components/SubNavigation";
 import Cookies from 'js-cookie';
+import { API_BASE_URL, axiosInstance } from "../config";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -69,6 +73,15 @@ function TeamManager() {
     const [errorMessage, setErrorMessage] = useState("");
     const [searchUserName, setSearchTerm] = useState("");
     const [teamMembers, setTeamMembers] = useState([]);
+    const [confirmUsername, setConfirmUsername] = useState('');
+    const [confirmUsernameError, setConfirmUsernameError] = useState(false);
+    const [email, setEmail] = useState('');
+    const [code, setCode] = useState('');
+    const [step, setStep] = useState(0);
+    const [message, setMessage] = useState('');
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
 
     useEffect(() => {
         fetchTeam(id).then(data => {
@@ -76,26 +89,71 @@ function TeamManager() {
         });
     }, [id]);
 
+    const showMessage = (msg) => {
+        setMessage(msg);
+        setOpenSnackbar(true);
+    };
+
+    const handleSubmitEmail = async () => {
+        try {
+            const result = await axiosInstance.post(`${API_BASE_URL}/check-email`, { email });
+            if (result.data.status === 'success') {
+                setStep(1);
+                showMessage("A verification code has been sent to your email.");
+            } else {
+                showMessage(result.data.message || "Mailbox input error, can't change password");
+            }
+        } catch (error) {
+            showMessage("Error sending verification code");
+            console.error('Error:', error);
+        }
+    };
+
+    const handleVerifyCode = async () => {
+        try {
+            const result = await axiosInstance.post(`${API_BASE_URL}/verify-code`, { email, code });
+            if (result.data.status === 'success') {
+                setStep(2);
+                showMessage("");
+            } else {
+                showMessage(result.data.message || "Verification failed, incorrect code.");
+            }
+        } catch (error) {
+            showMessage("Error verifying code");
+            console.error('Error:', error);
+        }
+    };
+
+
     const handleDeleteTeam = async () => {
-        await deleteTeam(id);
-        setDeleteTeamDialogOpen(false);
+        // if (confirmUsername === getCurrentUserUsername()) {
+        if (confirmUsername === "3493007331@qq.com") {
+            await deleteTeam(id);
+            setDeleteTeamDialogOpen(false);
+            setConfirmUsername('');
+            setConfirmUsernameError(false);
+        } else {
+            setConfirmUsernameError(true);
+        }
+
     };
 
     const handleAddMember = async () => {
         if (!teamMembers) return;
         try {
             const message = await addTeamMember(id, teamMembers);
-            console.log(message);  // This will log the success message
+            console.log(message);
             setTeam(prev => {
                 return { ...prev, members: [...prev.members, teamMembers] };
             });
             setSearchTerm('');
 
-            // Refresh the page after a successful submission
             window.location.reload();
-
+            setSnackbarMessage('Member successfully added');
+            setSnackbarOpen(true); // 打开Snackbar显示成功消息
         } catch (error) {
-            // If there's an error message, show it in an alert
+            setSnackbarMessage('Failed to add member');
+            setSnackbarOpen(true);
             alert(error.message);
         }
     };
@@ -164,25 +222,51 @@ function TeamManager() {
             <Navigation title="Team Management" id="id" />
 
             {/* Delete team confirmation dialog */}
-            <Dialog
-                open={deleteTeamDialogOpen}
-                onClose={() => setDeleteTeamDialogOpen(false)}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{"Delete Team"}</DialogTitle>
+            <Dialog open={deleteTeamDialogOpen} onClose={() => setDeleteTeamDialogOpen(false)}>
+                <DialogTitle>{"Delete Team"}</DialogTitle>
                 <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        Are you sure you want to delete this team?
-                    </DialogContentText>
+                    {step === 0 && (
+                        <>
+                            <DialogContentText>
+                                Please enter your email to receive a verification code.
+                            </DialogContentText>
+                            <TextField
+                                label="Email"
+                                type="email"
+                                fullWidth
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </>
+                    )}
+                    {step === 1 && (
+                        <>
+                            <DialogContentText>
+                                Please enter the verification code sent to your email.
+                            </DialogContentText>
+                            <TextField
+                                label="Verification Code"
+                                type="text"
+                                fullWidth
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                            />
+                        </>
+                    )}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setDeleteTeamDialogOpen(false)} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={handleDeleteTeam} color="primary" autoFocus>
-                        Confirm
-                    </Button>
+                    {step === 0 && <Button onClick={handleSubmitEmail} color="primary">Send Code</Button>}
+                    {step === 1 && <Button onClick={handleVerifyCode} color="primary">Verify Code</Button>}
+                    {step === 2 && (
+                        <>
+                            <Button onClick={() => setDeleteTeamDialogOpen(false)} color="primary">
+                                Cancel
+                            </Button>
+                            <Button onClick={handleDeleteTeam} color="primary" autoFocus>
+                                Confirm
+                            </Button>
+                        </>
+                    )}
                 </DialogActions>
             </Dialog>
 
@@ -316,6 +400,17 @@ function TeamManager() {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+                message={snackbarMessage}
+                action={
+                    <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbarOpen(false)}>
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
+                }
+            />
 
             <main className={classes.content}>
                 <Container maxWidth="lg" className={classes.container}>

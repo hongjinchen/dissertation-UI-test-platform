@@ -1,6 +1,6 @@
 import React from "react";
 import { useDrag, useDrop } from "react-dnd";
-import { Box, Divider } from "@mui/material";
+import { Box, Divider, Typography } from "@mui/material";
 import { darken } from "@mui/system";
 
 
@@ -87,7 +87,7 @@ const DroppableItem = ({
         margin: 1,
         opacity: isDragging ? 0.5 : 1,
         cursor: "grab",
-        boxShadow: isOver ? "0 0 10px rgba(0, 0, 0, 0.5)" : "none", // 根据 isOver 改变阴影效果
+        boxShadow: isOver ? "0 0 10px rgba(0, 0, 0, 0.5)" : "none",
       }}
     >
       {type}
@@ -113,7 +113,8 @@ const DroppableItem = ({
             borderRadius: '5px'
           }}
         >
-          {params.map((param, idx) => (
+
+          {/* {params.map((param, idx) => (
             <Box
               key={idx}
               sx={{
@@ -133,7 +134,20 @@ const DroppableItem = ({
 
               <span>{param.value}</span>
             </Box>
+          ))} */}
+          {params.map((param, idx) => (
+            <Box key={idx} sx={{ margin: '8px', display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+              {Object.entries(param).map(([key, value]) => {
+                if (['id', '不需要渲染的键名'].includes(key) || !value.trim()) {
+                  return null;
+                }
+                return <Typography key={key} variant="body2" sx={{ margin: '4px', backgroundColor: '#f0f0f0', padding: '4px 8px', borderRadius: '4px' }}>
+                  {`${key}: ${value}`}
+                </Typography>;
+              })}
+            </Box>
           ))}
+
         </Box>
       </Box>
       <Box sx={{ paddingLeft: 2 }}>{children}</Box>

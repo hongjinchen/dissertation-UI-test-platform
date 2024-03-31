@@ -4,32 +4,41 @@ from email.mime.multipart import MIMEMultipart
 from email.header import Header
 from email.mime.base import MIMEBase
 from email import encoders
+import json
 
-host_server = 'smtp.qq.com'
-sender_qq = '775363056@qq.com'
-pwd = 'jytfijrqbwxnbege'
+
+
 
 
 def send_email(email_address, email_content, attachments=[]):
-    mail_title = 'Your Test Report'
-    msg = MIMEMultipart()
-    msg["Subject"] = Header(mail_title, 'utf-8')
-    msg["From"] = sender_qq
-    msg['To'] = email_address
-    msg.attach(MIMEText(email_content, 'html', 'utf-8'))
+    # 环境变量读取
+    config_file_path = 'app\config.json'
 
-    for file_path, file_name in attachments:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            attachment_content = f.read()
+    with open(config_file_path, 'r') as config_file:
+        config = json.load(config_file)
+        host_server = config['email']['host_server']
+        sender_qq = config['email']['sender_qq']
+        pwd = config['email']['pwd']
 
-        attachment = MIMEText(attachment_content, 'html', 'utf-8')
-        attachment["Content-Disposition"] = f'attachment; filename="{file_name}"'
-        msg.attach(attachment)
+        mail_title = 'Your Test Report'
+        msg = MIMEMultipart()
+        msg["Subject"] = Header(mail_title, 'utf-8')
+        msg["From"] = sender_qq
+        msg['To'] = email_address
+        msg.attach(MIMEText(email_content, 'html', 'utf-8'))
 
-    smtp = SMTP_SSL(host_server)
-    smtp.login(sender_qq, pwd)
-    smtp.sendmail(sender_qq, [email_address], msg.as_string())
-    smtp.quit()
-    
-    
-    
+        for file_path, file_name in attachments:
+            with open(file_path, 'rb') as f:
+                attachment = MIMEBase('application', 'octet-stream')
+                attachment.set_payload(f.read())
+                encoders.encode_base64(attachment)
+                attachment.add_header('Content-Disposition', f'attachment; filename={file_name}')
+                msg.attach(attachment)
+
+        try:
+            smtp = SMTP_SSL(host_server)
+            smtp.login(sender_qq, pwd)
+            smtp.sendmail(sender_qq, [email_address], msg.as_string())
+            smtp.quit()
+        except Exception as e:
+            print(f"An error occurred: {e}")

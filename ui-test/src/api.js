@@ -24,7 +24,6 @@ api.interceptors.request.use(
 );
 
 // user 部分接口
-
 // 注册
 export const registerUser = async (username, email, password) => {
   try {

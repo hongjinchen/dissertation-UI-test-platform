@@ -21,8 +21,6 @@ import Cookies from 'js-cookie';
 
 const Register = () => {
   const navigate = useNavigate();
-
-
   const [values, setValues] = useState({
     username: "",
     email: "",

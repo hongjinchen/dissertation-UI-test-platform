@@ -5,7 +5,7 @@ import { getItemColor } from "../utils";
 
 const DraggableItem = ({ type, subType, color, children, InputComponent, onDragBegin, parentId, params }) => {
   const [dragParams, setDragParams] = useState(params);
-  const dragParamsRef = useRef(dragParams);  // 使用 useRef 来存储 dragParams 的值
+  const dragParamsRef = useRef(dragParams);
 
   useEffect(() => {
     dragParamsRef.current = dragParams;
@@ -24,7 +24,7 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
       };
     },
     canDrag: () => {
-      if (InputComponent && dragParams.some(param => param.value.trim() === "")) {
+      if (InputComponent && dragParams.some(param => param.value?.trim() === "")) {
         window.alert("Please fill in the input before dragging!");
         return false;
       }
@@ -40,16 +40,20 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
       }
     },
   }));
-
+  const handleInputChange1 = (index, key, newValue) => {
+    const newDragParams = [...dragParams];
+    newDragParams[index][key] = newValue;
+    setDragParams(newDragParams);
+  };
   const handleInputChange = (index, event) => {
     const newDragParams = [...dragParams];
-    console.log("event.target",event.target.value)
+    console.log("event.target", event.target.value)
     newDragParams[index].value = event.target.value;
     setDragParams(newDragParams);
   };
   const handleSeInputChange = (index, event) => {
     const newDragParams = [...dragParams];
-    console.log("event.target",event.target.value)
+    console.log("event.target", event.target.value)
     newDragParams[index].textValue = event.target.value;
     setDragParams(newDragParams);
   };
@@ -67,15 +71,39 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
           key={idx}
           onChange={(e) => handleInputChange(idx, e)}
           onSeChange={(e) => handleSeInputChange(idx, e)}
+          onSelectorChange={(e) => handleSelectorChange(idx, e)}
+          onUrlChange={(e) => handleInputChange1(idx, 'url',  e.target.value)}
+          onStatusCodeChange={(e) => handleInputChange1(idx, 'statusCode',  e.target.value)}
+          onWidthChange={(e) => handleInputChange1(idx, 'width', e.target.value)}
+          onHeightChange={(e) => handleInputChange1(idx, 'height', e.target.value)}
+          oncookieNameChange={(e) => handleInputChange1(idx, 'cookieName', e.target.value)}
+          oncookieValueChange={(e) => handleInputChange1(idx, 'cookieValue', e.target.value)}
+          onSourceLocatorTypeChange={(e) => handleInputChange1(idx, 'sourceLocatorType', e.target.value)}
+          onSourceLocatorValueChange={(e) => handleInputChange1(idx, 'sourceLocatorValue', e.target.value)}
+          onTargetLocatorTypeChange={(e) => handleInputChange1(idx, 'targetLocatorType', e.target.value)}
+          onTargetLocatorValueChange={(e) => handleInputChange1(idx, 'targetLocatorValue', e.target.value)}
+          sourceLocatorType={param.sourceLocatorType}
+          sourceLocatorValue={param.sourceLocatorValue}
+          targetLocatorType={param.targetLocatorType}
+          targetLocatorValue={param.targetLocatorValue}
+          url={param.url}
+          width={param.width}
+          height={param.height}
+          statusCode={param.statusCode}
+          expectMatch={param.expectMatch}
           value={param.value}
           textValue={param.textValue}
-          onSelectorChange={(e) => handleSelectorChange(idx, e)}
           selectorValue={param.type}
+          cookieName={param.cookieName}
+          cookieValue={param.cookieValue}
+          locatorType={param.locatorType}
+          locatorValue={param.locatorValue}
+          ExpectedValue={param.ExpectedValue}
         />
       );
     })
   );
-  
+
 
   return (
     <Box
@@ -95,7 +123,6 @@ const DraggableItem = ({ type, subType, color, children, InputComponent, onDragB
           <p>{subType}</p>
         </Box>
       )}
-      {/* {params} */}
       {InputComponent && <InputComponents />}
     </Box>
   );

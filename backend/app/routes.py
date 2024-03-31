@@ -16,7 +16,13 @@ from sqlalchemy import or_
 import base64
 import json
 import os
-
+import random
+from email.utils import formataddr
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from smtplib import SMTP_SSL
+import redis
 
 @app.after_request
 def add_cors_headers(response):
@@ -95,8 +101,9 @@ def login():
         password = data['password']
 
         user = User.query.filter_by(email=email).first()
-
+        print("1",user)
         if user is not None and check_password_hash(user.password, password):
+            print("2",user)
             login_user(user)
 
             # Generating tokens
@@ -116,6 +123,42 @@ def login():
 
         return jsonify(message='Login failed.', status='failed')
 
+def generate_verification_code(length=4):
+    numbers = '0123'
+    return ''.join(random.choice(numbers) for _ in range(length))
+
+def send_verification_code(receiver_email, verification_code):
+    host_server = 'smtp.qq.com'
+    sender_qq = '775363056@qq.com'
+    pwd = 'jytfijrqbwxnbege'  # QQ邮箱SMTP服务的授权码
+    sender_qq_mail = '775363056@qq.com'
+    mail_title = 'Your Verification Code'
+    
+    # 创建一个MIMEMultipart类的实例
+    msg = MIMEMultipart()
+    msg["Subject"] = Header(mail_title, 'utf-8')
+    msg["From"] = formataddr(("Your Service Name", sender_qq_mail))
+    msg["To"] = receiver_email
+
+    # 邮件正文内容
+    mail_content = f"Hello, your verification code is: {verification_code}. Please use this code to complete your operation."
+    msg.attach(MIMEText(mail_content, 'plain', 'utf-8'))
+    
+    try:
+        smtp = SMTP_SSL(host_server)
+        smtp.set_debuglevel(0)  # 设置为1会打印出和SMTP服务器交互的所有信息
+        smtp.ehlo(host_server)
+        smtp.login(sender_qq, pwd)
+        
+        smtp.sendmail(sender_qq_mail, receiver_email, msg.as_string())
+        smtp.quit()
+        print("Mail sent successfully.")
+    except Exception as e:
+        print(f"Failed to send mail, error: {e}")
+
+# 连接到Redis服务器
+redis_client = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+        
 @app.route('/check-email', methods=['POST'])
 def check_email_existence():
     email = request.json.get('email')
@@ -125,11 +168,31 @@ def check_email_existence():
     user = User.query.filter_by(email=email).first()
 
     if user:
-        return jsonify({"status": "success", "message": "Email exists!"}), 200
+        # 生成验证码
+        verification_code = generate_verification_code()
+
+        # 使用Redis存储验证码和设置15分钟过期
+        redis_client.setex(f"verification_code:{email}", timedelta(minutes=15), value=verification_code)
+        send_verification_code(email, verification_code)
+
+        return jsonify({"status": "success", "message": "Verification code sent to email."}), 200
 
     else:
         return jsonify({"status": "fail", "message": "Email not found!"}), 404
 
+@app.route('/verify-code', methods=['POST'])
+def verify_code():
+    email = request.json.get('email')
+    code = request.json.get('code')
+    
+    # 从Redis获取验证码
+    stored_code = redis_client.get(f"verification_code:{email}")
+    if stored_code and stored_code == code:
+        # 验证码匹配
+        return jsonify({"status": "success", "message": "Code verified!"}), 200
+    else:
+        return jsonify({"status": "fail", "message": "Invalid code or code expired!"}), 400
+    
 @app.route('/update-password', methods=['PUT'])
 def update_password():
     email = request.json.get('email')
@@ -374,7 +437,7 @@ def get_user_teams(user_id):
 
     user_teams = user.teams
     team_data = []
-    print(user_teams)
+
     for user_team in user_teams:
         team = user_team.team
         team_data.append({
@@ -545,7 +608,6 @@ def run_test_event():
     data = request.get_json()
     try:
         test_event_data = data['test_event']
-
         created_at = datetime.fromisoformat(
             test_event_data['created_at'].replace('Z', '+00:00'))
         test_event = TestEvent(
@@ -571,8 +633,8 @@ def run_test_event():
             new_contribution = UserContribution(
                 user_id=test_event.created_by, activity_period=activity_period, count=1)
             db.session.add(new_contribution)
-
         for test_case_data in data['test_cases']:
+            
             test_case = TestCase(
                 created_at=created_at,
                 type=test_case_data['type'],
@@ -603,6 +665,7 @@ def run_test_event():
 
         test_case_list = data['test_cases']
 
+        print("test_case_list", test_case_list)
        # Create a list storing the paths of individual environment reports
         report_files = []
         total_success_rate = 0
@@ -655,6 +718,7 @@ def merge_html_reports(report_paths):
         with open(path, 'r', encoding='utf-8') as f:
             merged_content += f.read()
     return merged_content
+import chardet
 
 
 @app.route('/test-report/<int:report_id>', methods=['GET'])
@@ -664,7 +728,6 @@ def get_test_report(report_id):
     if not report:
         return jsonify({'error': 'Report not found'}), 404
 
-   # Trying to parse report.html_report as a Python list
     try:
         report_files = json.loads(report.html_report)
     except json.JSONDecodeError:
@@ -677,23 +740,26 @@ def get_test_report(report_id):
     encoded_html_reports = []
 
     for report_folder in report_files:
-
         files_and_directories = os.listdir(report_folder)
 
         for item in files_and_directories:
             full_path = os.path.join(report_folder, item)
             if os.path.isfile(full_path):
                 try:
-                    with open(full_path, 'r', encoding='utf-8') as f:
+                    # 使用chardet自动检测编码
+                    with open(full_path, 'rb') as f:
+                        raw_data = f.read()
+                        encoding = chardet.detect(raw_data)['encoding']
+
+                    # 使用检测到的编码读取文件内容
+                    with open(full_path, 'r', encoding=encoding) as f:
                         html_content = f.read()
-                        encoded_html_report = base64.b64encode(
-                            html_content.encode('utf-8')).decode('utf-8')
+                        encoded_html_report = base64.b64encode(html_content.encode('utf-8')).decode('utf-8')
                         encoded_html_reports.append(encoded_html_report)
                 except Exception as e:
                     print(f"Error reading file {full_path}: {e}")
                     continue
 
-    # Get the username associated with test_event.created_by
     created_by_username = test_event.creator.username
 
     report_data = {
@@ -710,7 +776,6 @@ def get_test_report(report_id):
     }
 
     return jsonify(report_data), 200
-
 
 @app.route('/testEventName', methods=['GET'])
 def get_testevent_name():
@@ -738,7 +803,7 @@ def get_testcases():
             test_cases = TestCase.query.filter_by(
                 test_event_id=testevent_id).order_by(TestCase.created_at).all()
             result = []
-            print("test_cases", test_cases)
+            # print("test_cases", test_cases)
             for index, test_case in enumerate(test_cases):
                 children = []
                 elements = TestCaseElement.query.filter_by(
@@ -976,9 +1041,14 @@ def get_team(team_id):
 @app.route('/team/<int:team_id>', methods=['DELETE'])
 def remove_team(team_id):
     team = Team.query.get_or_404(team_id)
+    
+    # 删除所有引用该团队的 UserTeam 实体
+    UserTeam.query.filter_by(team_id=team_id).delete()
+    
     db.session.delete(team)
     db.session.commit()
     return jsonify({"message": "Team deleted successfully!"}), 200
+
 
 @app.route('/team/<int:team_id>/add_member', methods=['POST'])
 def add_team_member(team_id):

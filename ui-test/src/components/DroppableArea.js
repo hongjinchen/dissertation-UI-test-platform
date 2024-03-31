@@ -30,6 +30,7 @@ const DroppableArea = ({ id, testCaseId }) => {
     safari: false,
     firefox: false,
   });
+  
   const [label, setLabel] = useState("");
   const [testCaseName, setTestCaseName] = useState("");
 
@@ -44,6 +45,7 @@ const DroppableArea = ({ id, testCaseId }) => {
   useEffect(() => {
     async function getName() {
       const fetchedData = await fetchTestCaseData(testCaseId);
+      console.log("fetchedData",fetchedData)
       if (testCaseId) {
         setDroppedItems(fetchedData);
         console.log("fetchedData:", fetchedData);

@@ -129,7 +129,7 @@ function GroupPage() {
   const KanbanData = [];
   return (
     <div className={classes.root}>
-      <Navigation title="My Group" id="id" />
+      <Navigation title="My Team" id="id" />
 
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
@@ -151,7 +151,7 @@ function GroupPage() {
 
                 <Grid item xs={12} md={6}>
                   <Paper className={classes.member}>
-                    <Title>Group Members</Title>
+                    <Title>Team Members</Title>
                     <MemberList data={members} />
                   </Paper>
                 </Grid>
