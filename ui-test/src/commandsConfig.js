@@ -37,46 +37,46 @@ const InputWithSelector = React.forwardRef(({ onChange, value, onSelectorChange,
   </Grid>
 ));
 
-const SelectionStatus = React.forwardRef(({onChange, onSeChange, onSelectorChange, locatorType, locatorValue, ExpectedValue }, ref) => (
-    <Grid container spacing={1}>
-      <Grid item xs={12}>
-        <TextField
-          size="small"
-          fullWidth
-          variant="outlined"
-          label="Expected value"
-          onChange={onSeChange}
-          value={ExpectedValue}
-        />
-      </Grid>
-      <Grid item xs={8}>
-        <TextField
-          size="small"
-          fullWidth
-          variant="outlined"
-          label="Element locator"
-          onChange={onChange}
-          value={locatorValue}
-        />
-      </Grid>
-      <Grid item xs={4}>
-        <TextField
-          size="small"
-          fullWidth
-          variant="outlined"
-          label="Type"
-          select
-          onChange={onSelectorChange}
-          value={locatorType}
-        >
-          {locatorOptions.map(option => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid>
+const SelectionStatus = React.forwardRef(({ onChange, onSeChange, onSelectorChange, locatorType, locatorValue, ExpectedValue }, ref) => (
+  <Grid container spacing={1}>
+    <Grid item xs={12}>
+      <TextField
+        size="small"
+        fullWidth
+        variant="outlined"
+        label="Expected value"
+        onChange={onSeChange}
+        value={ExpectedValue}
+      />
     </Grid>
+    <Grid item xs={8}>
+      <TextField
+        size="small"
+        fullWidth
+        variant="outlined"
+        label="Element locator"
+        onChange={onChange}
+        value={locatorValue}
+      />
+    </Grid>
+    <Grid item xs={4}>
+      <TextField
+        size="small"
+        fullWidth
+        variant="outlined"
+        label="Type"
+        select
+        onChange={onSelectorChange}
+        value={locatorType}
+      >
+        {locatorOptions.map(option => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
+      </TextField>
+    </Grid>
+  </Grid>
 ));
 
 SelectionStatus.propTypes = {
@@ -317,27 +317,33 @@ export const commandsConfig = [
     params: [
       { width: '', height: '' }
     ],
-    InputComponent: React.forwardRef(({ onWidthChange, width,onHeightChange,height }, ref) => (
+    InputComponent: React.forwardRef(({ onWidthChange, width, onHeightChange, height }, ref) => (
       <div>
-        <TextField
-          ref={ref}
-          size="small"
-          margin="normal"
-          fullWidth
-          variant="outlined"
-          label="Width"
-          onChange={onWidthChange}
-          value={width}
-        />
-        <TextField
-          size="small"
-          margin="normal"
-          fullWidth
-          variant="outlined"
-          label="Height"
-          onChange={onHeightChange}
-          value={height}
-        />
+        <Grid container spacing={1}>
+          <Grid item xs={6}>
+            <TextField
+              ref={ref}
+              size="small"
+              margin="normal"
+              fullWidth
+              variant="outlined"
+              label="Width"
+              onChange={onWidthChange}
+              value={width}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              size="small"
+              margin="normal"
+              fullWidth
+              variant="outlined"
+              label="Height"
+              onChange={onHeightChange}
+              value={height}
+            />
+          </Grid>
+        </Grid>
       </div>
     )),
   },
@@ -565,7 +571,39 @@ export const commandsConfig = [
   },
   {
     type: 'Then',
+    subType: 'Check the title of the current page',
+    color: 'blue',
+    label: 'Then',
+    params: [{
+      value: '',
+      type: '',
+    },],
+    InputComponent: React.forwardRef(({ onChange, value }, ref) => (
+      <TextField
+        ref={ref}
+        size="small"
+        fullWidth
+        variant="outlined"
+        label="Input title"
+        onChange={onChange}
+        value={value}
+      />
+    )),
+  },
+  {
+    type: 'Then',
     subType: 'Check element exists',
+    color: 'blue',
+    label: 'Then',
+    params: [{
+      value: '',
+      type: '',
+    },],
+    InputComponent: InputWithSelector,
+  },
+  {
+    type: 'Then',
+    subType: 'Check element does not exists',
     color: 'blue',
     label: 'Then',
     params: [{
@@ -612,7 +650,7 @@ export const commandsConfig = [
     color: 'blue',
     label: 'Then',
     params: [
-      { url: '', statusCode: ''},
+      { url: '', statusCode: '' },
     ],
     InputComponent: ({ onUrlChange, onStatusCodeChange, url, statusCode }) => (
       <Grid container spacing={2}>
@@ -647,7 +685,7 @@ export const commandsConfig = [
     color: 'blue',
     label: 'Then',
     params: [
-      { url: '', statusCode: ''},
+      { url: '', statusCode: '' },
     ],
     InputComponent: ({ onUrlChange, onStatusCodeChange, url, statusCode }) => (
       <Grid container spacing={2}>
@@ -802,6 +840,56 @@ export const commandsConfig = [
             fullWidth
             variant="outlined"
             label="Element locator value"
+            onChange={onChange}
+            value={value}
+          />
+        </Grid>
+        <Grid item xs={4}>
+          <TextField
+            size="small"
+            fullWidth
+            variant="outlined"
+            label="Type"
+            select
+            onChange={onSelectorChange}
+            value={selectorValue}
+          >
+            {locatorOptions.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+      </Grid>
+    )),
+  },
+  {
+    type: 'Then',
+    subType: 'Check element count',
+    color: 'blue',
+    label: 'Then',
+    params: [
+      { textValue: '', value: '', type: '' },
+    ],
+    InputComponent: React.forwardRef(({ onChange, onSeChange, onSelectorChange, textValue, value, selectorValue }, ref) => (
+      <Grid container spacing={1}>
+        <Grid item xs={12}>
+          <TextField
+            size="small"
+            fullWidth
+            variant="outlined"
+            label="Ecpected number"
+            onChange={onSeChange}
+            value={textValue}
+          />
+        </Grid>
+        <Grid item xs={8}>
+          <TextField
+            size="small"
+            fullWidth
+            variant="outlined"
+            label="Locator value"
             onChange={onChange}
             value={value}
           />

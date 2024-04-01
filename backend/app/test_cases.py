@@ -44,20 +44,6 @@ def exception_handler_decorator(func):
     return wrapper
 
 
-# locator: not only driver.find_element(By.ID, element_id)
-def construct_locator(parameters):
-    """
-    Constructs the locator based on the provided parameters.
-    """
-    if 'ID' in parameters:
-        return ('ID', parameters['ID'])
-    elif 'Name' in parameters:
-        return ('NAME', parameters['Name'])
-    elif 'Class Name' in parameters:
-        return ('CLASS_NAME', parameters['Class Name'])
-    else:
-        raise ValueError(f"Unsupported locator in parameters: {parameters}")
-"""  """
 
 # Given
 def open_website(driver, url):
@@ -95,8 +81,10 @@ def delete_all_cookies(self, driver, **kwargs):
 
 @exception_handler_decorator
 def drag_and_drop(self, driver, **kwargs):
-    source_element = driver.find_element(getattr(By, kwargs.get('sourceLocatorType').upper()), kwargs.get('sourceLocatorValue'))
-    target_element = driver.find_element(getattr(By, kwargs.get('targetLocatorType').upper()), kwargs.get('targetLocatorValue'))
+    source_element = driver.find_element(getattr(By, kwargs.get('sourceLocatorType').upper()),
+                                         kwargs.get('sourceLocatorValue'))
+    target_element = driver.find_element(getattr(By, kwargs.get('targetLocatorType').upper()),
+                                         kwargs.get('targetLocatorValue'))
     ActionChains(driver).drag_and_drop(source_element, target_element).perform()
     
 def click_button(self, driver, **kwargs):
@@ -191,11 +179,21 @@ def press_key_on_page(self, driver, **kwargs):
 # Then
 
 @exception_handler_decorator
+def check_page_title(self, driver, **kwargs):
+    expected_title = kwargs['value']
+    try:
+        current_title = driver.title
+        assert current_title == expected_title, f"Page title does not match. 
+        Expected: '{expected_title}', Got: '{current_title}'"
+        print("Page title matches expected title.")
+    except AssertionError as error:
+        raise AssertionError(error)
+    
 def verify_current_url(self, driver, **kwargs):
     expected_url = kwargs['value']
     current_url = driver.current_url
     assert current_url == expected_url, f"Current URL {current_url} does not match expected URL {expected_url}."
-
+    
 @exception_handler_decorator
 def verify_page_status_code(self,driver, **kwargs):
     url = kwargs['url']
@@ -209,7 +207,8 @@ def verify_page_not_status_code(self,driver, **kwargs):
     url = kwargs['url']
     unexpected_status_code = int(kwargs['statusCode'])
     response = requests.get(url)
-    assert response.status_code != unexpected_status_code, f"Page status code {response.status_code} should not be {unexpected_status_code}."
+    assert response.status_code != unexpected_status_code, f"Page status 
+    code {response.status_code} should not be {unexpected_status_code}."
 
     
 def enter_text(self, driver, **kwargs):
@@ -223,8 +222,8 @@ def verify_element_value(self, driver, **kwargs):
     assert element.get_attribute('value') == kwargs['textValue'], "Element value does not match expected value."
 
 def verify_number_of_elements(self, driver, **kwargs):
-    locator_type = kwargs['locatorType']
-    locator_value = kwargs['locatorValue']
+    locator_type = kwargs['type']
+    locator_value = kwargs['value']
     elements = driver.find_elements(getattr(By, locator_type.upper()), locator_value)
     assert len(elements) == int(kwargs['expectedNumber']), "Number of elements does not match expected number."
 
@@ -265,7 +264,15 @@ def check_element_exists(self, driver, **kwargs):
     except NoSuchElementException:
         assert False, "Expected element does not exist."
 
-
+def check_element_not_exists(self, driver, **kwargs):
+    locator_type = kwargs['type'].replace(" ", "_").upper() 
+    locator_value = kwargs['value']
+    try:
+        driver.find_element(getattr(By, locator_type), locator_value)
+        assert False, "Expected element to not exist, but it does."
+    except NoSuchElementException:
+        pass
+    
 @exception_handler_decorator
 def check_element_visible(self, driver, **kwargs):
     locator_type = kwargs['type'].replace(" ", "_").upper() 
@@ -306,7 +313,6 @@ def check_element_selected(self, driver, **kwargs):
 
 action_mapping = {
     "Given": open_website,
-    
     "Users set COOKIE": set_cookie,
     "User click the button": click_button,
     "User clicks on the text": click_on_text,
@@ -323,7 +329,7 @@ action_mapping = {
     "User resize the Browser Window":resize_browser_window,
     "Page scrolling":scroll_page,
     "User presses key":press_key_on_page,
-        
+    'Check element count': verify_number_of_elements,
     "Check element exists": check_element_exists,
     "Check element visible": check_element_visible,
     "Check the element's selection status": check_element_selected,
@@ -331,7 +337,7 @@ action_mapping = {
     "Check element class status": verify_element_class,
     "Check text exists": check_element_text,
     "The user is now on this page": verify_current_url,
-    "Verify number of elements": verify_number_of_elements,
+    "Check the title of the current page": check_page_title,
     "Verify a cookie exists": verify_cookie_exists,
     "Verify a cookie's value": verify_cookie_value,
     "Page has a specific StatusCode": verify_page_status_code,
@@ -385,7 +391,7 @@ class TestCases(unittest.TestCase):
                           for param in test_case['parameters']}
             open_website(self.driver, parameters.get('URL'))
 
-        # Parse and run test_case_elements.
+        # Parse and run test_case_elements (when and then)
         for test_case_element in test_case['test_case_elements']:
             action_subtype = test_case_element['subtype']
             parameters = extract_parameters(test_case_element['parameters'])

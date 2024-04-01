@@ -6667,3 +6667,135 @@ Stacktrace:
 2024-04-01 02:06:29,506 - INFO - 127.0.0.1 - - [01/Apr/2024 02:06:29] "GET /user/31 HTTP/1.1" 200 -
 2024-04-01 02:06:31,283 - INFO - 127.0.0.1 - - [01/Apr/2024 02:06:31] "GET /user/31 HTTP/1.1" 200 -
 2024-04-01 02:06:31,813 - INFO - 127.0.0.1 - - [01/Apr/2024 02:06:31] "GET /user/31 HTTP/1.1" 200 -
+2024-04-01 16:03:51,594 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.38:5000
+2024-04-01 16:03:51,594 - INFO - [33mPress CTRL+C to quit[0m
+2024-04-01 16:03:51,598 - INFO -  * Restarting with stat
+2024-04-01 16:03:52,897 - WARNING -  * Debugger is active!
+2024-04-01 16:03:52,900 - INFO -  * Debugger PIN: 211-255-688
+2024-04-01 16:04:11,505 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:11] "OPTIONS /login HTTP/1.1" 200 -
+2024-04-01 16:04:11,923 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:11] "POST /login HTTP/1.1" 200 -
+2024-04-01 16:04:11,977 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:11] "OPTIONS /getUserTeams/31 HTTP/1.1" 200 -
+2024-04-01 16:04:12,278 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:12] "OPTIONS /getUserTeams/31 HTTP/1.1" 200 -
+2024-04-01 16:04:12,299 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:12] "GET /getUserTeams/31 HTTP/1.1" 200 -
+2024-04-01 16:04:12,607 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:12] "GET /getUserTeams/31 HTTP/1.1" 200 -
+2024-04-01 16:04:13,241 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:13] "GET /getTeamMembers/29 HTTP/1.1" 200 -
+2024-04-01 16:04:13,489 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:13] "GET /getTeamMembers/29 HTTP/1.1" 200 -
+2024-04-01 16:04:13,562 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:13] "GET /tasklists/29 HTTP/1.1" 200 -
+2024-04-01 16:04:13,585 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:13] "GET /tasklists/29 HTTP/1.1" 200 -
+2024-04-01 16:04:14,170 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:14] "GET /tasklists/29 HTTP/1.1" 200 -
+2024-04-01 16:04:14,481 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:14] "GET /tasklists/29 HTTP/1.1" 200 -
+2024-04-01 16:04:15,370 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:15] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 16:04:15,622 - INFO - 127.0.0.1 - - [01/Apr/2024 16:04:15] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 16:17:13,930 - INFO - 127.0.0.1 - - [01/Apr/2024 16:17:13] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 16:17:14,190 - INFO - 127.0.0.1 - - [01/Apr/2024 16:17:14] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:20:25,801 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:25] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:20:26,051 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:26] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:20:26,905 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:26] "GET /getTestCases?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:20:27,193 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:27] "GET /testEventName?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:20:27,214 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:27] "GET /getTestCases?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:20:27,507 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:27] "GET /testEventName?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:20:28,421 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:28] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:20:28,684 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:28] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:20:31,657 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:31] "GET /getTestCases?testeventID=291 HTTP/1.1" 200 -
+2024-04-01 17:20:31,963 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:31] "GET /testEventName?testeventID=291 HTTP/1.1" 200 -
+2024-04-01 17:20:31,979 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:31] "GET /getTestCases?testeventID=291 HTTP/1.1" 200 -
+2024-04-01 17:20:32,277 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:32] "GET /testEventName?testeventID=291 HTTP/1.1" 200 -
+2024-04-01 17:20:33,279 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:33] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:20:33,542 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:33] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:20:34,096 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:34] "GET /getTestCases?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:20:34,401 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:34] "GET /testEventName?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:20:34,404 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:34] "GET /getTestCases?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:20:34,708 - INFO - 127.0.0.1 - - [01/Apr/2024 17:20:34] "GET /testEventName?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:21:39,429 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:39] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:39,699 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:39] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:40,455 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:40] "GET /getTestCases?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:21:40,754 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:40] "GET /testEventName?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:21:40,760 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:40] "GET /getTestCases?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:21:41,061 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:41] "GET /testEventName?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:21:42,770 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:42] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:43,020 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:43] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:43,412 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:43] "GET /getTestCases?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:43,712 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:43] "GET /testEventName?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:43,722 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:43] "GET /getTestCases?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:44,028 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:44] "GET /testEventName?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:46,559 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:46] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:46,813 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:46] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:47,122 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:47] "GET /getTestCases?testeventID=272 HTTP/1.1" 200 -
+2024-04-01 17:21:47,423 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:47] "GET /testEventName?testeventID=272 HTTP/1.1" 200 -
+2024-04-01 17:21:47,429 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:47] "GET /getTestCases?testeventID=272 HTTP/1.1" 200 -
+2024-04-01 17:21:47,739 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:47] "GET /testEventName?testeventID=272 HTTP/1.1" 200 -
+2024-04-01 17:21:48,470 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:48] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:48,715 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:48] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:49,120 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:49] "GET /getTestCases?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:21:49,428 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:49] "GET /testEventName?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:21:49,430 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:49] "GET /getTestCases?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:21:49,735 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:49] "GET /testEventName?testeventID=280 HTTP/1.1" 200 -
+2024-04-01 17:21:50,408 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:50] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:50,669 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:50] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:50,921 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:50] "GET /getTestCases?testeventID=281 HTTP/1.1" 200 -
+2024-04-01 17:21:51,224 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:51] "GET /testEventName?testeventID=281 HTTP/1.1" 200 -
+2024-04-01 17:21:51,229 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:51] "GET /getTestCases?testeventID=281 HTTP/1.1" 200 -
+2024-04-01 17:21:51,530 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:51] "GET /testEventName?testeventID=281 HTTP/1.1" 200 -
+2024-04-01 17:21:52,603 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:52] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:52,867 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:52] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:54,230 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:54] "GET /getTestCases?testeventID=282 HTTP/1.1" 200 -
+2024-04-01 17:21:54,537 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:54] "GET /testEventName?testeventID=282 HTTP/1.1" 200 -
+2024-04-01 17:21:54,540 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:54] "GET /getTestCases?testeventID=282 HTTP/1.1" 200 -
+2024-04-01 17:21:54,853 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:54] "GET /testEventName?testeventID=282 HTTP/1.1" 200 -
+2024-04-01 17:21:55,789 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:55] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:56,052 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:56] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:56,291 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:56] "GET /getTestCases?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:56,596 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:56] "GET /testEventName?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:56,602 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:56] "GET /getTestCases?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:56,900 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:56] "GET /testEventName?testeventID=271 HTTP/1.1" 200 -
+2024-04-01 17:21:58,095 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:58] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:58,356 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:58] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:21:59,466 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:59] "GET /getTestCases?testeventID=284 HTTP/1.1" 200 -
+2024-04-01 17:21:59,777 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:59] "GET /testEventName?testeventID=284 HTTP/1.1" 200 -
+2024-04-01 17:21:59,780 - INFO - 127.0.0.1 - - [01/Apr/2024 17:21:59] "GET /getTestCases?testeventID=284 HTTP/1.1" 200 -
+2024-04-01 17:22:00,091 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:00] "GET /testEventName?testeventID=284 HTTP/1.1" 200 -
+2024-04-01 17:22:01,574 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:01] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:01,822 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:01] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:03,293 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:03] "GET /getTestCases?testeventID=286 HTTP/1.1" 200 -
+2024-04-01 17:22:03,597 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:03] "GET /testEventName?testeventID=286 HTTP/1.1" 200 -
+2024-04-01 17:22:03,608 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:03] "GET /getTestCases?testeventID=286 HTTP/1.1" 200 -
+2024-04-01 17:22:03,904 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:03] "GET /testEventName?testeventID=286 HTTP/1.1" 200 -
+2024-04-01 17:22:05,877 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:05] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:06,147 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:06] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:07,525 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:07] "GET /getTestCases?testeventID=290 HTTP/1.1" 200 -
+2024-04-01 17:22:07,838 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:07] "GET /testEventName?testeventID=290 HTTP/1.1" 200 -
+2024-04-01 17:22:07,841 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:07] "GET /getTestCases?testeventID=290 HTTP/1.1" 200 -
+2024-04-01 17:22:08,156 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:08] "GET /testEventName?testeventID=290 HTTP/1.1" 200 -
+2024-04-01 17:22:08,904 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:08] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:09,235 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:09] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:11,864 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:11] "GET /getTestCases?testeventID=288 HTTP/1.1" 200 -
+2024-04-01 17:22:12,165 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:12] "GET /testEventName?testeventID=288 HTTP/1.1" 200 -
+2024-04-01 17:22:12,171 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:12] "GET /getTestCases?testeventID=288 HTTP/1.1" 200 -
+2024-04-01 17:22:12,481 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:12] "GET /testEventName?testeventID=288 HTTP/1.1" 200 -
+2024-04-01 17:22:15,080 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:15] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:15,348 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:15] "GET /getTeamScript/29 HTTP/1.1" 200 -
+2024-04-01 17:22:16,961 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:16] "GET /getTestCases?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:22:17,262 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:17] "GET /testEventName?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:22:17,268 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:17] "GET /getTestCases?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 17:22:17,575 - INFO - 127.0.0.1 - - [01/Apr/2024 17:22:17] "GET /testEventName?testeventID=270 HTTP/1.1" 200 -
+2024-04-01 20:22:18,605 - INFO -  * Detected change in 'D:\\ÍùÆÚÑ§Ï°×ÊÁÏ+±Ê¼Ç\\last project\\backend\\app\\test_cases.py', reloading
+2024-04-01 20:22:18,892 - INFO -  * Restarting with stat
+2024-04-01 20:22:19,918 - WARNING -  * Debugger is active!
+2024-04-01 20:22:19,918 - INFO -  * Debugger PIN: 211-255-688
+2024-04-01 20:27:19,675 - INFO -  * Detected change in 'D:\\ÍùÆÚÑ§Ï°×ÊÁÏ+±Ê¼Ç\\last project\\backend\\app\\test_cases.py', reloading
+2024-04-01 20:27:19,777 - INFO -  * Restarting with stat
+2024-04-01 20:27:20,645 - WARNING -  * Debugger is active!
+2024-04-01 20:27:20,647 - INFO -  * Debugger PIN: 211-255-688
+2024-04-01 20:38:03,918 - INFO -  * Detected change in 'D:\\ÍùÆÚÑ§Ï°×ÊÁÏ+±Ê¼Ç\\last project\\backend\\app\\test_cases.py', reloading
+2024-04-01 20:38:04,056 - INFO -  * Restarting with stat
+2024-04-01 20:38:04,938 - WARNING -  * Debugger is active!
+2024-04-01 20:38:04,940 - INFO -  * Debugger PIN: 211-255-688
+2024-04-01 20:41:37,069 - INFO -  * Detected change in 'D:\\ÍùÆÚÑ§Ï°×ÊÁÏ+±Ê¼Ç\\last project\\backend\\app\\test_cases.py', reloading
+2024-04-01 20:41:37,184 - INFO -  * Restarting with stat
+2024-04-01 20:41:38,086 - WARNING -  * Debugger is active!
+2024-04-01 20:41:38,089 - INFO -  * Debugger PIN: 211-255-688
+2024-04-01 20:47:08,004 - INFO -  * Detected change in 'D:\\ÍùÆÚÑ§Ï°×ÊÁÏ+±Ê¼Ç\\last project\\backend\\app\\test_cases.py', reloading
+2024-04-01 20:47:08,105 - INFO -  * Restarting with stat
